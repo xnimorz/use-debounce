@@ -1,6 +1,6 @@
 {
   "name": "use-debounce",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Debounce hook for react",
   "main": "lib/index.js",
   "scripts": {
@@ -12,21 +12,19 @@
   },
   "keywords": [
     "debounce",
-    "react-hook"
+    "react-hook",
+    "react"
   ],
   "author": "Nikita Mostovoy (nik.mostovoy@gmail.com)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/xnimorz/use-debounce/issues"
   },
-  "peerDependencies": {
-    "react": ">=16.6.0"
-  },
+  "peerDependencies": {},
   "homepage": "https://github.com/xnimorz/use-debounce#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "jest": "^22.4.3"
+    "babel-preset-env": "^1.7.0"
   }
 }

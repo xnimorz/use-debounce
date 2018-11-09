@@ -22,18 +22,18 @@ https://codesandbox.io/s/kx75xzyrq7
 According to https://twitter.com/dan_abramov/status/1060729512227467264
 
 ```javascript
-import React, { useState } from "react";
-import { useDebounce } from "use-debounce";
+import React, { useState } from 'react';
+import { useDebounce } from 'use-debounce';
 
 export default function Input() {
-  const [text, setText] = useState("Hello");
+  const [text, setText] = useState('Hello');
   const debouncedText = useDebounce(text, 1000);
 
   return (
     <div>
       <input
-        defaultValue={"Hello"}
-        onChange={e => {
+        defaultValue={'Hello'}
+        onChange={(e) => {
           setText(e.target.value);
         }}
       />

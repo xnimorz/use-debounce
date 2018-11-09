@@ -17,6 +17,8 @@ npm i use-debounce --save
 The simplest way to start playing around with use-debounce is with this CodeSandbox snippet:
 https://codesandbox.io/s/kx75xzyrq7
 
+More complex example with searching for matching countries using debounced input: https://codesandbox.io/s/rr40wnropq (thanks to https://twitter.com/ZephDavies)
+
 ## Simple debouncing
 
 According to https://twitter.com/dan_abramov/status/1060729512227467264

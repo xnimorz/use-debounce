@@ -4,7 +4,8 @@
   "description": "Debounce hook for react",
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel ./src --out-dir ./lib"
+    "test": "yarn jest",
+    "build": "yarn test && babel ./src --out-dir ./lib"
   },
   "repository": {
     "type": "git",
@@ -20,11 +21,20 @@
   "bugs": {
     "url": "https://github.com/xnimorz/use-debounce/issues"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "react": ">=16.6.0",
+    "react-dom": ">=16.6.0"
+  },
   "homepage": "https://github.com/xnimorz/use-debounce#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0"
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.7.0",
+    "jest": "^23.6.0",
+    "react": "^16.7.0-alpha.0",
+    "react-dom": "^16.7.0-alpha.0"
   }
 }

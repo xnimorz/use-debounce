@@ -1,6 +1,6 @@
 {
   "name": "use-debounce",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Debounce hook for react",
   "main": "lib/index.js",
   "typings": "src/index.d.ts",
@@ -23,8 +23,8 @@
     "url": "https://github.com/xnimorz/use-debounce/issues"
   },
   "peerDependencies": {
-    "react": ">=16.7.0-alpha.0",
-    "react-dom": ">=16.7.0-alpha.0"
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   },
   "homepage": "https://github.com/xnimorz/use-debounce#readme",
   "devDependencies": {
@@ -35,7 +35,7 @@
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.7.0",
     "jest": "^23.6.0",
-    "react": "^16.7.0-alpha.0",
-    "react-dom": "^16.7.0-alpha.0"
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
   }
 }

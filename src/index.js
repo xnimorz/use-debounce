@@ -1,17 +1,4 @@
-import { useState, useEffect } from 'react';
+import useDebounce from './cache';
+import useDebouncedCallback from './callback';
 
-export const useDebounce = (value, delay) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-};
+export { useDebounce, useDebouncedCallback };

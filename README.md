@@ -52,29 +52,26 @@ Besides `useDebounce` for values you can debounce callbacks, that is the more co
 Example with Input (and react callbacks): https://codesandbox.io/s/x0jvqrwyq
 
 ```js
-  import useDebouncedCallback from 'use-debounce/callback';
-  
-  function Input({ defaultValue }) {
+import useDebouncedCallback from 'use-debounce/lib/callback';
+
+function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
   // Debounce callback
   const debouncedFunction = useDebounce(
     // function
-    value => {
+    (value) => {
       setValue(value);
     },
     // delay in ms
     1000,
     // deps (in case your function has closure dependency like https://reactjs.org/docs/hooks-reference.html#usecallback)
-    [],
+    []
   );
 
   // you should use `e => debouncedFunction(e.target.value)` as react works with synthetic evens
   return (
     <div>
-      <input
-        defaultValue={defaultValue}
-        onChange={e => debouncedFunction(e.target.value)}
-      />
+      <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />
       <p>Debounced value: {value}</p>
     </div>
   );

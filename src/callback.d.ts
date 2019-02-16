@@ -1,5 +1,5 @@
 export default function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
-  deps: ReadonlyArray<any>,
-  delay: Number
+  delay: Number,
+  deps: ReadonlyArray<any>
 ): T;

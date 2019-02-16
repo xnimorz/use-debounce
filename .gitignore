@@ -6,3 +6,4 @@ npm-debug.js
 lib
 .git
 .DS_store
+coverage

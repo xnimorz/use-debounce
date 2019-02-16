@@ -1,6 +1,7 @@
 import Enzyme from 'enzyme';
 import React from 'react';
-import { useDebounce } from '../src';
+import useDebounce from '../src/cache';
+import { act } from 'react-dom/test-utils';
 
 jest.useFakeTimers();
 
@@ -24,11 +25,15 @@ describe('useDebounce', () => {
     // check inited value
     expect(tree.text()).toBe('Hello');
 
-    tree.setProps({ text: 'Hello world' });
+    act(() => {
+      tree.setProps({ text: 'Hello world' });
+    });
     // timeout shouldn't have called yet
     expect(tree.text()).toBe('Hello');
 
-    jest.runAllTimers();
+    act(() => {
+      jest.runAllTimers();
+    });
     // after runAllTimer text should be updated
     expect(tree.text()).toBe('Hello world');
   });
@@ -43,13 +48,18 @@ describe('useDebounce', () => {
     // check inited value
     expect(tree.text()).toBe('Hello');
 
-    // this value shouldn't be applied, as we'll set up another one
-    tree.setProps({ text: 'Wrong value' });
+    act(() => {
+      // this value shouldn't be applied, as we'll set up another one
+      tree.setProps({ text: 'Wrong value' });
+    });
     // timeout shouldn't have called yet
     expect(tree.text()).toBe('Hello');
 
     tree.setProps({ text: 'Right value' });
-    jest.runAllTimers();
+
+    act(() => {
+      jest.runAllTimers();
+    });
     // after runAllTimer text should be updated
     expect(tree.text()).toBe('Right value');
   });

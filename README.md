@@ -57,7 +57,7 @@ import useDebouncedCallback from 'use-debounce/lib/callback';
 function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
   // Debounce callback
-  const debouncedFunction = useDebounce(
+  const debouncedFunction = useDebouncedCallback(
     // function
     (value) => {
       setValue(value);

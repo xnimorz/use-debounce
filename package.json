@@ -35,7 +35,7 @@
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.7.0",
     "jest": "^23.6.0",
-    "react": "16.8.2",
-    "react-dom": "16.8.2"
+    "react": "16.8.3",
+    "react-dom": "16.8.3"
   }
 }

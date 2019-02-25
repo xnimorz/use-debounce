@@ -25,6 +25,24 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(1);
   });
 
+  it('will cancel delayed callback when cancel method is called', () => {
+    const callback = jest.fn();
+
+    function Component() {
+      const debouncedCallback = useDebouncedCallback(callback, 1000, []);
+      debouncedCallback();
+      setTimeout(debouncedCallback.cancel, 500);
+      return null;
+    }
+    Enzyme.mount(<Component />);
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(callback.mock.calls.length).toBe(0);
+  });
+
   it('will call callback only with the latest params', () => {
     const callback = jest.fn((param) => {
       expect(param).toBe('Right param');

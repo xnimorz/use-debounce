@@ -3,13 +3,13 @@ import { useCallback, useEffect, useRef } from 'react';
 export default function useDebouncedCallback(callback, delay, deps) {
   const functionTimeoutHandler = useRef(null);
   const debouncedFunction = useCallback(callback, deps);
-  const cancel = useCallback(() => {
+  const cancelDebouncedCallback = useCallback(() => {
     clearTimeout(functionTimeoutHandler.current);
   }, [functionTimeoutHandler.current]);
 
   useEffect(
     () => () => {
-      cancel();
+      cancelDebouncedCallback();
     },
     []
   );
@@ -21,7 +21,5 @@ export default function useDebouncedCallback(callback, delay, deps) {
     }, delay);
   };
 
-  debouncedCallback.cancel = cancel;
-
-  return debouncedCallback;
+  return [debouncedCallback, cancelDebouncedCallback];
 }

@@ -10,7 +10,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const debouncedCallback = useDebouncedCallback(callback, 1000, []);
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, []);
       debouncedCallback();
       return null;
     }
@@ -29,9 +29,9 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const debouncedCallback = useDebouncedCallback(callback, 1000, []);
+      const [debouncedCallback, cancelDebouncedCallback] = useDebouncedCallback(callback, 1000, []);
       debouncedCallback();
-      setTimeout(debouncedCallback.cancel, 500);
+      setTimeout(cancelDebouncedCallback, 500);
       return null;
     }
     Enzyme.mount(<Component />);
@@ -49,7 +49,7 @@ describe('useDebouncedCallback', () => {
     });
 
     function Component() {
-      const debouncedCallback = useDebouncedCallback(callback, 1000, []);
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, []);
       debouncedCallback('Wrong param');
       setTimeout(() => {
         debouncedCallback('Right param');
@@ -72,7 +72,7 @@ describe('useDebouncedCallback', () => {
 
   it('will change callback function, if params from dependencies has changed', () => {
     function Component({ text }) {
-      const debouncedCallback = useDebouncedCallback(
+      const [debouncedCallback] = useDebouncedCallback(
         jest.fn(() => {
           expect(text).toBe('Right param');
         }),
@@ -94,7 +94,7 @@ describe('useDebouncedCallback', () => {
 
   it("won't change callback function, if params from dependencies hasn't changed", () => {
     function Component({ text }) {
-      const debouncedCallback = useDebouncedCallback(
+      const [debouncedCallback] = useDebouncedCallback(
         jest.fn(() => {
           expect(text).toBe('Right param');
         }),

@@ -29,7 +29,7 @@ import { useDebounce } from 'use-debounce';
 
 export default function Input() {
   const [text, setText] = useState('Hello');
-  const debouncedText = useDebounce(text, 1000);
+  const [value, cancelValue] = useDebounce(text, 1000);
 
   return (
     <div>
@@ -40,7 +40,7 @@ export default function Input() {
         }}
       />
       <p>Actual value: {text}</p>
-      <p>Debounce value: {debouncedText}</p>
+      <p>Debounce value: {value}</p>
     </div>
   );
 }
@@ -57,7 +57,7 @@ import useDebouncedCallback from 'use-debounce/lib/callback';
 function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
   // Debounce callback
-  const debouncedFunction = useDebouncedCallback(
+  const [debouncedCallback, cancelDebouncedCallback] = useDebouncedCallback(
     // function
     (value) => {
       setValue(value);
@@ -68,10 +68,10 @@ function Input({ defaultValue }) {
     []
   );
 
-  // you should use `e => debouncedFunction(e.target.value)` as react works with synthetic evens
+  // you should use `e => debouncedCallback(e.target.value)` as react works with synthetic evens
   return (
     <div>
-      <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />
+      <input defaultValue={defaultValue} onChange={(e) => debouncedCallback(e.target.value)} />
       <p>Debounced value: {value}</p>
     </div>
   );
@@ -89,7 +89,7 @@ function ScrolledComponent() {
   const [position, setPosition] = useState(window.pageYOffset);
 
   // Debounce callback
-  const scrollHandler = useDebouncedCallback(
+  const [scrollHandler] = useDebouncedCallback(
     // function
     () => {
       setPosition(window.pageYOffset);

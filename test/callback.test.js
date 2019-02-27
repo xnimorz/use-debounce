@@ -25,24 +25,6 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(1);
   });
 
-  it('will cancel delayed callback when cancel method is called', () => {
-    const callback = jest.fn();
-
-    function Component() {
-      const [debouncedCallback, cancelDebouncedCallback] = useDebouncedCallback(callback, 1000, []);
-      debouncedCallback();
-      setTimeout(cancelDebouncedCallback, 500);
-      return null;
-    }
-    Enzyme.mount(<Component />);
-
-    act(() => {
-      jest.runAllTimers();
-    });
-
-    expect(callback.mock.calls.length).toBe(0);
-  });
-
   it('will call callback only with the latest params', () => {
     const callback = jest.fn((param) => {
       expect(param).toBe('Right param');
@@ -68,6 +50,24 @@ describe('useDebouncedCallback', () => {
     });
 
     expect(callback.mock.calls.length).toBe(1);
+  });
+
+  it('will cancel delayed callback when cancel method is called', () => {
+    const callback = jest.fn();
+
+    function Component() {
+      const [debouncedCallback, cancelDebouncedCallback] = useDebouncedCallback(callback, 1000, []);
+      debouncedCallback();
+      setTimeout(cancelDebouncedCallback, 500);
+      return null;
+    }
+    Enzyme.mount(<Component />);
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(callback.mock.calls.length).toBe(0);
   });
 
   it('will change callback function, if params from dependencies has changed', () => {
@@ -112,5 +112,84 @@ describe('useDebouncedCallback', () => {
     act(() => {
       jest.runAllTimers();
     });
+  });
+
+  it('call callback with the latest value if maxWait time exceed', () => {
+    const callback = (value) => expect(value).toBe('Right value');
+
+    function Component({ text }) {
+      const [debouncedCallback] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      debouncedCallback(text);
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="Wrong Value" />);
+
+    act(() => {
+      jest.runTimersToTime(400);
+      tree.setProps({ text: 'Right value' });
+    });
+
+    act(() => {
+      jest.runTimersToTime(400);
+    });
+  });
+
+  it('will call callback if maxWait time exceed', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const [debouncedCallback] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      debouncedCallback();
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      jest.runTimersToTime(400);
+      tree.setProps({ text: 'test' });
+    });
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('test');
+
+    act(() => {
+      jest.runTimersToTime(400);
+    });
+
+    expect(callback.mock.calls.length).toBe(1);
+  });
+
+  it('will cancel callback if maxWait time exceed and cancel method was invoked', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const [debouncedCallback, cancel] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      debouncedCallback();
+      if (text === 'test') {
+        cancel();
+      }
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      jest.runTimersToTime(400);
+      tree.setProps({ text: 'test' });
+    });
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('test');
+
+    act(() => {
+      jest.runTimersToTime(400);
+    });
+
+    expect(callback.mock.calls.length).toBe(0);
   });
 });

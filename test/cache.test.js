@@ -87,4 +87,73 @@ describe('useDebounce', () => {
     // after runAllTimer text should be updated
     expect(tree.text()).toBe('Right value');
   });
+
+  it('should cancel maxWait callback', () => {
+    function Component({ text }) {
+      const [value, cancel] = useDebounce(text, 500, { maxWait: 600 });
+      if (text === 'Right value') {
+        cancel();
+      }
+      return <div>{value}</div>;
+    }
+    const tree = Enzyme.mount(<Component text={'Hello'} />);
+
+    // check inited value
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      // this value shouldn't be applied, as we'll set up another one
+      tree.setProps({ text: 'Wrong value' });
+    });
+
+    act(() => {
+      jest.runTimersToTime(400);
+    });
+
+    // timeout shouldn't have called yet
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      tree.setProps({ text: 'Right value' });
+    });
+
+    act(() => {
+      jest.runTimersToTime(400);
+    });
+
+    expect(tree.text()).toBe('Hello');
+  });
+
+  it('should apply the latest value if maxWait timeout is called', () => {
+    function Component({ text }) {
+      const [value] = useDebounce(text, 500, { maxWait: 600 });
+      return <div>{value}</div>;
+    }
+    const tree = Enzyme.mount(<Component text={'Hello'} />);
+
+    // check inited value
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      // this value shouldn't be applied, as we'll set up another one
+      tree.setProps({ text: 'Wrong value' });
+    });
+
+    act(() => {
+      jest.runTimersToTime(400);
+    });
+
+    // timeout shouldn't have called yet
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      tree.setProps({ text: 'Right value' });
+    });
+
+    act(() => {
+      jest.runTimersToTime(400);
+    });
+    // after runAllTimer text should be updated
+    expect(tree.text()).toBe('Right value');
+  });
 });

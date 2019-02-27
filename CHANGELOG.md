@@ -12,7 +12,7 @@ const debouncedValue = useDebounce(value, 300, {maxWait: 1000});
 const debouncedCallback = useDebouncedCallback(() => {...}, 300, [], {maxWait: 1000});
 ```
 
-- add cancel callback (thanks to @thibaultboursier for contributing). Cancel callback removes func from the queue (even maxWait):
+- add cancel callback (thanks to [@thibaultboursier](https://github.com/thibaultboursier) for contributing). Cancel callback removes func from the queue (even maxWait):
 
 ```javascript
 import { useDebounce, useDebouncedCallback } from 'use-debounce';

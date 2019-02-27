@@ -29,7 +29,7 @@ import { useDebounce } from 'use-debounce';
 
 export default function Input() {
   const [text, setText] = useState('Hello');
-  const [value, cancelValue] = useDebounce(text, 1000);
+  const [value] = useDebounce(text, 1000);
 
   return (
     <div>
@@ -57,7 +57,7 @@ import useDebouncedCallback from 'use-debounce/lib/callback';
 function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
   // Debounce callback
-  const [debouncedCallback, cancelDebouncedCallback] = useDebouncedCallback(
+  const [debouncedCallback] = useDebouncedCallback(
     // function
     (value) => {
       setValue(value);
@@ -116,4 +116,42 @@ function ScrolledComponent() {
     </div>
   );
 }
+```
+
+### Advanced usage
+
+1. Both `useDebounce` and `useDebouncedCallback` works with `maxWait` option. This params describes the maximum time func is allowed to be delayed before it's invoked.
+2. You can cancel debounce cycle, by calling `cancel` callback
+
+The full example you can see here https://codesandbox.io/s/4wvmp1xlw4
+
+```javascript
+import React, { useState, useCallback } from 'react';
+import ReactDOM from 'react-dom';
+import useDebouncedCallback from './tmp';
+
+function Input({ defaultValue }) {
+  const [value, setValue] = useState(defaultValue);
+  const [debouncedFunction, cancel] = useDebouncedCallback(
+    (value) => {
+      setValue(value);
+    },
+    500,
+    [],
+    // The maximum time func is allowed to be delayed before it's invoked:
+    { maxWait: 2000 }
+  );
+
+  // you should use `e => debouncedFunction(e.target.value)` as react works with synthetic evens
+  return (
+    <div>
+      <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />
+      <p>Debounced value: {value}</p>
+      <button onClick={cancel}>Cancel Debounce cycle</button>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById('root');
+ReactDOM.render(<Input defaultValue="Hello world" />, rootElement);
 ```

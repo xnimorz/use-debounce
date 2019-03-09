@@ -120,6 +120,8 @@ function ScrolledComponent() {
 
 ### Advanced usage
 
+#### Cancel and maxWait
+
 1. Both `useDebounce` and `useDebouncedCallback` works with `maxWait` option. This params describes the maximum time func is allowed to be delayed before it's invoked.
 2. You can cancel debounce cycle, by calling `cancel` callback
 
@@ -128,7 +130,7 @@ The full example you can see here https://codesandbox.io/s/4wvmp1xlw4
 ```javascript
 import React, { useState, useCallback } from 'react';
 import ReactDOM from 'react-dom';
-import useDebouncedCallback from './tmp';
+import useDebouncedCallback from 'use-debounce/lib/callback';
 
 function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
@@ -154,4 +156,34 @@ function Input({ defaultValue }) {
 
 const rootElement = document.getElementById('root');
 ReactDOM.render(<Input defaultValue="Hello world" />, rootElement);
+```
+
+#### callPending method
+
+`useDebouncedCallback` has `callPending` method. It allows to call the callback manually if it hasn't fired yet. This method is handy to use when the user takes an action that would cause the component to unmount, but you need to execute the callback.
+
+```javascript
+import React, { useState, useCallback } from 'react';
+import useDebouncedCallback from 'use-debounce/lib/callback';
+
+function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
+  const [debouncedFunction, cancel, callPending] = useDebouncedCallback(
+    (value) => {
+      asyncFetchData;
+    },
+    500,
+    [],
+    { maxWait: 2000 }
+  );
+
+  // When the component goes to be unmounted, we will fetch data if the input has changed.
+  useEffect(
+    () => () => {
+      callPending();
+    },
+    []
+  );
+
+  return <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />;
+}
 ```

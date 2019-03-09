@@ -1,5 +1,5 @@
 import Enzyme from 'enzyme';
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDebouncedCallback from '../src/callback';
 import { act } from 'react-dom/test-utils';
 
@@ -197,7 +197,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, []);
       debouncedCallback();
       if (text === 'test') {
         callPending();
@@ -220,7 +220,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, []);
       if (text === 'test') {
         callPending();
       }
@@ -243,7 +243,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, cancel, callPending] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      const [debouncedCallback, cancel, callPending] = useDebouncedCallback(callback, 500, []);
       debouncedCallback();
       if (text === 'test') {
         cancel();
@@ -262,5 +262,32 @@ describe('useDebouncedCallback', () => {
 
     expect(callback.mock.calls.length).toBe(0);
     expect(tree.text()).toBe('test');
+  });
+
+  it('will call pending callback if callPending function is called on component unmount', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, []);
+
+      debouncedCallback();
+      useEffect(
+        () => () => {
+          callPending();
+        },
+        []
+      );
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.unmount();
+    });
+
+    expect(callback.mock.calls.length).toBe(1);
   });
 });

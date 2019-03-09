@@ -1,6 +1,34 @@
 ## 1.1.0
 
-- add `callPending` callback to `useDebouncedCallback` method.
+- add `callPending` callback to `useDebouncedCallback` method. It allows to call the callback manually if it hasn't fired yet. This method is handy to use when the user takes an action that would cause the component to unmount, but you need to execute the callback.
+
+```javascript
+import React, { useState, useCallback } from 'react';
+import useDebouncedCallback from 'use-debounce/lib/callback';
+
+function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
+  const [debouncedFunction, cancel, callPending] = useDebouncedCallback(
+    (value) => {
+      asyncFetchData;
+    },
+    500,
+    [],
+    { maxWait: 2000 }
+  );
+
+  // When the component goes to be unmounted, we will fetch data if the input has changed.
+  useEffect(
+    () => () => {
+      callPending();
+    },
+    []
+  );
+
+  return <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />;
+}
+```
+
+More examples are available here: https://github.com/xnimorz/use-debounce/commit/989d6c0efb4eef080ed78330233186d7b0c249e3#diff-c7e0cfdec8acc174d3301ff43b986264R196
 
 ## 1.0.0
 

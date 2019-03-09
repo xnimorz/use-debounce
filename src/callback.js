@@ -5,6 +5,7 @@ export default function useDebouncedCallback(callback, delay, deps, options = {}
   const maxWaitHandler = useRef(null);
   const maxWaitArgs = useRef([]);
   const functionTimeoutHandler = useRef(null);
+  const isComponentUnmounted = useRef(false);
 
   const debouncedFunction = useCallback(callback, deps);
 
@@ -18,7 +19,8 @@ export default function useDebouncedCallback(callback, delay, deps, options = {}
 
   useEffect(
     () => () => {
-      cancelDebouncedCallback();
+      // we use flag, as we allow to call callPending outside the hook
+      isComponentUnmounted.current = true;
     },
     []
   );
@@ -27,14 +29,18 @@ export default function useDebouncedCallback(callback, delay, deps, options = {}
     maxWaitArgs.current = args;
     clearTimeout(functionTimeoutHandler.current);
     functionTimeoutHandler.current = setTimeout(() => {
-      debouncedFunction(...args);
+      if (!isComponentUnmounted.current) {
+        debouncedFunction(...args);
+      }
 
       cancelDebouncedCallback();
     }, delay);
 
     if (maxWait && !maxWaitHandler.current) {
       maxWaitHandler.current = setTimeout(() => {
-        debouncedFunction(...maxWaitArgs.current);
+        if (!isComponentUnmounted.current) {
+          debouncedFunction(...maxWaitArgs.current);
+        }
         cancelDebouncedCallback();
       }, maxWait);
     }

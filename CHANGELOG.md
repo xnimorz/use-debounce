@@ -1,3 +1,7 @@
+## 1.1.0
+
+- add `callPending` callback to `useDebouncedCallback` method.
+
 ## 1.0.0
 
 The example with all features you can see here: https://codesandbox.io/s/4wvmp1xlw4

@@ -13,6 +13,7 @@ export default function useDebouncedCallback(callback, delay, deps, options = {}
     clearTimeout(maxWaitHandler.current);
     maxWaitHandler.current = null;
     maxWaitArgs.current = [];
+    functionTimeoutHandler.current = null;
   }, [functionTimeoutHandler.current, maxWaitHandler.current]);
 
   useEffect(
@@ -39,5 +40,16 @@ export default function useDebouncedCallback(callback, delay, deps, options = {}
     }
   };
 
-  return [debouncedCallback, cancelDebouncedCallback];
+  const callPending = () => {
+    // Call pending callback only if we have anything in our queue
+    if (!functionTimeoutHandler.current) {
+      return;
+    }
+
+    debouncedFunction(...maxWaitArgs.current);
+    cancelDebouncedCallback();
+  };
+
+  // For the moment, we use 3 args array so that we save backward compatibility
+  return [debouncedCallback, cancelDebouncedCallback, callPending];
 }

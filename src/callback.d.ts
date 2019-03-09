@@ -3,4 +3,4 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
   delay: Number,
   deps: ReadonlyArray<any>,
   options?: { maxWait?: number }
-): [T, () => void];
+): [T, () => void, () => void];

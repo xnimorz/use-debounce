@@ -192,4 +192,75 @@ describe('useDebouncedCallback', () => {
 
     expect(callback.mock.calls.length).toBe(0);
   });
+
+  it('will call pending callback if callPending function is called', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      debouncedCallback();
+      if (text === 'test') {
+        callPending();
+      }
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.setProps({ text: 'test' });
+    });
+
+    expect(callback.mock.calls.length).toBe(1);
+  });
+
+  it('won\t call pending callback if callPending function is called and there are no items in queue', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      if (text === 'test') {
+        callPending();
+      }
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.setProps({ text: 'test' });
+    });
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('test');
+  });
+
+  it('won\t call pending callback if callPending function is called and cancel method is also executed', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const [debouncedCallback, cancel, callPending] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      debouncedCallback();
+      if (text === 'test') {
+        cancel();
+        callPending();
+      }
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.setProps({ text: 'test' });
+    });
+
+    expect(callback.mock.calls.length).toBe(0);
+    expect(tree.text()).toBe('test');
+  });
 });

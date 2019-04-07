@@ -6,7 +6,8 @@
   "typings": "src/index.d.ts",
   "scripts": {
     "test": "yarn jest",
-    "build": "yarn test && babel ./src --out-dir ./lib"
+    "build": "yarn test && babel ./src --out-dir ./lib",
+    "size": "size-limit"
   },
   "repository": {
     "type": "git",
@@ -36,6 +37,10 @@
     "enzyme-adapter-react-16": "^1.7.0",
     "jest": "^23.6.0",
     "react": "16.8.3",
-    "react-dom": "16.8.3"
-  }
+    "react-dom": "16.8.3",
+    "size-limit": "^1.0.1"
+  },
+  "size-limit": [
+    {"path": "lib/index.js"}
+  ]
 }

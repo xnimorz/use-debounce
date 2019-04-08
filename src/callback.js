@@ -25,26 +25,29 @@ export default function useDebouncedCallback(callback, delay, deps, options = {}
     []
   );
 
-  const debouncedCallback = (...args) => {
-    maxWaitArgs.current = args;
-    clearTimeout(functionTimeoutHandler.current);
-    functionTimeoutHandler.current = setTimeout(() => {
-      if (!isComponentUnmounted.current) {
-        debouncedFunction(...args);
-      }
-
-      cancelDebouncedCallback();
-    }, delay);
-
-    if (maxWait && !maxWaitHandler.current) {
-      maxWaitHandler.current = setTimeout(() => {
+  const debouncedCallback = useCallback(
+    (...args) => {
+      maxWaitArgs.current = args;
+      clearTimeout(functionTimeoutHandler.current);
+      functionTimeoutHandler.current = setTimeout(() => {
         if (!isComponentUnmounted.current) {
-          debouncedFunction(...maxWaitArgs.current);
+          debouncedFunction(...args);
         }
+
         cancelDebouncedCallback();
-      }, maxWait);
-    }
-  };
+      }, delay);
+
+      if (maxWait && !maxWaitHandler.current) {
+        maxWaitHandler.current = setTimeout(() => {
+          if (!isComponentUnmounted.current) {
+            debouncedFunction(...maxWaitArgs.current);
+          }
+          cancelDebouncedCallback();
+        }, maxWait);
+      }
+    },
+    [debouncedFunction, maxWait, delay]
+  );
 
   const callPending = () => {
     // Call pending callback only if we have anything in our queue

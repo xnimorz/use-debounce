@@ -290,4 +290,100 @@ describe('useDebouncedCallback', () => {
 
     expect(callback.mock.calls.length).toBe(1);
   });
+
+  it('will memoize debouncedCallback', () => {
+    let debouncedCallbackCached = null;
+
+    function Component({ text }) {
+      const [debouncedCallback] = useDebouncedCallback(() => {}, 500, []);
+
+      if (debouncedCallbackCached) {
+        expect(debouncedCallback).toBe(debouncedCallbackCached);
+      }
+      debouncedCallbackCached = debouncedCallback;
+
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.setProps({ text: 'two' });
+    });
+  });
+
+  it('will change reference to debouncedCallback if dependency from deps array is changed', () => {
+    expect.assertions(3);
+    let debouncedCallbackCached = null;
+    let textCached = null;
+
+    function Component({ text }) {
+      const [debouncedCallback] = useDebouncedCallback(() => {}, 500, [text]);
+
+      if (debouncedCallbackCached) {
+        if (textCached === text) {
+          expect(debouncedCallback).toBe(debouncedCallbackCached);
+        } else {
+          expect(debouncedCallback).not.toBe(debouncedCallbackCached);
+        }
+      }
+      debouncedCallbackCached = debouncedCallback;
+      textCached = text;
+
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.setProps({ text: 'one' });
+    });
+
+    act(() => {
+      tree.setProps({ text: 'two' });
+    });
+  });
+
+  it('will change reference to debouncedCallback if maxWait or delay option is changed', () => {
+    expect.assertions(5);
+    let debouncedCallbackCached = null;
+    let cachedObj = null;
+
+    function Component({ text, maxWait, delay }) {
+      const [debouncedCallback] = useDebouncedCallback(() => {}, delay, [], { maxWait });
+
+      if (debouncedCallbackCached) {
+        if (cachedObj.delay === delay && cachedObj.maxWait === maxWait) {
+          expect(debouncedCallback).toBe(debouncedCallbackCached);
+        } else {
+          expect(debouncedCallback).not.toBe(debouncedCallbackCached);
+        }
+      }
+      debouncedCallbackCached = debouncedCallback;
+      cachedObj = { text, maxWait, delay };
+
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.setProps({ text: 'one' });
+    });
+
+    act(() => {
+      tree.setProps({ text: 'two' });
+    });
+
+    act(() => {
+      tree.setProps({ delay: 1 });
+    });
+
+    act(() => {
+      tree.setProps({ maxWait: 2 });
+    });
+  });
 });

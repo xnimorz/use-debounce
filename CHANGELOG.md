@@ -1,3 +1,11 @@
+## 1.1.3
+
+- remove `react-dom` from peerDependencies (as you can use this library with react native).
+
+## 1.1.2
+
+- `useCallback` now memoize returned callback
+
 ## 1.1.0
 
 - add `callPending` callback to `useDebouncedCallback` method. It allows to call the callback manually if it hasn't fired yet. This method is handy to use when the user takes an action that would cause the component to unmount, but you need to execute the callback.

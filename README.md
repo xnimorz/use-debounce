@@ -63,9 +63,7 @@ function Input({ defaultValue }) {
       setValue(value);
     },
     // delay in ms
-    1000,
-    // deps (in case your function has closure dependency like https://reactjs.org/docs/hooks-reference.html#usecallback)
-    []
+    1000
   );
 
   // you should use `e => debouncedCallback(e.target.value)` as react works with synthetic evens
@@ -95,9 +93,7 @@ function ScrolledComponent() {
       setPosition(window.pageYOffset);
     },
     // delay in ms
-    800,
-    // deps (in case your function has closure dependency like https://reactjs.org/docs/hooks-reference.html#usecallback)
-    []
+    800
   );
 
   useEffect(() => {
@@ -139,7 +135,6 @@ function Input({ defaultValue }) {
       setValue(value);
     },
     500,
-    [],
     // The maximum time func is allowed to be delayed before it's invoked:
     { maxWait: 2000 }
   );
@@ -172,7 +167,6 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
       asyncFetchData;
     },
     500,
-    [],
     { maxWait: 2000 }
   );
 

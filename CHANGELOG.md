@@ -7,8 +7,7 @@ const myCallback = useDebouncedCallback(
   useCallback(() => {
     /* do some stuff */
   }, [value]),
-  500,
-  []
+  500
 );
 ```
 

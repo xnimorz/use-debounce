@@ -1,4 +1,1 @@
-import useDebounce from './cache';
-import useDebouncedCallback from './callback';
-
-export { useDebounce, useDebouncedCallback };
+module.exports = { useDebounce: require('./cache').default, useDebouncedCallback: require('./callback').default };

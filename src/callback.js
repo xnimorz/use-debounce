@@ -31,7 +31,7 @@ export default function useDebouncedCallback(callback, delay, options = {}) {
       clearTimeout(functionTimeoutHandler.current);
       functionTimeoutHandler.current = setTimeout(() => {
         if (!isComponentUnmounted.current) {
-          debouncedFunction(...arguments);
+          debouncedFunction.apply(null, arguments);
         }
 
         cancelDebouncedCallback();
@@ -40,7 +40,7 @@ export default function useDebouncedCallback(callback, delay, options = {}) {
       if (maxWait && !maxWaitHandler.current) {
         maxWaitHandler.current = setTimeout(() => {
           if (!isComponentUnmounted.current) {
-            debouncedFunction(...maxWaitArgs.current);
+            debouncedFunction.apply(null, maxWaitArgs.current);
           }
           cancelDebouncedCallback();
         }, maxWait);
@@ -55,10 +55,10 @@ export default function useDebouncedCallback(callback, delay, options = {}) {
       return;
     }
 
-    debouncedFunction(...maxWaitArgs.current);
+    debouncedFunction.apply(null, maxWaitArgs.current);
     cancelDebouncedCallback();
   };
 
-  // For the moment, we use 3 args array so that we save backward compatibility
+  // At the moment, we use 3 args array so that we save backward compatibility
   return [debouncedCallback, cancelDebouncedCallback, callPending];
 }

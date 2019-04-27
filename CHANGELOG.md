@@ -13,7 +13,7 @@ const myCallback = useDebouncedCallback(
 ```
 
 - added `size-limit` to the project.
-- Reduce size of the library from 705 bytes to 453 bytes (35%)
+- Reduce size of the library from 705 bytes to 352 bytes (50%)
 
 ## 1.1.3
 

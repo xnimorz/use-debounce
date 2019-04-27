@@ -120,7 +120,7 @@ function ScrolledComponent() {
 
 ### Advanced usage
 
-#### Cancel and maxWait
+#### Cancel, maxWait and memoization
 
 1. Both `useDebounce` and `useDebouncedCallback` works with `maxWait` option. This params describes the maximum time func is allowed to be delayed before it's invoked.
 2. You can cancel debounce cycle, by calling `cancel` callback

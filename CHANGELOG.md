@@ -1,3 +1,20 @@
+## 2.0.0
+
+- **breaking changes** now, `useDebounceCallback` doesn't have `deps` argument. If you want to cache your callback it's better to use:
+
+```js
+const myCallback = useDebouncedCallback(
+  useCallback(() => {
+    /* do some stuff */
+  }, [value]),
+  500,
+  []
+);
+```
+
+- added `size-limit` to the project.
+- Reduce size of the library from 705 bytes to 453 bytes (35%)
+
 ## 1.1.3
 
 - remove `react-dom` from peerDependencies (as you can use this library with react native).

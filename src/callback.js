@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useRef } from 'react';
+const { useRef, useCallback, useEffect } = require('react');
 
-export default function useDebouncedCallback(callback, delay, deps, options = {}) {
-  const { maxWait } = options;
+export default function useDebouncedCallback(callback, delay, options = {}) {
+  const maxWait = options.maxWait;
   const maxWaitHandler = useRef(null);
   const maxWaitArgs = useRef([]);
   const functionTimeoutHandler = useRef(null);
   const isComponentUnmounted = useRef(false);
 
-  const debouncedFunction = useCallback(callback, deps);
+  const debouncedFunction = callback;
 
   const cancelDebouncedCallback = useCallback(() => {
     clearTimeout(functionTimeoutHandler.current);
@@ -26,12 +26,12 @@ export default function useDebouncedCallback(callback, delay, deps, options = {}
   );
 
   const debouncedCallback = useCallback(
-    (...args) => {
-      maxWaitArgs.current = args;
+    function() {
+      maxWaitArgs.current = arguments;
       clearTimeout(functionTimeoutHandler.current);
       functionTimeoutHandler.current = setTimeout(() => {
         if (!isComponentUnmounted.current) {
-          debouncedFunction(...args);
+          debouncedFunction(...arguments);
         }
 
         cancelDebouncedCallback();

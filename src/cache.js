@@ -1,21 +1,15 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-
-import useDebouncedCallback from './callback';
+const React = require('react');
+const useDebouncedCallback = require('./callback').default;
 
 export default function useDebounce(value, delay, options = {}) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  const [debouncedCallback, cancel] = useDebouncedCallback(
-    (value) => setDebouncedValue(value),
-    delay,
-    [value],
-    options
-  );
+  const debouncedState = React.useState(value);
+  const debouncedCallback = useDebouncedCallback((value) => debouncedState[1](value), delay, options);
 
-  useEffect(() => {
-    if (debouncedValue !== value) {
-      debouncedCallback(value);
+  React.useEffect(() => {
+    if (debouncedState[0] !== value) {
+      debouncedCallback[0](value);
     }
   });
 
-  return [debouncedValue, cancel];
+  return [debouncedState[0], debouncedCallback[1]];
 }

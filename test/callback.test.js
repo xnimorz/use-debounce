@@ -1,5 +1,5 @@
 import Enzyme from 'enzyme';
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import useDebouncedCallback from '../src/callback';
 import { act } from 'react-dom/test-utils';
 
@@ -10,7 +10,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, []);
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000);
       debouncedCallback();
       return null;
     }
@@ -31,7 +31,7 @@ describe('useDebouncedCallback', () => {
     });
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, []);
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000);
       debouncedCallback('Wrong param');
       setTimeout(() => {
         debouncedCallback('Right param');
@@ -56,7 +56,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback, cancelDebouncedCallback] = useDebouncedCallback(callback, 1000, []);
+      const [debouncedCallback, cancelDebouncedCallback] = useDebouncedCallback(callback, 1000);
       debouncedCallback();
       setTimeout(cancelDebouncedCallback, 500);
       return null;
@@ -73,10 +73,12 @@ describe('useDebouncedCallback', () => {
   it('will change callback function, if params from dependencies has changed', () => {
     function Component({ text }) {
       const [debouncedCallback] = useDebouncedCallback(
-        jest.fn(() => {
-          expect(text).toBe('Right param');
-        }),
-        1000,
+        useCallback(
+          jest.fn(() => {
+            expect(text).toBe('Right param');
+          }),
+          [text]
+        ),
         [text]
       );
       return <button onClick={debouncedCallback} />;
@@ -95,11 +97,13 @@ describe('useDebouncedCallback', () => {
   it("won't change callback function, if params from dependencies hasn't changed", () => {
     function Component({ text }) {
       const [debouncedCallback] = useDebouncedCallback(
-        jest.fn(() => {
-          expect(text).toBe('Right param');
-        }),
-        1000,
-        []
+        useCallback(
+          jest.fn(() => {
+            expect(text).toBe('Right param');
+          }),
+          []
+        ),
+        1000
       );
       return <button onClick={debouncedCallback} />;
     }
@@ -118,7 +122,7 @@ describe('useDebouncedCallback', () => {
     const callback = (value) => expect(value).toBe('Right value');
 
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      const [debouncedCallback] = useDebouncedCallback(callback, 500, { maxWait: 600 });
       debouncedCallback(text);
       return <span>{text}</span>;
     }
@@ -138,7 +142,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      const [debouncedCallback] = useDebouncedCallback(callback, 500, { maxWait: 600 });
       debouncedCallback();
       return <span>{text}</span>;
     }
@@ -166,7 +170,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, cancel] = useDebouncedCallback(callback, 500, [], { maxWait: 600 });
+      const [debouncedCallback, cancel] = useDebouncedCallback(callback, 500, { maxWait: 600 });
       debouncedCallback();
       if (text === 'test') {
         cancel();
@@ -197,7 +201,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, []);
+      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500);
       debouncedCallback();
       if (text === 'test') {
         callPending();
@@ -220,7 +224,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, []);
+      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500);
       if (text === 'test') {
         callPending();
       }
@@ -243,7 +247,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, cancel, callPending] = useDebouncedCallback(callback, 500, []);
+      const [debouncedCallback, cancel, callPending] = useDebouncedCallback(callback, 500);
       debouncedCallback();
       if (text === 'test') {
         cancel();
@@ -268,7 +272,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500, []);
+      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500);
 
       debouncedCallback();
       useEffect(
@@ -295,7 +299,7 @@ describe('useDebouncedCallback', () => {
     let debouncedCallbackCached = null;
 
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(() => {}, 500, []);
+      const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, []), 500);
 
       if (debouncedCallbackCached) {
         expect(debouncedCallback).toBe(debouncedCallbackCached);
@@ -319,7 +323,7 @@ describe('useDebouncedCallback', () => {
     let textCached = null;
 
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(() => {}, 500, [text]);
+      const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, [text]), 500);
 
       if (debouncedCallbackCached) {
         if (textCached === text) {
@@ -352,7 +356,7 @@ describe('useDebouncedCallback', () => {
     let cachedObj = null;
 
     function Component({ text, maxWait, delay }) {
-      const [debouncedCallback] = useDebouncedCallback(() => {}, delay, [], { maxWait });
+      const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, []), delay, { maxWait });
 
       if (debouncedCallbackCached) {
         if (cachedObj.delay === delay && cachedObj.maxWait === maxWait) {

@@ -15,7 +15,7 @@ export default function useDebouncedCallback(callback, delay, options = {}) {
     maxWaitHandler.current = null;
     maxWaitArgs.current = [];
     functionTimeoutHandler.current = null;
-  }, [functionTimeoutHandler.current, maxWaitHandler.current]);
+  }, []);
 
   useEffect(
     () => () => {
@@ -30,23 +30,25 @@ export default function useDebouncedCallback(callback, delay, options = {}) {
       maxWaitArgs.current = arguments;
       clearTimeout(functionTimeoutHandler.current);
       functionTimeoutHandler.current = setTimeout(() => {
+        cancelDebouncedCallback();
+
         if (!isComponentUnmounted.current) {
           debouncedFunction.apply(null, arguments);
         }
-
-        cancelDebouncedCallback();
       }, delay);
 
       if (maxWait && !maxWaitHandler.current) {
         maxWaitHandler.current = setTimeout(() => {
-          if (!isComponentUnmounted.current) {
-            debouncedFunction.apply(null, maxWaitArgs.current);
-          }
+          const args = maxWaitArgs.current;
           cancelDebouncedCallback();
+
+          if (!isComponentUnmounted.current) {
+            debouncedFunction.apply(null, args);
+          }
         }, maxWait);
       }
     },
-    [debouncedFunction, maxWait, delay]
+    [debouncedFunction, maxWait, delay, cancelDebouncedCallback]
   );
 
   const callPending = () => {

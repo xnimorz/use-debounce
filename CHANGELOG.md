@@ -1,3 +1,8 @@
+## 2.0.1
+
+- Fix the issue https://github.com/xnimorz/use-debounce/issues/23. Thanks to @anilanar for reporting it.
+- Add eslint to the project
+
 ## 2.0.0
 
 - **breaking changes** now, `useDebounceCallback` doesn't have `deps` argument. If you want to cache your callback it's better to use:

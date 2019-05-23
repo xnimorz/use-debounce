@@ -143,7 +143,7 @@ describe('useDebounce', () => {
       jest.runTimersToTime(400);
     });
 
-    // timeout shouldn't have called yet
+    // timeout shouldn't have been called yet
     expect(tree.text()).toBe('Hello');
 
     act(() => {
@@ -155,5 +155,65 @@ describe('useDebounce', () => {
     });
     // after runAllTimer text should be updated
     expect(tree.text()).toBe('Right value');
+  });
+
+  it("shouldn't apply the previous value if it was changed to started one", () => {
+    function Component({ text }) {
+      const [value] = useDebounce(text, 500);
+      return <div>{value}</div>;
+    }
+
+    const tree = Enzyme.mount(<Component text={'Hello'} />);
+
+    act(() => {
+      // this value shouldn't be applied, as we'll set up another one
+      tree.setProps({ text: 'new value' });
+    });
+
+    // timeout shouldn't have been called yet
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      tree.setProps({ text: 'Hello' });
+    });
+
+    act(() => {
+      jest.runTimersToTime(500);
+    });
+
+    // Value shouldn't be changed, as we rerender Component with text prop === 'Hello'
+    expect(tree.text()).toBe('Hello');
+  });
+
+  it("shouldn't rerender component for the first time", () => {
+    function Component({ text }) {
+      const [value] = useDebounce(text, 1000, { maxWait: 500 });
+      const rerenderCounter = React.useRef(0);
+      rerenderCounter.current += 1;
+      return <div>{rerenderCounter.current}</div>;
+    }
+
+    const tree = Enzyme.mount(<Component text={'Hello'} />);
+
+    expect(tree.text()).toBe('1');
+
+    act(() => {
+      // We wait for the half of maxWait Timeout,
+      jest.runTimersToTime(250);
+    });
+
+    act(() => {
+      tree.setProps({ text: 'Test' });
+    });
+
+    expect(tree.text()).toBe('2');
+
+    act(() => {
+      // We wait for the maxWait Timeout,
+      jest.runTimersToTime(250);
+    });
+
+    // If maxWait wasn't started at the first render of the component, we shouldn't receive the new value
+    expect(tree.text()).toBe('2');
   });
 });

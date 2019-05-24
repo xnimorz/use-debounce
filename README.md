@@ -52,7 +52,7 @@ Besides `useDebounce` for values you can debounce callbacks, that is the more co
 Example with Input (and react callbacks): https://codesandbox.io/s/x0jvqrwyq
 
 ```js
-import useDebouncedCallback from 'use-debounce/lib/callback';
+import { useDebouncedCallback } from 'use-debounce';
 
 function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
@@ -126,7 +126,7 @@ The full example you can see here https://codesandbox.io/s/4wvmp1xlw4
 ```javascript
 import React, { useState, useCallback } from 'react';
 import ReactDOM from 'react-dom';
-import useDebouncedCallback from 'use-debounce/lib/callback';
+import { useDebouncedCallback } from 'use-debounce';
 
 function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
@@ -159,7 +159,7 @@ ReactDOM.render(<Input defaultValue="Hello world" />, rootElement);
 
 ```javascript
 import React, { useState, useCallback } from 'react';
-import useDebouncedCallback from 'use-debounce/lib/callback';
+import { useDebouncedCallback } from 'use-debounce';
 
 function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
   const [debouncedFunction, cancel, callPending] = useDebouncedCallback(

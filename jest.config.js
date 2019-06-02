@@ -1,9 +1,9 @@
 module.exports = {
   transform: {
-    '^.+\\.(js|jsx)$': './node_modules/babel-jest',
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   roots: ['<rootDir>/test'],
-  setupTestFrameworkScriptFile: '<rootDir>/test/setupEnzyme.js',
+  setupTestFrameworkScriptFile: '<rootDir>/test/setupEnzyme.ts',
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
-  moduleFileExtensions: ['js', 'json', 'jsx'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

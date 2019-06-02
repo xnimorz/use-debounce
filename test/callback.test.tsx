@@ -1,6 +1,7 @@
-import Enzyme from 'enzyme';
-import React, { useEffect, useCallback } from 'react';
-import useDebouncedCallback from '../lib/callback';
+import * as Enzyme from 'enzyme';
+import { useEffect, useCallback } from 'react';
+import * as React from 'react';
+import useDebouncedCallback from '../src/callback';
 import { act } from 'react-dom/test-utils';
 
 jest.useFakeTimers();
@@ -79,7 +80,7 @@ describe('useDebouncedCallback', () => {
           }),
           [text]
         ),
-        [text]
+        1000
       );
       return <button onClick={debouncedCallback} />;
     }
@@ -355,7 +356,7 @@ describe('useDebouncedCallback', () => {
     let debouncedCallbackCached = null;
     let cachedObj = null;
 
-    function Component({ text, maxWait, delay }) {
+    function Component({ text, maxWait = 1000, delay = 500 }) {
       const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, []), delay, { maxWait });
 
       if (debouncedCallbackCached) {

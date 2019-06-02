@@ -1,11 +1,9 @@
 {
-  "parser": "babel-eslint",
-  "extends": "standard",
+  "parser": "@typescript-eslint/parser",
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier/@typescript-eslint", "plugin:prettier/recommended"],
   "parserOptions": {
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "globalReturn": false
-    }
+    "ecmaVersion": 2018,
+    "sourceType": "module"
   },
   "plugins": ["react-hooks"],
   "rules": {

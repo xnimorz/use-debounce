@@ -7,3 +7,4 @@ lib
 .git
 .DS_store
 coverage
+tmp

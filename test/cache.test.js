@@ -1,6 +1,6 @@
 import Enzyme from 'enzyme';
 import React from 'react';
-import useDebounce from '../src/cache';
+import useDebounce from '../lib/cache';
 import { act } from 'react-dom/test-utils';
 
 jest.useFakeTimers();

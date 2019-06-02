@@ -1,15 +1,19 @@
-const { useRef, useCallback, useEffect } = require('react');
+import { useRef, useCallback, useEffect } from 'react';
 
-export default function useDebouncedCallback(callback, delay, options = {}) {
+export default function useDebouncedCallback<T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number,
+  options: { maxWait?: number } = {}
+): [T, () => void, () => void] {
   const maxWait = options.maxWait;
   const maxWaitHandler = useRef(null);
-  const maxWaitArgs = useRef([]);
+  const maxWaitArgs: { current: any[] } = useRef([]);
   const functionTimeoutHandler = useRef(null);
-  const isComponentUnmounted = useRef(false);
+  const isComponentUnmounted: { current: boolean } = useRef(false);
 
   const debouncedFunction = callback;
 
-  const cancelDebouncedCallback = useCallback(() => {
+  const cancelDebouncedCallback: () => void = useCallback(() => {
     clearTimeout(functionTimeoutHandler.current);
     clearTimeout(maxWaitHandler.current);
     maxWaitHandler.current = null;
@@ -26,14 +30,14 @@ export default function useDebouncedCallback(callback, delay, options = {}) {
   );
 
   const debouncedCallback = useCallback(
-    function() {
-      maxWaitArgs.current = arguments;
+    (...args) => {
+      maxWaitArgs.current = args;
       clearTimeout(functionTimeoutHandler.current);
       functionTimeoutHandler.current = setTimeout(() => {
         cancelDebouncedCallback();
 
         if (!isComponentUnmounted.current) {
-          debouncedFunction.apply(null, arguments);
+          debouncedFunction(...args);
         }
       }, delay);
 
@@ -62,5 +66,5 @@ export default function useDebouncedCallback(callback, delay, options = {}) {
   };
 
   // At the moment, we use 3 args array so that we save backward compatibility
-  return [debouncedCallback, cancelDebouncedCallback, callPending];
+  return [debouncedCallback as T, cancelDebouncedCallback, callPending];
 }

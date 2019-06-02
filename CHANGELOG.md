@@ -1,3 +1,7 @@
+## 2.1.0
+
+- Rewrite to typescript
+
 ## 2.0.1
 
 - Fix the issue https://github.com/xnimorz/use-debounce/issues/23. Thanks to @anilanar for reporting it.

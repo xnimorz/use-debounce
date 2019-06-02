@@ -1,5 +1,11 @@
 # useDebounce react hook
 
+It provides:
+
+- [classic debounced callback](#debounced-callbacks)
+- [**value** debouncing](#simple-values-debouncing)
+- [cancel, maxWait and memoization](#advanced-usage)
+
 Install it with yarn:
 
 ```
@@ -19,7 +25,7 @@ https://codesandbox.io/s/kx75xzyrq7
 
 More complex example with searching for matching countries using debounced input: https://codesandbox.io/s/rr40wnropq (thanks to https://twitter.com/ZephDavies)
 
-## Simple debouncing
+## Simple values debouncing
 
 According to https://twitter.com/dan_abramov/status/1060729512227467264
 
@@ -45,6 +51,8 @@ export default function Input() {
   );
 }
 ```
+
+This hook compares prev and next value using shallow equal. It means, setting an object `{}` will trigger debounce timer. If you have to compare objects (https://github.com/xnimorz/use-debounce/issues/27#issuecomment-496828063), you can use `useDebounceCallback`, that is explained below:
 
 ## Debounced callbacks
 

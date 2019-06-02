@@ -3,7 +3,7 @@
   "version": "2.1.0-beta",
   "description": "Debounce hook for react",
   "main": "lib/index.js",
-  "typings": "src/index.d.ts",
+  "typings": "lib/index.d.ts",
   "scripts": {
     "test": "yarn jest",
     "build": "yarn test && eslint \"src/**.ts\" && tsc -p ./",

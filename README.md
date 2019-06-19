@@ -9,7 +9,7 @@ It provides:
 Install it with yarn:
 
 ```
-yarn add use-debounce
+yarn add -D use-debounce
 ```
 
 Or with npm:

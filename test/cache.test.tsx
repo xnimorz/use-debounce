@@ -38,6 +38,37 @@ describe('useDebounce', () => {
     expect(tree.text()).toBe('Hello world');
   });
 
+  it('will update value immediately if leading is set to true', () => {
+    function Component({ text }) {
+      const [value] = useDebounce(text, 1000, {leading: true});
+      return <div>{value}</div>;
+    }
+    const tree = Enzyme.mount(<Component text={'Hello'} />);
+
+    // check inited value
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      tree.setProps({ text: 'Hello world' });
+    });
+
+    // value should be set immediately by first leading call
+    expect(tree.text()).toBe('Hello world');
+
+    act(() => {
+      tree.setProps({ text: 'Hello again, world' });
+    });
+
+    // timeout shouldn't have been called yet after leading call was executed
+    expect(tree.text()).toBe('Hello world');
+
+    act(() => {
+      jest.runAllTimers();
+    });
+    // final value should update as per last timeout
+    expect(tree.text()).toBe('Hello again, world');
+  });
+
   it('will cancel value when cancel method is called', () => {
     function Component({ text }) {
       const [value, cancelValue] = useDebounce(text, 1000);

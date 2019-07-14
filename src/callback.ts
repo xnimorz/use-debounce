@@ -3,11 +3,15 @@ import { useRef, useCallback, useEffect } from 'react';
 export default function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
-  options: { maxWait?: number } = {}
+  options: { maxWait?: number, leading?: boolean } = {}
 ): [T, () => void, () => void] {
   const maxWait = options.maxWait;
   const maxWaitHandler = useRef(null);
   const maxWaitArgs: { current: any[] } = useRef([]);
+
+  const leading = options.leading;
+  const wasLeadingCalled: { current: boolean } = useRef(false);
+
   const functionTimeoutHandler = useRef(null);
   const isComponentUnmounted: { current: boolean } = useRef(false);
 
@@ -19,6 +23,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
     maxWaitHandler.current = null;
     maxWaitArgs.current = [];
     functionTimeoutHandler.current = null;
+    wasLeadingCalled.current = false;
   }, []);
 
   useEffect(
@@ -33,6 +38,13 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
     (...args) => {
       maxWaitArgs.current = args;
       clearTimeout(functionTimeoutHandler.current);
+
+      if (!functionTimeoutHandler.current && leading && !wasLeadingCalled.current) {
+        debouncedFunction(...args);
+        wasLeadingCalled.current = true;
+        return;
+      }
+
       functionTimeoutHandler.current = setTimeout(() => {
         cancelDebouncedCallback();
 

@@ -3,7 +3,7 @@ import { useRef, useCallback, useEffect } from 'react';
 export default function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
-  options: { maxWait?: number, leading?: boolean } = {}
+  options: { maxWait?: number; leading?: boolean } = {}
 ): [T, () => void, () => void] {
   const maxWait = options.maxWait;
   const maxWaitHandler = useRef(null);
@@ -64,7 +64,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
         }, maxWait);
       }
     },
-    [debouncedFunction, maxWait, delay, cancelDebouncedCallback]
+    [debouncedFunction, maxWait, delay, cancelDebouncedCallback, leading]
   );
 
   const callPending = () => {

@@ -1,7 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import useDebouncedCallback from './callback';
 
-export default function useDebounce<T>(value: T, delay: number, options?: { maxWait?: number, leading?: boolean }): [T, () => void] {
+export default function useDebounce<T>(
+  value: T,
+  delay: number,
+  options?: { maxWait?: number; leading?: boolean }
+): [T, () => void] {
   const [state, dispatch] = useState(value);
   const [callback, cancel] = useDebouncedCallback(useCallback((value) => dispatch(value), []), delay, options);
   const previousValue = useRef(value);

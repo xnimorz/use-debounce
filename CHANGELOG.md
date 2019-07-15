@@ -1,10 +1,15 @@
+## 2.2.0
+
+- Added leading calls param https://github.com/xnimorz/use-debounce#leading-calls thanks to [@Pringels](https://github.com/Pringels)
+- Updated dev-dependencies
+
 ## 2.1.0
 
 - Rewrite to typescript
 
 ## 2.0.1
 
-- Fix the issue https://github.com/xnimorz/use-debounce/issues/23. Thanks to @anilanar for reporting it.
+- Fix the issue https://github.com/xnimorz/use-debounce/issues/23. Thanks to [@anilanar](https://github.com/anilanar) for reporting it.
 - Add eslint to the project
 
 ## 2.0.0

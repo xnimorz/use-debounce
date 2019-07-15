@@ -189,3 +189,34 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
   return <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />;
 }
 ```
+
+#### leading calls
+
+Both `useDebounce` and `useDebouncedCallback` work with the `leading` option. This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. 
+
+For more information on how leading debounce calls work see: https://lodash.com/docs/#debounce
+
+```javascript
+import React, { useState } from 'react';
+import { useDebounce } from 'use-debounce';
+
+export default function Input() {
+  const [text, setText] = useState('Hello');
+  const [value] = useDebounce(text, 1000, { leading: true });
+  
+  // value is updated immediately when text changes the first time, 
+  // but all subsequent changes are debounced.
+  return (
+    <div>
+      <input
+        defaultValue={'Hello'}
+        onChange={(e) => {
+          setText(e.target.value);
+        }}
+      />
+      <p>Actual value: {text}</p>
+      <p>Debounce value: {value}</p>
+    </div>
+  );
+}
+```

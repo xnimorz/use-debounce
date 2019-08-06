@@ -1,3 +1,7 @@
+## 2.2.1
+
+— Added `types` field in package.json. Thanks to [@nmussy](https://github.com/nmussy)
+
 ## 2.2.0
 
 - Added leading calls param https://github.com/xnimorz/use-debounce#leading-calls thanks to [@Pringels](https://github.com/Pringels)

@@ -1,6 +1,6 @@
 {
   "name": "use-debounce",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Debounce hook for react",
   "main": "lib/index.js",
   "types": "./lib",

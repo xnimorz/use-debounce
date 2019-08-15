@@ -1,4 +1,4 @@
-import useDebounce from './cache';
-import useDebouncedCallback from './callback';
+import useDebounce from './useDebounce';
+import useDebouncedCallback from './useDebouncedCallback';
 
 export { useDebounce, useDebouncedCallback };

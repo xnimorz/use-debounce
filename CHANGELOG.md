@@ -1,7 +1,7 @@
 ## 3.0.0
 
-— **breaking change** now, `cache` file renamed to `useDebounce` and `callback` file renamed to `useDebouncedCallback`.
-If you used to import file by its path:
+- **breaking change** now, `cache` file renamed to `useDebounce` and `callback` file renamed to `useDebouncedCallback`.
+  If you used to import file by its path:
 
 ```js
 import useDebounce from 'use-debounce/lib/cache';

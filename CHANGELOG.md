@@ -1,18 +1,18 @@
 ## 3.0.0
 
 — **breaking change** now, `cache` file renamed to `useDebounce` and `callback` file renamed to `useDebouncedCallback`.
-If you import file by its path:
+If you used to import file by its path:
 
 ```js
-import useDebounce from 'use-debounce/cache';
-import useDebouncedCallback from 'use-debounce/callback';
+import useDebounce from 'use-debounce/lib/cache';
+import useDebouncedCallback from 'use-debounce/lib/callback';
 ```
 
 it should be renamed to
 
 ```js
-import useDebounce from 'use-debounce/useDebounce';
-import useDebouncedCallback from 'use-debounce/useDebounedCallback';
+import useDebounce from 'use-debounce/lib/useDebounce';
+import useDebouncedCallback from 'use-debounce/lib/useDebounedCallback';
 ```
 
 It helps us to keep more descriptive names. Thanks to [@vkrol](https://github.com/vkrol)

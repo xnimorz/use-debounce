@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import useDebouncedCallback from './callback';
+import useDebouncedCallback from './useDebouncedCallback';
 
 export default function useDebounce<T>(
   value: T,

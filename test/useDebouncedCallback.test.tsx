@@ -1,7 +1,7 @@
 import * as Enzyme from 'enzyme';
 import { useEffect, useCallback } from 'react';
 import * as React from 'react';
-import useDebouncedCallback from '../src/callback';
+import useDebouncedCallback from '../src/useDebouncedCallback';
 import { act } from 'react-dom/test-utils';
 
 jest.useFakeTimers();

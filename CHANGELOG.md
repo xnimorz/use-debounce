@@ -1,3 +1,29 @@
+## 3.0.0
+
+— **breaking change** now, `cache` file renamed to `useDebounce` and `callback` file renamed to `useDebouncedCallback`.
+If you import file by its path:
+
+```js
+import useDebounce from 'use-debounce/cache';
+import useDebouncedCallback from 'use-debounce/callback';
+```
+
+it should be renamed to
+
+```js
+import useDebounce from 'use-debounce/useDebounce';
+import useDebouncedCallback from 'use-debounce/useDebounedCallback';
+```
+
+It helps us to keep more descriptive names. Thanks to [@vkrol](https://github.com/vkrol)
+https://github.com/xnimorz/use-debounce/pull/33
+
+- **breaking change** now, `useDebouncedCallback` executes the latest callback, which was sent to the hook (thanks for the report [@alexandr-bbm](https://github.com/alexandr-bbm) https://github.com/xnimorz/use-debounce/issues/35)
+  https://github.com/xnimorz/use-debounce/commit/eca14cc25b1f14bdd337a555127fd98c54ab7a5c
+
+- code shipped in ESM format. Thanks to [@vkrol](https://github.com/vkrol)
+  https://github.com/xnimorz/use-debounce/pull/34
+
 ## 2.2.1
 
 — Added `types` field in package.json. Thanks to [@nmussy](https://github.com/nmussy)

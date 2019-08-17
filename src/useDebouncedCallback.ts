@@ -15,7 +15,8 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
   const functionTimeoutHandler = useRef(null);
   const isComponentUnmounted: { current: boolean } = useRef(false);
 
-  const debouncedFunction = callback;
+  const debouncedFunction = useRef(callback);
+  debouncedFunction.current = callback;
 
   const cancelDebouncedCallback: () => void = useCallback(() => {
     clearTimeout(functionTimeoutHandler.current);
@@ -40,7 +41,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
       clearTimeout(functionTimeoutHandler.current);
 
       if (!functionTimeoutHandler.current && leading && !wasLeadingCalled.current) {
-        debouncedFunction(...args);
+        debouncedFunction.current(...args);
         wasLeadingCalled.current = true;
         return;
       }
@@ -49,7 +50,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
         cancelDebouncedCallback();
 
         if (!isComponentUnmounted.current) {
-          debouncedFunction(...args);
+          debouncedFunction.current(...args);
         }
       }, delay);
 
@@ -59,12 +60,12 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
           cancelDebouncedCallback();
 
           if (!isComponentUnmounted.current) {
-            debouncedFunction.apply(null, args);
+            debouncedFunction.current.apply(null, args);
           }
         }, maxWait);
       }
     },
-    [debouncedFunction, maxWait, delay, cancelDebouncedCallback, leading]
+    [maxWait, delay, cancelDebouncedCallback, leading]
   );
 
   const callPending = () => {
@@ -73,7 +74,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
       return;
     }
 
-    debouncedFunction.apply(null, maxWaitArgs.current);
+    debouncedFunction.current.apply(null, maxWaitArgs.current);
     cancelDebouncedCallback();
   };
 

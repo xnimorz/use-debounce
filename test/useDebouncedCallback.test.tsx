@@ -1,5 +1,5 @@
 import * as Enzyme from 'enzyme';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import * as React from 'react';
 import useDebouncedCallback from '../src/useDebouncedCallback';
 import { act } from 'react-dom/test-utils';
@@ -30,7 +30,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, {leading: true});
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
       debouncedCallback();
       return null;
     }
@@ -49,7 +49,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, {leading: true});
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
       debouncedCallback();
       debouncedCallback();
       return null;
@@ -64,12 +64,12 @@ describe('useDebouncedCallback', () => {
 
     expect(callback.mock.calls.length).toBe(2);
   });
-  
+
   it('will call a second leading callback if no debounced callbacks are pending', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, {leading: true});
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
       debouncedCallback();
       debouncedCallback();
       setTimeout(() => {
@@ -380,37 +380,73 @@ describe('useDebouncedCallback', () => {
     });
   });
 
-  it('will change reference to debouncedCallback if dependency from deps array is changed', () => {
+  it('will change reference to debouncedCallback timeout is changed', () => {
     expect.assertions(3);
     let debouncedCallbackCached = null;
-    let textCached = null;
+    let timeoutCached = null;
 
-    function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, [text]), 500);
+    function Component({ text, timeout }) {
+      const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, [text]), timeout);
 
       if (debouncedCallbackCached) {
-        if (textCached === text) {
+        if (timeoutCached === timeout) {
           expect(debouncedCallback).toBe(debouncedCallbackCached);
         } else {
           expect(debouncedCallback).not.toBe(debouncedCallbackCached);
         }
       }
       debouncedCallbackCached = debouncedCallback;
-      textCached = text;
+      timeoutCached = timeout;
 
       return <span>{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = Enzyme.mount(<Component timeout={500} text="one" />);
 
     expect(tree.text()).toBe('one');
 
     act(() => {
-      tree.setProps({ text: 'one' });
+      tree.setProps({ timeout: 500 });
     });
 
     act(() => {
-      tree.setProps({ text: 'two' });
+      tree.setProps({ text: 1000 });
     });
+  });
+
+  it('will call the latest callback', () => {
+    expect.assertions(1);
+
+    function Component({ callback }) {
+      const [debouncedCallback] = useDebouncedCallback(callback, 500);
+      const counter = useRef(1);
+
+      useEffect(() => {
+        // this useEffect should be called only once
+        debouncedCallback(counter.current);
+
+        counter.current = counter.current + 1;
+      }, [debouncedCallback]);
+
+      return null;
+    }
+    const tree = Enzyme.mount(
+      <Component
+        callback={() => {
+          throw new Error("This callback shouldn't be executed");
+        }}
+      />
+    );
+
+    act(() => {
+      tree.setProps({
+        callback: (counter) => {
+          // This callback should be called with counter === 1
+          expect(counter).toBe(1);
+        },
+      });
+    });
+
+    jest.runTimersToTime(500);
   });
 
   it('will change reference to debouncedCallback if maxWait or delay option is changed', () => {

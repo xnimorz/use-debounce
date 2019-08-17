@@ -3,10 +3,14 @@
   "version": "2.2.1",
   "description": "Debounce hook for react",
   "main": "lib/index.js",
+  "module": "esm/index.js",
   "types": "./lib",
+  "sideEffects": false,
   "scripts": {
     "test": "yarn jest",
-    "build": "yarn test && eslint \"src/**.ts\" && tsc -p ./",
+    "build": "yarn test && eslint \"src/**.ts\" && yarn build:cjs && yarn build:es",
+    "build:cjs": "tsc",
+    "build:es": "tsc -m esNext --outDir esm",
     "size": "size-limit"
   },
   "size-limit": [

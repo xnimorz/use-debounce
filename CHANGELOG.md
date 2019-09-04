@@ -16,7 +16,7 @@ it should be renamed to
 
 ```js
 import useDebounce from 'use-debounce/lib/useDebounce';
-import useDebouncedCallback from 'use-debounce/lib/useDebounedCallback';
+import useDebouncedCallback from 'use-debounce/lib/useDebouncedCallback';
 ```
 
 It helps us to keep more descriptive names. Thanks to [@vkrol](https://github.com/vkrol)

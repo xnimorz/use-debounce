@@ -1,3 +1,7 @@
+## 3.0.1
+
+- Added missed `esm` directory (thanks for reporting [@FredyC](https://github.com/FredyC))
+
 ## 3.0.0
 
 - **breaking change** now, `cache` file renamed to `useDebounce` and `callback` file renamed to `useDebouncedCallback`.

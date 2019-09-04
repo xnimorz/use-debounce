@@ -1,6 +1,8 @@
 ## 3.0.1
 
 - Added missed `esm` directory (thanks for reporting [@FredyC](https://github.com/FredyC))
+- Fixed import name (thanks for PR [@neoromantic](https://github.com/neoromantic))
+- Updated `eslint-utils` lib version due to security issue
 
 ## 3.0.0
 

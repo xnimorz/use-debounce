@@ -1,8 +1,0 @@
-.idea
-.vscode
-node_modules
-npm-debug.js
-.git
-.DS_store
-coverage
-tmp

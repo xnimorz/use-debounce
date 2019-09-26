@@ -32,6 +32,10 @@
   "bugs": {
     "url": "https://github.com/xnimorz/use-debounce/issues"
   },
+  "files": [
+    "esm",
+    "lib"
+  ],
   "peerDependencies": {
     "react": ">=16.8.0"
   },

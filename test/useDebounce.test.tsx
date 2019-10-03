@@ -247,4 +247,29 @@ describe('useDebounce', () => {
     // If maxWait wasn't started at the first render of the component, we shouldn't receive the new value
     expect(tree.text()).toBe('2');
   });
+
+  it('should use equality function if supplied', () => {
+    // Use equality function that always returns true
+    const eq = jest.fn((left: string, right: string): boolean => {
+      return true;
+    });
+
+    function Component({ text }) {
+      const [value] = useDebounce(text, 1000, {}, eq);
+      return <div>{value}</div>;
+    }
+
+    const tree = Enzyme.mount(<Component text={'Hello'} />);
+
+    expect(eq).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      tree.setProps({ text: 'Test' });
+    });
+
+    expect(eq).toHaveBeenCalledTimes(2);
+    expect(eq).toHaveBeenCalledWith('Hello', 'Test');
+    // Since the equality function always returns true, expect the value to stay the same
+    expect(tree.text()).toBe('Hello');
+  });
 });

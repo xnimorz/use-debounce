@@ -255,7 +255,7 @@ describe('useDebounce', () => {
     });
 
     function Component({ text }) {
-      const [value] = useDebounce(text, 1000, {}, eq);
+      const [value] = useDebounce(text, 1000, { equalityFn: eq });
       return <div>{value}</div>;
     }
 

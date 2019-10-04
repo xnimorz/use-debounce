@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import useDebouncedCallback from './useDebouncedCallback';
 
-function refEquality<T>(left: T, right: T): boolean {
+function valueEquality<T>(left: T, right: T): boolean {
   return left === right;
 }
 
@@ -9,7 +9,7 @@ export default function useDebounce<T>(
   value: T,
   delay: number,
   options?: { maxWait?: number; leading?: boolean },
-  equalityFn: (left: T, right: T) => boolean = refEquality
+  equalityFn: (left: T, right: T) => boolean = valueEquality
 ): [T, () => void] {
   const [state, dispatch] = useState(value);
   const [callback, cancel] = useDebouncedCallback(useCallback((value) => dispatch(value), []), delay, options);

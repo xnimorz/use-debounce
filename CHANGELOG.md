@@ -1,3 +1,8 @@
+## 3.1.0
+
+- Now package includes only nessesary files. Thanks to [@vkrol](https://github.com/vkrol)
+- Added optional `equalityFn` to `options` object for `useDebounce` so that you can provide a custom equality function to the hook. Thanks to [@seruco](https://github.com/seruco)
+
 ## 3.0.1
 
 - Added missed `esm` directory (thanks for reporting [@FredyC](https://github.com/FredyC))

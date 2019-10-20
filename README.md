@@ -192,7 +192,7 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
 
 #### leading calls
 
-Both `useDebounce` and `useDebouncedCallback` work with the `leading` option. This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. 
+Both `useDebounce` and `useDebouncedCallback` work with the `leading` option. This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires.
 
 For more information on how leading debounce calls work see: https://lodash.com/docs/#debounce
 
@@ -203,8 +203,8 @@ import { useDebounce } from 'use-debounce';
 export default function Input() {
   const [text, setText] = useState('Hello');
   const [value] = useDebounce(text, 1000, { leading: true });
-  
-  // value is updated immediately when text changes the first time, 
+
+  // value is updated immediately when text changes the first time,
   // but all subsequent changes are debounced.
   return (
     <div>
@@ -220,3 +220,13 @@ export default function Input() {
   );
 }
 ```
+
+#### Options:
+
+You can provide additional options as a third argument to both `useDebounce` and `useDebounceCallback`:
+
+| option     | default                       | Description                                                                                                                      | Example                                                                |
+| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| maxWait    | -                             | Describes the maximum time func is allowed to be delayed before it's invoked                                                     | https://github.com/xnimorz/use-debounce#cancel-maxwait-and-memoization |
+| leading    | -                             | This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. | https://github.com/xnimorz/use-debounce#leading-calls                  |
+| equalityFn | (prev, next) => prev === next | Comparator function which shows if timeout should be started                                                                     |                                                                        |

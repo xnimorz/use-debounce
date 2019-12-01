@@ -1,0 +1,20 @@
+name: CI
+
+on: 
+  pull_request:
+    branches: 
+      - master
+  push:
+    branches: 
+      - master
+
+jobs:
+  tests:
+    runs-on: [ubuntu-latest]
+    steps:
+         - name: Install deps
+           run: yarn
+         - name: Run tests
+           run: yarn test
+         - name: Run linters
+           run: yarn eslint "src/**.ts"

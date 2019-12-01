@@ -1,5 +1,6 @@
 ## 3.2.0
-- `useDebounce` has `callPending` method.
+
+- `useDebounce` has `callPending` method. See https://github.com/xnimorz/use-debounce/blob/master/test/useDebounce.test.tsx#L276-L302 unit test for examples.
 
 ## 3.1.0
 

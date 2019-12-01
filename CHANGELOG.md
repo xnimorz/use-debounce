@@ -1,3 +1,6 @@
+## 3.2.0
+- `useDebounce` has `callPending` method.
+
 ## 3.1.0
 
 - Now package includes only nessesary files. Thanks to [@vkrol](https://github.com/vkrol)

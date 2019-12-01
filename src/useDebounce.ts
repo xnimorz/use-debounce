@@ -9,11 +9,15 @@ export default function useDebounce<T>(
   value: T,
   delay: number,
   options?: { maxWait?: number; leading?: boolean; equalityFn?: (left: T, right: T) => boolean }
-): [T, () => void] {
+): [T, () => void, () => void] {
   const eq = options && options.equalityFn ? options.equalityFn : valueEquality;
 
   const [state, dispatch] = useState(value);
-  const [callback, cancel] = useDebouncedCallback(useCallback((value) => dispatch(value), []), delay, options);
+  const [callback, cancel, callPending] = useDebouncedCallback(
+    useCallback((value) => dispatch(value), []),
+    delay,
+    options
+  );
   const previousValue = useRef(value);
 
   useEffect(() => {
@@ -24,5 +28,5 @@ export default function useDebounce<T>(
     }
   }, [value, callback, eq]);
 
-  return [state, cancel];
+  return [state, cancel, callPending];
 }

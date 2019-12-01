@@ -40,7 +40,7 @@ describe('useDebounce', () => {
 
   it('will update value immediately if leading is set to true', () => {
     function Component({ text }) {
-      const [value] = useDebounce(text, 1000, {leading: true});
+      const [value] = useDebounce(text, 1000, { leading: true });
       return <div>{value}</div>;
     }
     const tree = Enzyme.mount(<Component text={'Hello'} />);
@@ -271,5 +271,32 @@ describe('useDebounce', () => {
     expect(eq).toHaveBeenCalledWith('Hello', 'Test');
     // Since the equality function always returns true, expect the value to stay the same
     expect(tree.text()).toBe('Hello');
+  });
+
+  it('should setup new value immediately if callPending is called', () => {
+    let callPending;
+    function Component({ text }) {
+      const [value, , _callPending] = useDebounce(text, 1000);
+      callPending = _callPending;
+
+      return <div>{value}</div>;
+    }
+
+    const tree = Enzyme.mount(<Component text={'Hello'} />);
+
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      tree.setProps({ text: 'Test' });
+    });
+
+    // We don't call neither runTimers no callPending.
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      callPending();
+    });
+
+    expect(tree.text()).toBe('Test');
   });
 });

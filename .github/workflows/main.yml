@@ -1,20 +1,26 @@
 name: CI
 
-on: 
+on:
   pull_request:
-    branches: 
+    branches:
       - master
   push:
-    branches: 
+    branches:
       - master
 
 jobs:
-  tests:
-    runs-on: [ubuntu-latest]
+  build:
+    runs-on: ubuntu-latest
+
     steps:
-         - name: Install deps
-           run: yarn
-         - name: Run tests
-           run: yarn test
-         - name: Run linters
-           run: yarn eslint "src/**.ts"
+      - uses: actions/checkout@v1
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: install and tests
+        run: |
+          yarn install
+          yarn build
+        env:
+          CI: true

@@ -1,5 +1,8 @@
 ## 3.3.0
+
 - `useDebouncedCallback` and `useDebounce` now can configure both `leading` and `trailing` options. They are fully compatible with `lodash.debounce` function https://lodash.com/docs/4.17.15#debounce. `leading` by default is false, trailing by default is true.
+  Examples: https://codesandbox.io/s/vigilant-bush-zrbzg
+  https://github.com/xnimorz/use-debounce/blob/master/test/useDebouncedCallback.test.tsx#L29-L180
 
 ## 3.2.0
 

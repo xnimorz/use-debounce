@@ -3,14 +3,15 @@ import { useRef, useCallback, useEffect } from 'react';
 export default function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
-  options: { maxWait?: number; leading?: boolean } = {}
+  options: { maxWait?: number; leading?: boolean; trailing?: boolean } = {}
 ): [T, () => void, () => void] {
   const maxWait = options.maxWait;
   const maxWaitHandler = useRef(null);
   const maxWaitArgs: { current: any[] } = useRef([]);
 
   const leading = options.leading;
-  const wasLeadingCalled: { current: boolean } = useRef(false);
+  const trailing = options.trailing === undefined ? true : options.trailing;
+  const leadingCall = useRef(false);
 
   const functionTimeoutHandler = useRef(null);
   const isComponentUnmounted: { current: boolean } = useRef(false);
@@ -24,7 +25,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
     maxWaitHandler.current = null;
     maxWaitArgs.current = [];
     functionTimeoutHandler.current = null;
-    wasLeadingCalled.current = false;
+    leadingCall.current = false;
   }, []);
 
   useEffect(
@@ -39,22 +40,27 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
     (...args) => {
       maxWaitArgs.current = args;
       clearTimeout(functionTimeoutHandler.current);
-
-      if (!functionTimeoutHandler.current && leading && !wasLeadingCalled.current) {
+      if (leadingCall.current) {
+        leadingCall.current = false;
+      }
+      if (!functionTimeoutHandler.current && leading && !leadingCall.current) {
         debouncedFunction.current(...args);
-        wasLeadingCalled.current = true;
-        return;
+        leadingCall.current = true;
       }
 
       functionTimeoutHandler.current = setTimeout(() => {
+        let shouldCallFunction = true;
+        if (leading && leadingCall.current) {
+          shouldCallFunction = false;
+        }
         cancelDebouncedCallback();
 
-        if (!isComponentUnmounted.current) {
+        if (!isComponentUnmounted.current && trailing && shouldCallFunction) {
           debouncedFunction.current(...args);
         }
       }, delay);
 
-      if (maxWait && !maxWaitHandler.current) {
+      if (maxWait && !maxWaitHandler.current && trailing) {
         maxWaitHandler.current = setTimeout(() => {
           const args = maxWaitArgs.current;
           cancelDebouncedCallback();
@@ -65,7 +71,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
         }, maxWait);
       }
     },
-    [maxWait, delay, cancelDebouncedCallback, leading]
+    [maxWait, delay, cancelDebouncedCallback, leading, trailing]
   );
 
   const callPending = () => {

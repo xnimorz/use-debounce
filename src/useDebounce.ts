@@ -8,7 +8,7 @@ function valueEquality<T>(left: T, right: T): boolean {
 export default function useDebounce<T>(
   value: T,
   delay: number,
-  options?: { maxWait?: number; leading?: boolean; equalityFn?: (left: T, right: T) => boolean }
+  options?: { maxWait?: number; leading?: boolean; trailing?: boolean; equalityFn?: (left: T, right: T) => boolean }
 ): [T, () => void, () => void] {
   const eq = options && options.equalityFn ? options.equalityFn : valueEquality;
 

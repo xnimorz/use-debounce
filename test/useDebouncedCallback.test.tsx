@@ -26,11 +26,11 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(1);
   });
 
-  it('will call leading callback immediately (but only once)', () => {
+  it('will call leading callback immediately (but only once, as trailing is set to false)', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
       debouncedCallback();
       return null;
     }
@@ -65,7 +65,7 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(2);
   });
 
-  it('will call a second leading callback if no debounced callbacks are pending', () => {
+  it('will call three callbacks if no debounced callbacks are pending', () => {
     const callback = jest.fn();
 
     function Component() {
@@ -86,6 +86,70 @@ describe('useDebouncedCallback', () => {
     });
 
     expect(callback.mock.calls.length).toBe(3);
+  });
+
+  it('will call a second leading callback if no debounced callbacks are pending with trailing false', () => {
+    const callback = jest.fn();
+
+    function Component() {
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
+      debouncedCallback();
+      setTimeout(() => {
+        debouncedCallback();
+      }, 1001);
+      return null;
+    }
+    Enzyme.mount(<Component />);
+
+    expect(callback.mock.calls.length).toBe(1);
+
+    act(() => {
+      jest.runTimersToTime(1001);
+    });
+
+    expect(callback.mock.calls.length).toBe(2);
+  });
+
+  it("won't call both on the leading edge and on the trailing edge if leading and trailing are set up to true and function call is only once", () => {
+    const callback = jest.fn();
+
+    function Component() {
+      // trailing is true by default
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
+
+      debouncedCallback();
+      return null;
+    }
+    Enzyme.mount(<Component />);
+
+    expect(callback.mock.calls.length).toBe(1);
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(callback.mock.calls.length).toBe(1);
+  });
+
+  it('will call both on the leading edge and on the trailing edge if leading and trailing are set up to true and there are more than 1 function call', () => {
+    const callback = jest.fn();
+
+    function Component() {
+      // trailing is true by default
+      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
+      debouncedCallback();
+      debouncedCallback();
+      return null;
+    }
+    Enzyme.mount(<Component />);
+
+    expect(callback.mock.calls.length).toBe(1);
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(callback.mock.calls.length).toBe(2);
   });
 
   it('will call callback only with the latest params', () => {

@@ -183,7 +183,7 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
     () => () => {
       callPending();
     },
-    []
+    [callPending]
   );
 
   return <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />;

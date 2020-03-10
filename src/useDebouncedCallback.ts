@@ -74,7 +74,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
     [maxWait, delay, cancelDebouncedCallback, leading, trailing]
   );
 
-  const callPending = () => {
+  const callPending = useCallback(() => {
     // Call pending callback only if we have anything in our queue
     if (!functionTimeoutHandler.current) {
       return;
@@ -82,7 +82,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
 
     debouncedFunction.current.apply(null, maxWaitArgs.current);
     cancelDebouncedCallback();
-  };
+  }, [cancelDebouncedCallback]);
 
   // At the moment, we use 3 args array so that we save backward compatibility
   return [debouncedCallback as T, cancelDebouncedCallback, callPending];

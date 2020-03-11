@@ -553,4 +553,29 @@ describe('useDebouncedCallback', () => {
       tree.setProps({ maxWait: 2 });
     });
   });
+
+  it('will memoize callPending', () => {
+    let callPendingCached = null;
+
+    function Component({ text }) {
+      const [debouncedCallback, cancelDebouncedCallback, callPending] = useDebouncedCallback(
+        useCallback(() => {}, []),
+        500
+      );
+
+      if (callPendingCached) {
+        expect(callPending).toBe(callPendingCached);
+      }
+      callPendingCached = callPending;
+
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.setProps({ text: 'two' });
+    });
+  });
 });

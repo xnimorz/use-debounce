@@ -1,3 +1,7 @@
+## 3.4.0
+
+- Now `callPendings` wrapped with useCallback hook, so that the reference to the function would be the same. Thanks to [@jfschwarz](https://github.com/jfschwarz)
+
 ## 3.3.0
 
 - `useDebouncedCallback` and `useDebounce` now can configure both `leading` and `trailing` options. They are fully compatible with `lodash.debounce` function https://lodash.com/docs/4.17.15#debounce. `leading` by default is false, trailing by default is true.

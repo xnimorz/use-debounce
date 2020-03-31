@@ -7,14 +7,14 @@ export default function useDebouncedCallback<T extends any[]>(
 ): [(...args: T) => void, () => void, () => void] {
   const maxWait = options.maxWait;
   const maxWaitHandler = useRef(null);
-  const maxWaitArgs: { current: T | [] }  = useRef([]);
+  const maxWaitArgs = useRef<T | []>([]);
 
   const leading = options.leading;
   const trailing = options.trailing === undefined ? true : options.trailing;
   const leadingCall = useRef(false);
 
   const functionTimeoutHandler = useRef(null);
-  const isComponentUnmounted: { current: boolean } = useRef(false);
+  const isComponentUnmounted = useRef(false);
 
   const debouncedFunction = useRef(callback);
   debouncedFunction.current = callback;

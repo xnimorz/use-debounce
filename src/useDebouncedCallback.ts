@@ -1,13 +1,13 @@
 import { useRef, useCallback, useEffect } from 'react';
 
-export default function useDebouncedCallback<T extends (...args: any[]) => any>(
-  callback: T,
+export default function useDebouncedCallback<T extends any[]>(
+  callback: (...args: T) => unknown,
   delay: number,
   options: { maxWait?: number; leading?: boolean; trailing?: boolean } = {}
-): [T, () => void, () => void] {
+): [(...args: T) => void, () => void, () => void] {
   const maxWait = options.maxWait;
   const maxWaitHandler = useRef(null);
-  const maxWaitArgs: { current: any[] } = useRef([]);
+  const maxWaitArgs: { current: T | [] }  = useRef([]);
 
   const leading = options.leading;
   const trailing = options.trailing === undefined ? true : options.trailing;
@@ -37,7 +37,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
   );
 
   const debouncedCallback = useCallback(
-    (...args) => {
+    (...args: T) => {
       maxWaitArgs.current = args;
       clearTimeout(functionTimeoutHandler.current);
       if (leadingCall.current) {
@@ -85,5 +85,5 @@ export default function useDebouncedCallback<T extends (...args: any[]) => any>(
   }, [cancelDebouncedCallback]);
 
   // At the moment, we use 3 args array so that we save backward compatibility
-  return [debouncedCallback as T, cancelDebouncedCallback, callPending];
+  return [debouncedCallback, cancelDebouncedCallback, callPending];
 }

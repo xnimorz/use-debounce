@@ -14,7 +14,7 @@ export default function useDebounce<T>(
 
   const [state, dispatch] = useState(value);
   const [callback, cancel, callPending] = useDebouncedCallback(
-    useCallback((value) => dispatch(value), []),
+    useCallback((value: T) => dispatch(value), []),
     delay,
     options
   );

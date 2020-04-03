@@ -1,3 +1,7 @@
+## 3.4.1
+
+- update types, so that they are more convinient. Thanks to [@astj](https://github.com/astj)
+
 ## 3.4.0
 
 - Now `callPendings` wrapped with useCallback hook, so that the reference to the function would be the same. Thanks to [@jfschwarz](https://github.com/jfschwarz)

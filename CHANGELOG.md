@@ -1,3 +1,7 @@
+## 3.4.2
+
+- Clear cache in build directory. Thanks to [@wangcch](https://github.com/wangcch)
+
 ## 3.4.1
 
 - update types, so that they are more convinient. Thanks to [@astj](https://github.com/astj)

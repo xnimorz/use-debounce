@@ -77,7 +77,7 @@ https://github.com/xnimorz/use-debounce/pull/33
 
 ## 2.0.0
 
-- **breaking changes** now, `useDebounceCallback` doesn't have `deps` argument. If you want to cache your callback it's better to use:
+- **breaking changes** now, `useDebouncedCallback` doesn't have `deps` argument. If you want to cache your callback it's better to use:
 
 ```js
 const myCallback = useDebouncedCallback(

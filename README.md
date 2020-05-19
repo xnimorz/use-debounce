@@ -52,7 +52,7 @@ export default function Input() {
 }
 ```
 
-This hook compares prev and next value using shallow equal. It means, setting an object `{}` will trigger debounce timer. If you have to compare objects (https://github.com/xnimorz/use-debounce/issues/27#issuecomment-496828063), you can use `useDebounceCallback`, that is explained below:
+This hook compares prev and next value using shallow equal. It means, setting an object `{}` will trigger debounce timer. If you have to compare objects (https://github.com/xnimorz/use-debounce/issues/27#issuecomment-496828063), you can use `useDebouncedCallback`, that is explained below:
 
 ## Debounced callbacks
 
@@ -223,7 +223,7 @@ export default function Input() {
 
 #### Options:
 
-You can provide additional options as a third argument to both `useDebounce` and `useDebounceCallback`:
+You can provide additional options as a third argument to both `useDebounce` and `useDebouncedCallback`:
 
 | option     | default                       | Description                                                                                                                      | Example                                                                |
 | ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |

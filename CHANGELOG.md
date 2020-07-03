@@ -1,3 +1,7 @@
+## 3.4.3
+
+- Fix use-debounce so that it works correctly with react-native and next.js (as both of them use fast-refresh).
+
 ## 3.4.2
 
 - Clear cache in build directory. Thanks to [@wangcch](https://github.com/wangcch)

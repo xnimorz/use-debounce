@@ -28,13 +28,14 @@ export default function useDebouncedCallback<T extends unknown[]>(
     leadingCall.current = false;
   }, []);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    // We have to set isComponentUnmounted to be truth, as fast-refresh runs all useEffects
+    isComponentUnmounted.current = false;
+    return () => {
       // we use flag, as we allow to call callPending outside the hook
       isComponentUnmounted.current = true;
-    },
-    []
-  );
+    };
+  }, []);
 
   const debouncedCallback = useCallback(
     (...args: T) => {

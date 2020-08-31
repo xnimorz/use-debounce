@@ -21,6 +21,9 @@ export default function useDebouncedCallback<T extends unknown[]>(
   const mounted = useRef(true);
   funcRef.current = func;
 
+  // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
+  const useRAF = !wait && wait !== 0 && typeof window.requestAnimationFrame === 'function';
+
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function');
   }
@@ -29,8 +32,6 @@ export default function useDebouncedCallback<T extends unknown[]>(
   const trailing = 'trailing' in options ? !!options.trailing : true;
   const maxing = 'maxWait' in options;
   const maxWait = maxing ? Math.max(Number(options.maxWait) || 0, wait) : undefined;
-  // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
-  const useRAF = !wait && wait !== 0 && typeof window.requestAnimationFrame === 'function';
 
   const invokeFunc = useCallback((time) => {
     const args = lastArgs.current;

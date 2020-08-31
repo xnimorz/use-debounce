@@ -1,90 +1,181 @@
 import { useRef, useCallback, useEffect } from 'react';
 
+interface Options {
+  maxWait?: number;
+  leading?: boolean;
+  trailing?: boolean;
+}
+
 export default function useDebouncedCallback<T extends unknown[]>(
-  callback: (...args: T) => unknown,
-  delay: number,
-  options: { maxWait?: number; leading?: boolean; trailing?: boolean } = {}
+  func: (...args: T) => unknown,
+  wait: number,
+  options: Options = { leading: false, trailing: true }
 ): [(...args: T) => void, () => void, () => void] {
-  const maxWait = options.maxWait;
-  const maxWaitHandler = useRef(null);
-  const maxWaitArgs = useRef<T | []>([]);
+  const lastCallTime = useRef(undefined);
+  const lastInvokeTime = useRef(0);
+  const timerId = useRef(undefined);
+  const lastArgs = useRef<T | []>([]);
+  const lastThis = useRef(null);
+  const result = useRef(null);
+  const funcRef = useRef(func);
+  const mounted = useRef(true);
+  funcRef.current = func;
 
-  const leading = options.leading;
-  const trailing = options.trailing === undefined ? true : options.trailing;
-  const leadingCall = useRef(false);
+  if (typeof func !== 'function') {
+    throw new TypeError('Expected a function');
+  }
+  wait = Number(wait) || 0;
+  const leading = !!options.leading;
+  const trailing = 'trailing' in options ? !!options.trailing : true;
+  const maxing = 'maxWait' in options;
+  const maxWait = maxing ? Math.max(Number(options.maxWait) || 0, wait) : undefined;
+  // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
+  const useRAF = !wait && wait !== 0 && typeof window.requestAnimationFrame === 'function';
 
-  const functionTimeoutHandler = useRef(null);
-  const isComponentUnmounted = useRef(false);
+  const invokeFunc = useCallback((time) => {
+    const args = lastArgs.current;
+    const thisArg = lastThis.current;
 
-  const debouncedFunction = useRef(callback);
-  debouncedFunction.current = callback;
-
-  const cancelDebouncedCallback: () => void = useCallback(() => {
-    clearTimeout(functionTimeoutHandler.current);
-    clearTimeout(maxWaitHandler.current);
-    maxWaitHandler.current = null;
-    maxWaitArgs.current = [];
-    functionTimeoutHandler.current = null;
-    leadingCall.current = false;
+    lastArgs.current = lastThis.current = undefined;
+    lastInvokeTime.current = time;
+    result.current = funcRef.current.apply(thisArg, args);
+    return result.current;
   }, []);
 
+  const startTimer = useCallback(
+    (pendingFunc, wait) => {
+      if (useRAF) {
+        window.cancelAnimationFrame(timerId.current);
+        return window.requestAnimationFrame(pendingFunc);
+      }
+      return setTimeout(pendingFunc, wait);
+    },
+    [useRAF]
+  );
+
+  const cancelTimer = useCallback(
+    (id) => {
+      if (useRAF) {
+        return window.cancelAnimationFrame(id);
+      }
+      clearTimeout(id);
+    },
+    [useRAF]
+  );
+
+  const remainingWait = useCallback(
+    (time) => {
+      const timeSinceLastCall = time - lastCallTime.current;
+      const timeSinceLastInvoke = time - lastInvokeTime.current;
+      const timeWaiting = wait - timeSinceLastCall;
+
+      return maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
+    },
+    [maxWait, maxing, wait]
+  );
+
+  const shouldInvoke = useCallback(
+    (time) => {
+      if (!mounted.current) return false;
+
+      const timeSinceLastCall = time - lastCallTime.current;
+      const timeSinceLastInvoke = time - lastInvokeTime.current;
+
+      // Either this is the first call, activity has stopped and we're at the
+      // trailing edge, the system time has gone backwards and we're treating
+      // it as the trailing edge, or we've hit the `maxWait` limit.
+      return (
+        lastCallTime.current === undefined ||
+        timeSinceLastCall >= wait ||
+        timeSinceLastCall < 0 ||
+        (maxing && timeSinceLastInvoke >= maxWait)
+      );
+    },
+    [maxWait, maxing, wait]
+  );
+
+  const trailingEdge = useCallback(
+    (time) => {
+      timerId.current = undefined;
+
+      // Only invoke if we have `lastArgs` which means `func` has been
+      // debounced at least once.
+      if (trailing && lastArgs.current) {
+        return invokeFunc(time);
+      }
+      lastArgs.current = lastThis.current = undefined;
+      return result.current;
+    },
+    [invokeFunc, trailing]
+  );
+
+  const timerExpired = useCallback(() => {
+    const time = Date.now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    // Restart the timer.
+    timerId.current = startTimer(timerExpired, remainingWait(time));
+  }, [remainingWait, shouldInvoke, startTimer, trailingEdge]);
+
+  const leadingEdge = useCallback(
+    (time) => {
+      // Reset any `maxWait` timer.
+      lastInvokeTime.current = time;
+      // Start the timer for the trailing edge.
+      timerId.current = startTimer(timerExpired, wait);
+      // Invoke the leading edge.
+      return leading ? invokeFunc(time) : result.current;
+    },
+    [invokeFunc, startTimer, leading, timerExpired, wait]
+  );
+
+  const cancel = useCallback(() => {
+    if (timerId.current !== undefined) {
+      cancelTimer(timerId.current);
+    }
+    lastInvokeTime.current = 0;
+    lastArgs.current = lastCallTime.current = lastThis.current = timerId.current = undefined;
+  }, [cancelTimer]);
+
+  const flush = useCallback(() => {
+    return timerId.current === undefined ? result.current : trailingEdge(Date.now());
+  }, [trailingEdge]);
+
   useEffect(() => {
-    // We have to set isComponentUnmounted to be truth, as fast-refresh runs all useEffects
-    isComponentUnmounted.current = false;
+    mounted.current = true;
     return () => {
-      // we use flag, as we allow to call callPending outside the hook
-      isComponentUnmounted.current = true;
+      mounted.current = false;
     };
   }, []);
 
-  const debouncedCallback = useCallback(
+  const debounced = useCallback(
     (...args: T) => {
-      maxWaitArgs.current = args;
-      clearTimeout(functionTimeoutHandler.current);
-      if (leadingCall.current) {
-        leadingCall.current = false;
-      }
-      if (!functionTimeoutHandler.current && leading && !leadingCall.current) {
-        debouncedFunction.current(...args);
-        leadingCall.current = true;
-      }
+      const time = Date.now();
+      const isInvoking = shouldInvoke(time);
 
-      functionTimeoutHandler.current = setTimeout(() => {
-        let shouldCallFunction = true;
-        if (leading && leadingCall.current) {
-          shouldCallFunction = false;
+      lastArgs.current = args;
+      lastThis.current = this;
+      lastCallTime.current = time;
+
+      if (isInvoking) {
+        if (timerId.current === undefined && mounted.current) {
+          return leadingEdge(lastCallTime.current);
         }
-        cancelDebouncedCallback();
-
-        if (!isComponentUnmounted.current && trailing && shouldCallFunction) {
-          debouncedFunction.current(...args);
+        if (maxing) {
+          // Handle invocations in a tight loop.
+          timerId.current = startTimer(timerExpired, wait);
+          return invokeFunc(lastCallTime.current);
         }
-      }, delay);
-
-      if (maxWait && !maxWaitHandler.current && trailing) {
-        maxWaitHandler.current = setTimeout(() => {
-          const args = maxWaitArgs.current;
-          cancelDebouncedCallback();
-
-          if (!isComponentUnmounted.current) {
-            debouncedFunction.current.apply(null, args);
-          }
-        }, maxWait);
       }
+      if (timerId.current === undefined) {
+        timerId.current = startTimer(timerExpired, wait);
+      }
+      return result.current;
     },
-    [maxWait, delay, cancelDebouncedCallback, leading, trailing]
+    [invokeFunc, leadingEdge, maxing, shouldInvoke, startTimer, timerExpired, wait]
   );
 
-  const callPending = useCallback(() => {
-    // Call pending callback only if we have anything in our queue
-    if (!functionTimeoutHandler.current) {
-      return;
-    }
-
-    debouncedFunction.current.apply(null, maxWaitArgs.current);
-    cancelDebouncedCallback();
-  }, [cancelDebouncedCallback]);
-
   // At the moment, we use 3 args array so that we save backward compatibility
-  return [debouncedCallback, cancelDebouncedCallback, callPending];
+  return [debounced, cancel, flush];
 }

@@ -4,9 +4,10 @@ import * as React from 'react';
 import useDebouncedCallback from '../src/useDebouncedCallback';
 import { act } from 'react-dom/test-utils';
 
-jest.useFakeTimers();
-
 describe('useDebouncedCallback', () => {
+  beforeEach(() => {
+    jest.useFakeTimers('modern');
+  });
   it('will call callback when timeout is called', () => {
     const callback = jest.fn();
 
@@ -150,6 +151,59 @@ describe('useDebouncedCallback', () => {
     });
 
     expect(callback.mock.calls.length).toBe(2);
+  });
+
+  test.each`
+    options                                              | _0   | _190 | _200 | _210 | _500
+    ${{ leading: true, trailing: true }}                 | ${1} | ${1} | ${1} | ${1} | ${2}
+    ${{ leading: true, trailing: false }}                | ${1} | ${1} | ${1} | ${1} | ${1}
+    ${{ leading: false, trailing: true }}                | ${0} | ${0} | ${0} | ${0} | ${1}
+    ${{ leading: false, trailing: false }}               | ${0} | ${0} | ${0} | ${0} | ${0}
+    ${{ leading: true, trailing: true, maxWait: 190 }}   | ${1} | ${1} | ${2} | ${2} | ${3}
+    ${{ leading: true, trailing: false, maxWait: 190 }}  | ${1} | ${1} | ${1} | ${2} | ${2}
+    ${{ leading: false, trailing: true, maxWait: 190 }}  | ${0} | ${0} | ${1} | ${1} | ${2}
+    ${{ leading: true, trailing: true, maxWait: 200 }}   | ${1} | ${1} | ${2} | ${2} | ${3}
+    ${{ leading: true, trailing: false, maxWait: 200 }}  | ${1} | ${1} | ${1} | ${2} | ${2}
+    ${{ leading: false, trailing: true, maxWait: 200 }}  | ${0} | ${0} | ${1} | ${1} | ${2}
+    ${{ leading: false, trailing: false, maxWait: 200 }} | ${0} | ${0} | ${0} | ${0} | ${0}
+    ${{ leading: true, trailing: true, maxWait: 210 }}   | ${1} | ${1} | ${1} | ${2} | ${3}
+    ${{ leading: true, trailing: false, maxWait: 210 }}  | ${1} | ${1} | ${1} | ${1} | ${2}
+    ${{ leading: false, trailing: true, maxWait: 210 }}  | ${0} | ${0} | ${0} | ${1} | ${2}
+  `('options=$options', ({ options, _0, _190, _200, _210, _500 }) => {
+    const callback = jest.fn();
+
+    function Component() {
+      const [debouncedCallback] = useDebouncedCallback(callback, 200, options);
+
+      debouncedCallback();
+      expect(callback.mock.calls.length).toBe(_0);
+
+      setTimeout(() => {
+        expect(callback.mock.calls.length).toBe(_190);
+        debouncedCallback();
+      }, 191);
+
+      setTimeout(() => {
+        expect(callback.mock.calls.length).toBe(_200);
+        debouncedCallback();
+      }, 201);
+
+      setTimeout(() => {
+        expect(callback.mock.calls.length).toBe(_210);
+        debouncedCallback();
+      }, 211);
+
+      setTimeout(() => {
+        expect(callback.mock.calls.length).toBe(_500);
+      }, 500);
+
+      return null;
+    }
+    Enzyme.mount(<Component />);
+
+    act(() => {
+      jest.runAllTimers();
+    });
   });
 
   it('will call callback only with the latest params', () => {
@@ -402,12 +456,9 @@ describe('useDebouncedCallback', () => {
       const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500);
 
       debouncedCallback();
-      useEffect(
-        () => () => {
-          callPending();
-        },
-        []
-      );
+      useEffect(() => {
+        return callPending;
+      }, []);
       return <span>{text}</span>;
     }
     const tree = Enzyme.mount(<Component text="one" />);

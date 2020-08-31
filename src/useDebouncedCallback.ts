@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 
-interface Options {
+export interface Options {
   maxWait?: number;
   leading?: boolean;
   trailing?: boolean;

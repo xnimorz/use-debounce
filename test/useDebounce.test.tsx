@@ -3,7 +3,7 @@ import * as React from 'react';
 import useDebounce from '../src/useDebounce';
 import { act } from 'react-dom/test-utils';
 
-jest.useFakeTimers();
+jest.useFakeTimers('modern');
 
 describe('useDebounce', () => {
   it('put initialized value in first render', () => {

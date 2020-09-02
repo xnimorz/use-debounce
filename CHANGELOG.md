@@ -1,3 +1,22 @@
+## 4.0.0
+
+- _breaking change_: Support lodash style throttling options for trailing+maxWidth. Thanks to [@tryggvigy](https://github.com/tryggvigy)
+  Example:
+
+```
+useDebouncedCallback(callback, 300, {
+  leading: true,
+  trailing: false,
+  maxWait: 300,
+})
+```
+
+Where the trailing edge is turned off. Let's say the function is called twice in the first 300ms. Now debounced function to have been called _once_.
+
+_how to migrate_: Please, check your `traling: false` params with `maxWait` option
+
+- _breaking change_: Now in case delay option is unset, it will be `requestAnimationFrame` delay
+
 ## 3.4.3
 
 - Fix use-debounce so that it works correctly with react-native and next.js (as both of them use fast-refresh).

@@ -17,6 +17,8 @@ _how to migrate_: Please, check your `traling: false` params with `maxWait` opti
 
 - _breaking change_: Now in case delay option is unset, it will be `requestAnimationFrame` delay
 
+- _breaking change_: Now `debouncedCallback` from `useDebouncedCallback` returns a value. In v3 it used to return `undefined`:
+
 ## 3.4.3
 
 - Fix use-debounce so that it works correctly with react-native and next.js (as both of them use fast-refresh).

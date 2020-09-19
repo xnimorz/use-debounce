@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useMemo } from 'react';
 
 export interface Options {
   maxWait?: number;
@@ -6,11 +6,21 @@ export interface Options {
   trailing?: boolean;
 }
 
+export interface ControlFunctions {
+  cancel: () => void;
+  flush: () => void;
+  pending: () => boolean;
+}
+
+export interface DebouncedState<T extends unknown[]> extends ControlFunctions {
+  callback: (...args: T) => unknown;
+}
+
 export default function useDebouncedCallback<T extends unknown[]>(
   func: (...args: T) => unknown,
   wait: number,
   options: Options = { leading: false, trailing: true }
-): [(...args: T) => void, () => void, () => void] {
+): DebouncedState<T> {
   const lastCallTime = useRef(undefined);
   const lastInvokeTime = useRef(0);
   const timerId = useRef(undefined);
@@ -178,6 +188,19 @@ export default function useDebouncedCallback<T extends unknown[]>(
     [invokeFunc, leadingEdge, maxing, shouldInvoke, startTimer, timerExpired, wait]
   );
 
-  // At the moment, we use 3 args array so that we save backward compatibility
-  return [debounced, cancel, flush];
+  const pending = useCallback(() => {
+    return timerId.current !== undefined;
+  }, []);
+
+  const debouncedState: DebouncedState<T> = useMemo(
+    () => ({
+      callback: debounced,
+      cancel,
+      flush,
+      pending,
+    }),
+    [debounced, cancel, flush, pending]
+  );
+
+  return debouncedState;
 }

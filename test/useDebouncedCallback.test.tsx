@@ -12,8 +12,8 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000);
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 1000);
+      debounced.callback();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -31,8 +31,8 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
+      debounced.callback();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -50,9 +50,9 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
-      debouncedCallback();
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 1000, { leading: true });
+      debounced.callback();
+      debounced.callback();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -70,11 +70,11 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
-      debouncedCallback();
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 1000, { leading: true });
+      debounced.callback();
+      debounced.callback();
       setTimeout(() => {
-        debouncedCallback();
+        debounced.callback();
       }, 1001);
       return null;
     }
@@ -93,10 +93,10 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
+      debounced.callback();
       setTimeout(() => {
-        debouncedCallback();
+        debounced.callback();
       }, 1001);
       return null;
     }
@@ -116,9 +116,9 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       // trailing is true by default
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
+      const debounced = useDebouncedCallback(callback, 1000, { leading: true });
 
-      debouncedCallback();
+      debounced.callback();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -137,9 +137,9 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       // trailing is true by default
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000, { leading: true });
-      debouncedCallback();
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 1000, { leading: true });
+      debounced.callback();
+      debounced.callback();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -173,24 +173,24 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 200, options);
+      const debounced = useDebouncedCallback(callback, 200, options);
 
-      debouncedCallback();
+      debounced.callback();
       expect(callback.mock.calls.length).toBe(_0);
 
       setTimeout(() => {
         expect(callback.mock.calls.length).toBe(_190);
-        debouncedCallback();
+        debounced.callback();
       }, 191);
 
       setTimeout(() => {
         expect(callback.mock.calls.length).toBe(_200);
-        debouncedCallback();
+        debounced.callback();
       }, 201);
 
       setTimeout(() => {
         expect(callback.mock.calls.length).toBe(_210);
-        debouncedCallback();
+        debounced.callback();
       }, 211);
 
       setTimeout(() => {
@@ -212,10 +212,10 @@ describe('useDebouncedCallback', () => {
     });
 
     function Component() {
-      const [debouncedCallback] = useDebouncedCallback(callback, 1000);
-      debouncedCallback('Wrong param');
+      const debounced = useDebouncedCallback(callback, 1000);
+      debounced.callback('Wrong param');
       setTimeout(() => {
-        debouncedCallback('Right param');
+        debounced.callback('Right param');
       }, 500);
       return null;
     }
@@ -237,9 +237,9 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const [debouncedCallback, cancelDebouncedCallback] = useDebouncedCallback(callback, 1000);
-      debouncedCallback();
-      setTimeout(cancelDebouncedCallback, 500);
+      const debounced = useDebouncedCallback(callback, 1000);
+      debounced.callback();
+      setTimeout(debounced.cancel, 500);
       return null;
     }
     Enzyme.mount(<Component />);
@@ -253,7 +253,7 @@ describe('useDebouncedCallback', () => {
 
   it('will change callback function, if params from dependencies has changed', () => {
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(
+      const debounced = useDebouncedCallback(
         useCallback(
           jest.fn(() => {
             expect(text).toBe('Right param');
@@ -262,7 +262,7 @@ describe('useDebouncedCallback', () => {
         ),
         1000
       );
-      return <button onClick={debouncedCallback} />;
+      return <button onClick={debounced.callback} />;
     }
     const tree = Enzyme.mount(<Component text="Wrong param" />);
 
@@ -277,7 +277,7 @@ describe('useDebouncedCallback', () => {
 
   it("won't change callback function, if params from dependencies hasn't changed", () => {
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(
+      const debounced = useDebouncedCallback(
         useCallback(
           jest.fn(() => {
             expect(text).toBe('Right param');
@@ -286,7 +286,7 @@ describe('useDebouncedCallback', () => {
         ),
         1000
       );
-      return <button onClick={debouncedCallback} />;
+      return <button onClick={debounced.callback} />;
     }
     const tree = Enzyme.mount(<Component text="Right param" />);
 
@@ -303,8 +303,8 @@ describe('useDebouncedCallback', () => {
     const callback = (value) => expect(value).toBe('Right value');
 
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(callback, 500, { maxWait: 600 });
-      debouncedCallback(text);
+      const debounced = useDebouncedCallback(callback, 500, { maxWait: 600 });
+      debounced.callback(text);
       return <span>{text}</span>;
     }
     const tree = Enzyme.mount(<Component text="Wrong Value" />);
@@ -323,8 +323,8 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(callback, 500, { maxWait: 600 });
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 500, { maxWait: 600 });
+      debounced.callback();
       return <span>{text}</span>;
     }
     const tree = Enzyme.mount(<Component text="one" />);
@@ -351,10 +351,10 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, cancel] = useDebouncedCallback(callback, 500, { maxWait: 600 });
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 500, { maxWait: 600 });
+      debounced.callback();
       if (text === 'test') {
-        cancel();
+        debounced.cancel();
       }
       return <span>{text}</span>;
     }
@@ -382,10 +382,10 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500);
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 500);
+      debounced.callback();
       if (text === 'test') {
-        callPending();
+        debounced.flush();
       }
       return <span>{text}</span>;
     }
@@ -405,9 +405,9 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500);
+      const debounced = useDebouncedCallback(callback, 500);
       if (text === 'test') {
-        callPending();
+        debounced.flush();
       }
       return <span>{text}</span>;
     }
@@ -428,11 +428,11 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, cancel, callPending] = useDebouncedCallback(callback, 500);
-      debouncedCallback();
+      const debounced = useDebouncedCallback(callback, 500);
+      debounced.callback();
       if (text === 'test') {
-        cancel();
-        callPending();
+        debounced.cancel();
+        debounced.flush();
       }
       return <span>{text}</span>;
     }
@@ -453,11 +453,11 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const [debouncedCallback, , callPending] = useDebouncedCallback(callback, 500);
+      const debounced = useDebouncedCallback(callback, 500);
 
-      debouncedCallback();
+      debounced.callback();
       useEffect(() => {
-        return callPending;
+        return debounced.flush;
       }, []);
       return <span>{text}</span>;
     }
@@ -477,12 +477,12 @@ describe('useDebouncedCallback', () => {
     let debouncedCallbackCached = null;
 
     function Component({ text }) {
-      const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, []), 500);
+      const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
 
       if (debouncedCallbackCached) {
-        expect(debouncedCallback).toBe(debouncedCallbackCached);
+        expect(debounced.callback).toBe(debouncedCallbackCached);
       }
-      debouncedCallbackCached = debouncedCallback;
+      debouncedCallbackCached = debounced.callback;
 
       return <span>{text}</span>;
     }
@@ -501,16 +501,16 @@ describe('useDebouncedCallback', () => {
     let timeoutCached = null;
 
     function Component({ text, timeout }) {
-      const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, [text]), timeout);
+      const debounced = useDebouncedCallback(useCallback(() => {}, [text]), timeout);
 
       if (debouncedCallbackCached) {
         if (timeoutCached === timeout) {
-          expect(debouncedCallback).toBe(debouncedCallbackCached);
+          expect(debounced.callback).toBe(debouncedCallbackCached);
         } else {
-          expect(debouncedCallback).not.toBe(debouncedCallbackCached);
+          expect(debounced.callback).not.toBe(debouncedCallbackCached);
         }
       }
-      debouncedCallbackCached = debouncedCallback;
+      debouncedCallbackCached = debounced.callback;
       timeoutCached = timeout;
 
       return <span>{text}</span>;
@@ -532,15 +532,15 @@ describe('useDebouncedCallback', () => {
     expect.assertions(1);
 
     function Component({ callback }) {
-      const [debouncedCallback] = useDebouncedCallback(callback, 500);
+      const debounced = useDebouncedCallback(callback, 500);
       const counter = useRef(1);
 
       useEffect(() => {
         // this useEffect should be called only once
-        debouncedCallback(counter.current);
+        debounced.callback(counter.current);
 
         counter.current = counter.current + 1;
-      }, [debouncedCallback]);
+      }, [debounced.callback]);
 
       return null;
     }
@@ -570,16 +570,16 @@ describe('useDebouncedCallback', () => {
     let cachedObj = null;
 
     function Component({ text, maxWait = 1000, delay = 500 }) {
-      const [debouncedCallback] = useDebouncedCallback(useCallback(() => {}, []), delay, { maxWait });
+      const debounced = useDebouncedCallback(useCallback(() => {}, []), delay, { maxWait });
 
       if (debouncedCallbackCached) {
         if (cachedObj.delay === delay && cachedObj.maxWait === maxWait) {
-          expect(debouncedCallback).toBe(debouncedCallbackCached);
+          expect(debounced.callback).toBe(debouncedCallbackCached);
         } else {
-          expect(debouncedCallback).not.toBe(debouncedCallbackCached);
+          expect(debounced.callback).not.toBe(debouncedCallbackCached);
         }
       }
-      debouncedCallbackCached = debouncedCallback;
+      debouncedCallbackCached = debounced.callback;
       cachedObj = { text, maxWait, delay };
 
       return <span>{text}</span>;
@@ -609,15 +609,12 @@ describe('useDebouncedCallback', () => {
     let callPendingCached = null;
 
     function Component({ text }) {
-      const [debouncedCallback, cancelDebouncedCallback, callPending] = useDebouncedCallback(
-        useCallback(() => {}, []),
-        500
-      );
+      const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
 
       if (callPendingCached) {
-        expect(callPending).toBe(callPendingCached);
+        expect(debounced.flush).toBe(callPendingCached);
       }
-      callPendingCached = callPending;
+      callPendingCached = debounced.flush;
 
       return <span>{text}</span>;
     }
@@ -628,5 +625,42 @@ describe('useDebouncedCallback', () => {
     act(() => {
       tree.setProps({ text: 'two' });
     });
+  });
+
+  it('will memoize debounced object', () => {
+    let cached = null;
+
+    function Component({ text }) {
+      const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+
+      if (cached) {
+        expect(debounced).toBe(cached);
+      }
+      cached = debounced;
+
+      return <span>{text}</span>;
+    }
+    const tree = Enzyme.mount(<Component text="one" />);
+
+    expect(tree.text()).toBe('one');
+
+    act(() => {
+      tree.setProps({ text: 'two' });
+    });
+  });
+
+  it('pending indicates whether we have pending callbacks', () => {
+    function Component({ text }) {
+      const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+
+      expect(debounced.pending()).toBeFalsy();
+      debounced.callback();
+      expect(debounced.pending()).toBeTruthy();
+      debounced.flush();
+      expect(debounced.pending()).toBeFalsy();
+
+      return <span>{text}</span>;
+    }
+    Enzyme.mount(<Component text="one" />);
   });
 });

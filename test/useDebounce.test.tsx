@@ -71,8 +71,8 @@ describe('useDebounce', () => {
 
   it('will cancel value when cancel method is called', () => {
     function Component({ text }) {
-      const [value, cancelValue] = useDebounce(text, 1000);
-      setTimeout(cancelValue, 500);
+      const [value, fn] = useDebounce(text, 1000);
+      setTimeout(fn.cancel, 500);
       return <div>{value}</div>;
     }
     const tree = Enzyme.mount(<Component text={'Hello'} />);
@@ -121,9 +121,9 @@ describe('useDebounce', () => {
 
   it('should cancel maxWait callback', () => {
     function Component({ text }) {
-      const [value, cancel] = useDebounce(text, 500, { maxWait: 600 });
+      const [value, fn] = useDebounce(text, 500, { maxWait: 600 });
       if (text === 'Right value') {
-        cancel();
+        fn.cancel();
       }
       return <div>{value}</div>;
     }
@@ -276,8 +276,8 @@ describe('useDebounce', () => {
   it('should setup new value immediately if callPending is called', () => {
     let callPending;
     function Component({ text }) {
-      const [value, , _callPending] = useDebounce(text, 1000);
-      callPending = _callPending;
+      const [value, fn] = useDebounce(text, 1000);
+      callPending = fn.flush;
 
       return <div>{value}</div>;
     }

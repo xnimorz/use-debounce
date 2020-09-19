@@ -10,14 +10,8 @@
     "test": "yarn jest",
     "build": "yarn test && eslint \"src/**.ts\" && rm -rf ./lib/* ./esm/* && yarn build:cjs && yarn build:es",
     "build:cjs": "tsc",
-    "build:es": "tsc -m esNext --outDir esm",
-    "size": "size-limit"
+    "build:es": "tsc -m esNext --outDir esm"
   },
-  "size-limit": [
-    {
-      "path": "lib/index.js"
-    }
-  ],
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/xnimorz/use-debounce.git"
@@ -64,8 +58,10 @@
     "prettier": "^1.17.1",
     "react": "16.8.3",
     "react-dom": "16.8.3",
-    "size-limit": "^1.2.0",
     "ts-jest": "^26.3.0",
     "typescript": "^3.5.1"
+  },
+  "resolutions": {
+    "kind-of": "6.0.3"
   }
 }

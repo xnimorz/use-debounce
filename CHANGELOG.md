@@ -1,9 +1,72 @@
+## 5.0.0
+
+- _breaking change_: Now `useDebouncedCallback` returns an object instead of array:
+
+  Old:
+  ```js
+  const [debouncedCallback, cancelDebouncedCallback, callPending] = useDebouncedCallback(/*...*/);
+  ```
+
+  New:
+  ```js
+  const debounced = useDebouncedCallback(/*...*/);
+  /**
+   * debounced: {
+   *   callback: (...args: T) => unknown, which is debouncedCallback
+   *   cancel: () => void, which is cancelDebouncedCallback
+   *   flush: () => void, which is callPending
+   *   pending: () => boolean, which is a new function
+   * } 
+   */
+  ```
+
+- _breaking change_: Now `useDebounce` returns an array of 2 fields instead of a plain array:
+  Old:
+  ```js
+  const [value, cancel, callPending] = useDebounce(/*...*/);
+  ```
+
+  New:
+  ```js
+  const [value, fn] = useDebouncedCallback(/*...*/);
+  /**
+   * value is just a value without changes
+   * But fn now is an object: { 
+   *   cancel: () => void, which is cancel
+   *   flush: () => void, which is callPending
+   *   pending: () => boolean, which is a new function
+   * } 
+   */
+  ```
+
+- Added `pending` function to both `useDebounce` and `useDebouncedCallback` which shows whether component has pending callbacks
+  Example:
+
+  ```js
+  function Component({ text }) {
+    const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+
+    expect(debounced.pending()).toBeFalsy();
+    debounced.callback();
+    expect(debounced.pending()).toBeTruthy();
+    debounced.flush();
+    expect(debounced.pending()).toBeFalsy();
+
+    return <span>{text}</span>;
+  }
+  ```
+
+For more details of these major changes you could check this commit https://github.com/xnimorz/use-debounce/commit/1b4ac0432f7074248faafcfe6248df0be4bb4af0 and this issue https://github.com/xnimorz/use-debounce/issues/61
+
+- Fixed security alerts
+
+
 ## 4.0.0
 
 - _breaking change_: Support lodash style throttling options for trailing+maxWidth. Thanks to [@tryggvigy](https://github.com/tryggvigy)
   Example:
 
-```
+```js
 useDebouncedCallback(callback, 300, {
   leading: true,
   trailing: false,

@@ -22,7 +22,7 @@ export default function useDebounce<T>(
       debounced.callback(value);
       previousValue.current = value;
     }
-  }, [value, debounced.callback, eq]);
+  }, [value, debounced, eq]);
 
   return [state, { cancel: debounced.cancel, pending: debounced.pending, flush: debounced.flush }];
 }

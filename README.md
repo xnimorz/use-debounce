@@ -25,6 +25,10 @@ https://codesandbox.io/s/kx75xzyrq7
 
 More complex example with searching for matching countries using debounced input: https://codesandbox.io/s/rr40wnropq (thanks to https://twitter.com/ZephDavies)
 
+## Changelog
+
+https://github.com/xnimorz/use-debounce/blob/master/CHANGELOG.md 
+
 ## Simple values debouncing
 
 According to https://twitter.com/dan_abramov/status/1060729512227467264
@@ -65,7 +69,7 @@ import { useDebouncedCallback } from 'use-debounce';
 function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
   // Debounce callback
-  const [debouncedCallback] = useDebouncedCallback(
+  const debounced = useDebouncedCallback(
     // function
     (value) => {
       setValue(value);
@@ -74,10 +78,10 @@ function Input({ defaultValue }) {
     1000
   );
 
-  // you should use `e => debouncedCallback(e.target.value)` as react works with synthetic evens
+  // you should use `e => debounced.callback(e.target.value)` as react works with synthetic evens
   return (
     <div>
-      <input defaultValue={defaultValue} onChange={(e) => debouncedCallback(e.target.value)} />
+      <input defaultValue={defaultValue} onChange={(e) => debounced.callback(e.target.value)} />
       <p>Debounced value: {value}</p>
     </div>
   );
@@ -95,7 +99,7 @@ function ScrolledComponent() {
   const [position, setPosition] = useState(window.pageYOffset);
 
   // Debounce callback
-  const [scrollHandler] = useDebouncedCallback(
+  const debounced = useDebouncedCallback(
     // function
     () => {
       setPosition(window.pageYOffset);
@@ -105,7 +109,7 @@ function ScrolledComponent() {
   );
 
   useEffect(() => {
-    const unsubscribe = subscribe(window, 'scroll', scrollHandler);
+    const unsubscribe = subscribe(window, 'scroll', debounced.callback);
     return () => {
       unsubscribe();
     };
@@ -138,7 +142,7 @@ import { useDebouncedCallback } from 'use-debounce';
 
 function Input({ defaultValue }) {
   const [value, setValue] = useState(defaultValue);
-  const [debouncedFunction, cancel] = useDebouncedCallback(
+  const debounced = useDebouncedCallback(
     (value) => {
       setValue(value);
     },
@@ -147,12 +151,12 @@ function Input({ defaultValue }) {
     { maxWait: 2000 }
   );
 
-  // you should use `e => debouncedFunction(e.target.value)` as react works with synthetic evens
+  // you should use `e => debounced.callback(e.target.value)` as react works with synthetic evens
   return (
     <div>
-      <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />
+      <input defaultValue={defaultValue} onChange={(e) => debounced.callback(e.target.value)} />
       <p>Debounced value: {value}</p>
-      <button onClick={cancel}>Cancel Debounce cycle</button>
+      <button onClick={debounced.cancel}>Cancel Debounce cycle</button>
     </div>
   );
 }
@@ -161,16 +165,16 @@ const rootElement = document.getElementById('root');
 ReactDOM.render(<Input defaultValue="Hello world" />, rootElement);
 ```
 
-#### callPending method
+#### Flush method
 
-`useDebouncedCallback` has `callPending` method. It allows to call the callback manually if it hasn't fired yet. This method is handy to use when the user takes an action that would cause the component to unmount, but you need to execute the callback.
+`useDebouncedCallback` has `flush` method. It allows to call the callback manually if it hasn't fired yet. This method is handy to use when the user takes an action that would cause the component to unmount, but you need to execute the callback.
 
 ```javascript
 import React, { useState, useCallback } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
-  const [debouncedFunction, cancel, callPending] = useDebouncedCallback(
+  const debounced = useDebouncedCallback(
     (value) => {
       asyncFetchData;
     },
@@ -181,12 +185,12 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
   // When the component goes to be unmounted, we will fetch data if the input has changed.
   useEffect(
     () => () => {
-      callPending();
+      debounced.flush();
     },
-    [callPending]
+    [debounced]
   );
 
-  return <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />;
+  return <input defaultValue={defaultValue} onChange={(e) => debounced.callback(e.target.value)} />;
 }
 ```
 

@@ -9,3 +9,4 @@ lib
 .DS_store
 coverage
 tmp
+yarn-error.log

@@ -1,3 +1,6 @@
+## [Unreleased]
+- Fix typing to infer correct callback type
+
 ## 5.0.0
 
 - _breaking change_: Now `useDebouncedCallback` returns an object instead of array:
@@ -16,7 +19,7 @@
    *   cancel: () => void, which is cancelDebouncedCallback
    *   flush: () => void, which is callPending
    *   pending: () => boolean, which is a new function
-   * } 
+   * }
    */
   ```
 
@@ -31,11 +34,11 @@
   const [value, fn] = useDebouncedCallback(/*...*/);
   /**
    * value is just a value without changes
-   * But fn now is an object: { 
+   * But fn now is an object: {
    *   cancel: () => void, which is cancel
    *   flush: () => void, which is callPending
    *   pending: () => boolean, which is a new function
-   * } 
+   * }
    */
   ```
 

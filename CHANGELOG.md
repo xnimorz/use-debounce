@@ -1,16 +1,19 @@
-## [Unreleased]
-- Fix typing to infer correct callback type
+## 5.0.1
+
+- Fix typing to infer correct callback type (thanks to [@lytc](https://github.com/lytc))
 
 ## 5.0.0
 
 - _breaking change_: Now `useDebouncedCallback` returns an object instead of array:
 
   Old:
+
   ```js
   const [debouncedCallback, cancelDebouncedCallback, callPending] = useDebouncedCallback(/*...*/);
   ```
 
   New:
+
   ```js
   const debounced = useDebouncedCallback(/*...*/);
   /**
@@ -25,11 +28,13 @@
 
 - _breaking change_: Now `useDebounce` returns an array of 2 fields instead of a plain array:
   Old:
+
   ```js
   const [value, cancel, callPending] = useDebounce(/*...*/);
   ```
 
   New:
+
   ```js
   const [value, fn] = useDebouncedCallback(/*...*/);
   /**
@@ -63,7 +68,6 @@ For more details of these major changes you could check this commit https://gith
 
 - Fixed security alerts
 
-
 ## 4.0.0
 
 - _breaking change_: Support lodash style throttling options for trailing+maxWidth. Thanks to [@tryggvigy](https://github.com/tryggvigy)
@@ -74,7 +78,7 @@ useDebouncedCallback(callback, 300, {
   leading: true,
   trailing: false,
   maxWait: 300,
-})
+});
 ```
 
 Where the trailing edge is turned off. Let's say the function is called twice in the first 300ms. Now debounced function to have been called _once_.

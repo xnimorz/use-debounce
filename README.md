@@ -194,6 +194,24 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
 }
 ```
 
+#### Pending method
+
+`pending` method shows whether component has pending callbacks. Works for both `useDebounce` and `useDebouncedCallback`:
+
+```javascript
+function Component({ text }) {
+  const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+
+  expect(debounced.pending()).toBeFalsy();
+  debounced.callback();
+  expect(debounced.pending()).toBeTruthy();
+  debounced.flush();
+  expect(debounced.pending()).toBeFalsy();
+
+  return <span>{text}</span>;
+}
+```
+
 #### leading calls
 
 Both `useDebounce` and `useDebouncedCallback` work with the `leading` option. This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires.

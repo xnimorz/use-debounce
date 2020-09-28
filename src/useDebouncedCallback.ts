@@ -12,19 +12,19 @@ export interface ControlFunctions {
   pending: () => boolean;
 }
 
-export interface DebouncedState<T extends unknown[]> extends ControlFunctions {
-  callback: (...args: T) => unknown;
+export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> extends ControlFunctions {
+  callback: (...args: Parameters<T>) => ReturnType<T>;
 }
 
-export default function useDebouncedCallback<T extends unknown[]>(
-  func: (...args: T) => unknown,
+export default function useDebouncedCallback<T extends (...args: any[]) => ReturnType<T>>(
+  func: T,
   wait: number,
   options: Options = { leading: false, trailing: true }
 ): DebouncedState<T> {
   const lastCallTime = useRef(undefined);
   const lastInvokeTime = useRef(0);
   const timerId = useRef(undefined);
-  const lastArgs = useRef<T | []>([]);
+  const lastArgs = useRef<unknown[]>([]);
   const lastThis = useRef(null);
   const result = useRef(null);
   const funcRef = useRef(func);
@@ -162,7 +162,7 @@ export default function useDebouncedCallback<T extends unknown[]>(
   }, []);
 
   const debounced = useCallback(
-    (...args: T) => {
+    (...args: Parameters<T>): ReturnType<T> => {
       const time = Date.now();
       const isInvoking = shouldInvoke(time);
 

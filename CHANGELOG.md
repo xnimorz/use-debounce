@@ -1,3 +1,27 @@
+## 6.0.0
+
+- _breaking change_: Now `useDebounce`, `useDebouncedCallback` and `useThrottledCallback` has `isPending` method instead of `pending`
+
+  Old:
+
+  ```js
+  const {callback, pending} = useDebouncedCallback(/*...*/);
+  ```
+
+  New:
+
+  ```js
+  const { callback, isPending } = useDebouncedCallback(/*...*/);
+  /**
+   * {
+   *   callback: (...args: any[]) => ReturnType<T>
+   *   cancel: () => void
+   *   flush: () => void
+   *   isPending: () => boolean
+   * }
+   */
+  ```
+
 ## 5.2.1
 
 - prevent having ininite setTimeout setup when component gets unmounted https://github.com/xnimorz/use-debounce/issues/97

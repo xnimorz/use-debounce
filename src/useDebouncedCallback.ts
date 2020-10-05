@@ -12,7 +12,7 @@ export interface Options extends CallOptions {
 export interface ControlFunctions {
   cancel: () => void;
   flush: () => void;
-  pending: () => boolean;
+  isPending: () => boolean;
 }
 
 /**
@@ -237,7 +237,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
     [invokeFunc, leading, maxing, shouldInvoke, startTimer, timerExpired, wait]
   );
 
-  const pending = useCallback(() => {
+  const isPending = useCallback(() => {
     return !!timerId.current;
   }, []);
 
@@ -246,9 +246,9 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       callback: debounced,
       cancel,
       flush,
-      pending,
+      isPending,
     }),
-    [debounced, cancel, flush, pending]
+    [debounced, cancel, flush, isPending]
   );
 
   return debouncedState;

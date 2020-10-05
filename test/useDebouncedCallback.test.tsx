@@ -678,11 +678,11 @@ describe('useDebouncedCallback', () => {
     function Component({ text }) {
       const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
 
-      expect(debounced.pending()).toBeFalsy();
+      expect(debounced.isPending()).toBeFalsy();
       debounced.callback();
-      expect(debounced.pending()).toBeTruthy();
+      expect(debounced.isPending()).toBeTruthy();
       debounced.flush();
-      expect(debounced.pending()).toBeFalsy();
+      expect(debounced.isPending()).toBeFalsy();
 
       return <span>{text}</span>;
     }

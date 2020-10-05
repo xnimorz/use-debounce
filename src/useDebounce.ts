@@ -34,5 +34,5 @@ export default function useDebounce<T>(
     }
   }, [value, debounced, eq]);
 
-  return [state, { cancel: debounced.cancel, pending: debounced.pending, flush: debounced.flush }];
+  return [state, { cancel: debounced.cancel, isPending: debounced.isPending, flush: debounced.flush }];
 }

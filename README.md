@@ -78,7 +78,7 @@ function Input({ defaultValue }) {
     1000
   );
 
-  // you should use `e => debounced.callback(e.target.value)` as react works with synthetic evens
+  // you should use `e => debounced.callback(e.target.value)` as react works with synthetic events
   return (
     <div>
       <input defaultValue={defaultValue} onChange={(e) => debounced.callback(e.target.value)} />
@@ -151,7 +151,7 @@ function Input({ defaultValue }) {
     { maxWait: 2000 }
   );
 
-  // you should use `e => debounced.callback(e.target.value)` as react works with synthetic evens
+  // you should use `e => debounced.callback(e.target.value)` as react works with synthetic events
   return (
     <div>
       <input defaultValue={defaultValue} onChange={(e) => debounced.callback(e.target.value)} />

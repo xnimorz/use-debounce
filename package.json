@@ -16,7 +16,8 @@
   "scripts": {
     "size": "yarn build && size-limit",
     "test": "yarn jest",
-    "build": "microbundle build -f es,cjs"
+    "build": "microbundle build -f es,cjs",
+    "prepublishOnly": "npm run build"
   },
   "engines": {
     "node": ">= 10.0.0"
@@ -76,6 +77,10 @@
     "kind-of": "6.0.3"
   },
   "size-limit": [
+    {
+      "path": "dist/index.module.js",
+      "limit": "1.5 KB"
+    },
     {
       "path": "dist/index.module.js",
       "import": "{ useDebounce }",

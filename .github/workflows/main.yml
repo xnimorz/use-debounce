@@ -21,7 +21,8 @@ jobs:
       - name: install and tests
         run: |
           yarn install
-          yarn build
+          yarn test
+          yarn size
         env:
           CI: true
       - uses: preactjs/compressed-size-action@v2

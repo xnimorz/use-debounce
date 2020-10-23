@@ -5,6 +5,7 @@ node_modules
 npm-debug.js
 esm
 lib
+dist
 .git
 .DS_store
 coverage

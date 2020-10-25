@@ -3,13 +3,10 @@
 examples/bundle.js
 node_modules
 npm-debug.js
-dist
+esm
+lib
 .git
 .DS_store
 coverage
 tmp
 yarn-error.log
-
-# TODO: remove these lines
-esm
-lib

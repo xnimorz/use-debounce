@@ -2,10 +2,9 @@
   "name": "use-debounce",
   "version": "5.0.1",
   "description": "Debounce hook for react",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "./lib",
   "exports": {
     ".": {
       "import": "./dist/index.module.js",
@@ -15,8 +14,10 @@
   "sideEffects": false,
   "scripts": {
     "size": "yarn build && size-limit",
-    "test": "yarn jest",
-    "build": "microbundle build -f es,cjs",
+    "test": "yarn jest && eslint \"src/**.ts\"",
+    "build": "rm -rf ./lib/* ./esm/* && yarn build:cjs && yarn build:es",
+    "build:cjs": "tsc",
+    "build:es": "tsc -m esNext --outDir esm",
     "prepublishOnly": "npm run build"
   },
   "engines": {
@@ -65,7 +66,6 @@
     "eslint-plugin-react-hooks": "^1.6.0",
     "eslint-plugin-standard": "^4.0.0",
     "jest": "^26.4.2",
-    "microbundle": "^0.12.4",
     "prettier": "^1.17.1",
     "react": "16.8.3",
     "react-dom": "16.8.3",

@@ -25,6 +25,3 @@ jobs:
           yarn size
         env:
           CI: true
-      - uses: preactjs/compressed-size-action@v2
-        with:
-          repo-token: '${{ secrets.GITHUB_TOKEN }}'

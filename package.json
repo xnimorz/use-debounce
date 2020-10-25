@@ -79,16 +79,16 @@
   },
   "size-limit": [
     {
-      "path": "dist/index.module.js",
+      "path": "esm/index.js",
       "limit": "1.5 KB"
     },
     {
-      "path": "dist/index.module.js",
+      "path": "esm/index.js",
       "import": "{ useDebounce }",
       "limit": "1 KB"
     },
     {
-      "path": "dist/index.module.js",
+      "path": "esm/index.js",
       "import": "{ useDebouncedCallback }",
       "limit": "1 KB"
     }

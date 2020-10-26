@@ -1,3 +1,8 @@
+## next
+
+- Add size-limit and configure it for esm modules. Now the size of the whole library is limited within 1 KB (thanks to [@omgovich](https://github.com/omgovich))
+- Add an [export map](https://docs.skypack.dev/package-authors/package-checks#export-map) to your package.json. (thanks to [@omgovich](https://github.com/omgovich))
+
 ## 5.0.1
 
 - Fix typing to infer correct callback type (thanks to [@lytc](https://github.com/lytc))

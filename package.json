@@ -80,7 +80,7 @@
   "size-limit": [
     {
       "path": "esm/index.js",
-      "limit": "1.5 KB"
+      "limit": "1 KB"
     },
     {
       "path": "esm/index.js",

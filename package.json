@@ -5,12 +5,20 @@
   "main": "lib/index.js",
   "module": "esm/index.js",
   "types": "./lib",
+  "exports": {
+    ".": {
+      "import": "./dist/index.module.js",
+      "require": "./dist/index.js"
+    }
+  },
   "sideEffects": false,
   "scripts": {
-    "test": "yarn jest",
-    "build": "yarn test && eslint \"src/**.ts\" && rm -rf ./lib/* ./esm/* && yarn build:cjs && yarn build:es",
+    "size": "yarn build && size-limit",
+    "test": "yarn jest && eslint \"src/**.ts\"",
+    "build": "rm -rf ./lib/* ./esm/* && yarn build:cjs && yarn build:es",
     "build:cjs": "tsc",
-    "build:es": "tsc -m esNext --outDir esm"
+    "build:es": "tsc -m esNext --outDir esm",
+    "prepublishOnly": "npm run build"
   },
   "engines": {
     "node": ">= 10.0.0"
@@ -38,6 +46,7 @@
   },
   "homepage": "https://github.com/xnimorz/use-debounce#readme",
   "devDependencies": {
+    "@size-limit/preset-small-lib": "^4.6.2",
     "@types/enzyme": "^3.9.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^26.0.10",
@@ -61,10 +70,27 @@
     "prettier": "^1.17.1",
     "react": "16.8.3",
     "react-dom": "16.8.3",
+    "size-limit": "^4.6.2",
     "ts-jest": "^26.3.0",
     "typescript": "^3.5.1"
   },
   "resolutions": {
     "kind-of": "6.0.3"
-  }
+  },
+  "size-limit": [
+    {
+      "path": "esm/index.js",
+      "limit": "1.5 KB"
+    },
+    {
+      "path": "esm/index.js",
+      "import": "{ useDebounce }",
+      "limit": "1 KB"
+    },
+    {
+      "path": "esm/index.js",
+      "import": "{ useDebouncedCallback }",
+      "limit": "1 KB"
+    }
+  ]
 }

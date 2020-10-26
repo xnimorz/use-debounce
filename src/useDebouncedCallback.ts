@@ -32,8 +32,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   funcRef.current = func;
 
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
-  const useRAF =
-    !wait && wait !== 0 && typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function';
+  const useRAF = !wait && wait !== 0 && typeof window !== 'undefined';
 
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function');
@@ -57,8 +56,8 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   const startTimer = useCallback(
     (pendingFunc, wait) => {
       if (useRAF) {
-        window.cancelAnimationFrame(timerId.current);
-        return window.requestAnimationFrame(pendingFunc);
+        cancelAnimationFrame(timerId.current);
+        return requestAnimationFrame(pendingFunc);
       }
       return setTimeout(pendingFunc, wait);
     },
@@ -68,7 +67,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   const cancelTimer = useCallback(
     (id) => {
       if (useRAF) {
-        return window.cancelAnimationFrame(id);
+        return cancelAnimationFrame(id);
       }
       clearTimeout(id);
     },

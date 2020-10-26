@@ -132,7 +132,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   );
 
   const cancel = useCallback(() => {
-    if (timerId.current !== undefined) {
+    if (timerId.current) {
       useRAF ? cancelAnimationFrame(timerId.current) : clearTimeout(timerId.current);
     }
     lastInvokeTime.current = 0;
@@ -140,7 +140,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   }, [useRAF]);
 
   const flush = useCallback(() => {
-    return timerId.current === undefined ? result.current : trailingEdge(Date.now());
+    return !timerId.current ? result.current : trailingEdge(Date.now());
   }, [trailingEdge]);
 
   useEffect(() => {
@@ -160,7 +160,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       lastCallTime.current = time;
 
       if (isInvoking) {
-        if (timerId.current === undefined && mounted.current) {
+        if (!timerId.current && mounted.current) {
           return leadingEdge(lastCallTime.current);
         }
         if (maxing) {
@@ -169,7 +169,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
           return invokeFunc(lastCallTime.current);
         }
       }
-      if (timerId.current === undefined) {
+      if (!timerId.current) {
         timerId.current = startTimer(timerExpired, wait);
       }
       return result.current;
@@ -178,7 +178,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   );
 
   const pending = useCallback(() => {
-    return timerId.current !== undefined;
+    return !!timerId.current;
   }, []);
 
   const debouncedState: DebouncedState<T> = useMemo(

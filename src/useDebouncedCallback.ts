@@ -64,16 +64,6 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
     [useRAF]
   );
 
-  const cancelTimer = useCallback(
-    (id) => {
-      if (useRAF) {
-        return cancelAnimationFrame(id);
-      }
-      clearTimeout(id);
-    },
-    [useRAF]
-  );
-
   const remainingWait = useCallback(
     (time) => {
       const timeSinceLastCall = time - lastCallTime.current;
@@ -143,11 +133,11 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
 
   const cancel = useCallback(() => {
     if (timerId.current !== undefined) {
-      cancelTimer(timerId.current);
+      useRAF ? cancelAnimationFrame(timerId.current) : clearTimeout(timerId.current);
     }
     lastInvokeTime.current = 0;
     lastArgs.current = lastCallTime.current = lastThis.current = timerId.current = undefined;
-  }, [cancelTimer]);
+  }, [useRAF]);
 
   const flush = useCallback(() => {
     return timerId.current === undefined ? result.current : trailingEdge(Date.now());

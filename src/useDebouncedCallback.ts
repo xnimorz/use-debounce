@@ -64,17 +64,6 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
     [useRAF]
   );
 
-  const remainingWait = useCallback(
-    (time) => {
-      const timeSinceLastCall = time - lastCallTime.current;
-      const timeSinceLastInvoke = time - lastInvokeTime.current;
-      const timeWaiting = wait - timeSinceLastCall;
-
-      return maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
-    },
-    [maxWait, maxing, wait]
-  );
-
   const shouldInvoke = useCallback(
     (time) => {
       if (!mounted.current) return false;
@@ -115,9 +104,15 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
     if (shouldInvoke(time)) {
       return trailingEdge(time);
     }
-    // Restart the timer.
-    timerId.current = startTimer(timerExpired, remainingWait(time));
-  }, [remainingWait, shouldInvoke, startTimer, trailingEdge]);
+
+    const timeSinceLastCall = time - lastCallTime.current;
+    const timeSinceLastInvoke = time - lastInvokeTime.current;
+    const timeWaiting = wait - timeSinceLastCall;
+    const remainingWait = maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
+
+    // Restart the timer
+    timerId.current = startTimer(timerExpired, remainingWait);
+  }, [maxWait, maxing, shouldInvoke, startTimer, trailingEdge, wait]);
 
   const cancel = useCallback(() => {
     if (timerId.current) {

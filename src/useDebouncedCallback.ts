@@ -105,6 +105,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       return trailingEdge(time);
     }
 
+    // Remaining wait calculation
     const timeSinceLastCall = time - lastCallTime.current;
     const timeSinceLastInvoke = time - lastInvokeTime.current;
     const timeWaiting = wait - timeSinceLastCall;

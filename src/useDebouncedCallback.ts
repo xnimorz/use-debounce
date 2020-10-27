@@ -21,12 +21,12 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   wait: number,
   options: Options = { leading: false, trailing: true }
 ): DebouncedState<T> {
-  const lastCallTime = useRef(undefined);
+  const lastCallTime = useRef(null);
   const lastInvokeTime = useRef(0);
-  const timerId = useRef(undefined);
+  const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
-  const lastThis = useRef(null);
-  const result = useRef(null);
+  const lastThis = useRef();
+  const result = useRef();
   const funcRef = useRef(func);
   const mounted = useRef(true);
   funcRef.current = func;
@@ -37,17 +37,17 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function');
   }
-  wait = Number(wait) || 0;
+  wait = +wait || 0;
   const leading = !!options.leading;
   const trailing = 'trailing' in options ? !!options.trailing : true;
   const maxing = 'maxWait' in options;
-  const maxWait = maxing ? Math.max(Number(options.maxWait) || 0, wait) : undefined;
+  const maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : null;
 
   const invokeFunc = useCallback((time) => {
     const args = lastArgs.current;
     const thisArg = lastThis.current;
 
-    lastArgs.current = lastThis.current = undefined;
+    lastArgs.current = lastThis.current = null;
     lastInvokeTime.current = time;
     result.current = funcRef.current.apply(thisArg, args);
     return result.current;
@@ -86,7 +86,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       // trailing edge, the system time has gone backwards and we're treating
       // it as the trailing edge, or we've hit the `maxWait` limit.
       return (
-        lastCallTime.current === undefined ||
+        !lastCallTime.current ||
         timeSinceLastCall >= wait ||
         timeSinceLastCall < 0 ||
         (maxing && timeSinceLastInvoke >= maxWait)
@@ -97,14 +97,14 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
 
   const trailingEdge = useCallback(
     (time) => {
-      timerId.current = undefined;
+      timerId.current = null;
 
       // Only invoke if we have `lastArgs` which means `func` has been
       // debounced at least once.
       if (trailing && lastArgs.current) {
         return invokeFunc(time);
       }
-      lastArgs.current = lastThis.current = undefined;
+      lastArgs.current = lastThis.current = null;
       return result.current;
     },
     [invokeFunc, trailing]
@@ -124,7 +124,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       useRAF ? cancelAnimationFrame(timerId.current) : clearTimeout(timerId.current);
     }
     lastInvokeTime.current = 0;
-    lastArgs.current = lastCallTime.current = lastThis.current = timerId.current = undefined;
+    lastArgs.current = lastCallTime.current = lastThis.current = timerId.current = null;
   }, [useRAF]);
 
   const flush = useCallback(() => {

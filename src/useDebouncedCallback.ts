@@ -119,18 +119,6 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
     timerId.current = startTimer(timerExpired, remainingWait(time));
   }, [remainingWait, shouldInvoke, startTimer, trailingEdge]);
 
-  const leadingEdge = useCallback(
-    (time) => {
-      // Reset any `maxWait` timer.
-      lastInvokeTime.current = time;
-      // Start the timer for the trailing edge.
-      timerId.current = startTimer(timerExpired, wait);
-      // Invoke the leading edge.
-      return leading ? invokeFunc(time) : result.current;
-    },
-    [invokeFunc, startTimer, leading, timerExpired, wait]
-  );
-
   const cancel = useCallback(() => {
     if (timerId.current) {
       useRAF ? cancelAnimationFrame(timerId.current) : clearTimeout(timerId.current);
@@ -161,7 +149,12 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
 
       if (isInvoking) {
         if (!timerId.current && mounted.current) {
-          return leadingEdge(lastCallTime.current);
+          // Reset any `maxWait` timer.
+          lastInvokeTime.current = lastCallTime.current;
+          // Start the timer for the trailing edge.
+          timerId.current = startTimer(timerExpired, wait);
+          // Invoke the leading edge.
+          return leading ? invokeFunc(lastCallTime.current) : result.current;
         }
         if (maxing) {
           // Handle invocations in a tight loop.
@@ -174,7 +167,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       }
       return result.current;
     },
-    [invokeFunc, leadingEdge, maxing, shouldInvoke, startTimer, timerExpired, wait]
+    [invokeFunc, leading, maxing, shouldInvoke, startTimer, timerExpired, wait]
   );
 
   const pending = useCallback(() => {

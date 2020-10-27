@@ -10,7 +10,7 @@ export default function useDebounce<T>(
   delay: number,
   options?: { maxWait?: number; leading?: boolean; trailing?: boolean; equalityFn?: (left: T, right: T) => boolean }
 ): [T, ControlFunctions] {
-  const eq = options && options.equalityFn ? options.equalityFn : valueEquality;
+  const eq = (options && options.equalityFn) || valueEquality;
 
   const [state, dispatch] = useState(value);
   const debounced = useDebouncedCallback(useCallback((value: T) => dispatch(value), []), delay, options);

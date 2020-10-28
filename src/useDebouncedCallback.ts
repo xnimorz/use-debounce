@@ -55,11 +55,8 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
 
   const startTimer = useCallback(
     (pendingFunc, wait) => {
-      if (useRAF) {
-        cancelAnimationFrame(timerId.current);
-        return requestAnimationFrame(pendingFunc);
-      }
-      return setTimeout(pendingFunc, wait);
+      if (useRAF) cancelAnimationFrame(timerId.current);
+      timerId.current = useRAF ? requestAnimationFrame(pendingFunc) : setTimeout(pendingFunc, wait);
     },
     [useRAF]
   );
@@ -112,7 +109,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
     const remainingWait = maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
 
     // Restart the timer
-    timerId.current = startTimer(timerExpired, remainingWait);
+    startTimer(timerExpired, remainingWait);
   }, [maxWait, maxing, shouldInvoke, startTimer, trailingEdge, wait]);
 
   const cancel = useCallback(() => {
@@ -148,18 +145,18 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
           // Reset any `maxWait` timer.
           lastInvokeTime.current = lastCallTime.current;
           // Start the timer for the trailing edge.
-          timerId.current = startTimer(timerExpired, wait);
+          startTimer(timerExpired, wait);
           // Invoke the leading edge.
           return leading ? invokeFunc(lastCallTime.current) : result.current;
         }
         if (maxing) {
           // Handle invocations in a tight loop.
-          timerId.current = startTimer(timerExpired, wait);
+          startTimer(timerExpired, wait);
           return invokeFunc(lastCallTime.current);
         }
       }
       if (!timerId.current) {
-        timerId.current = startTimer(timerExpired, wait);
+        startTimer(timerExpired, wait);
       }
       return result.current;
     },

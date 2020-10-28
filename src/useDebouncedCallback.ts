@@ -49,8 +49,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
 
     lastArgs.current = lastThis.current = null;
     lastInvokeTime.current = time;
-    result.current = funcRef.current.apply(thisArg, args);
-    return result.current;
+    return (result.current = funcRef.current.apply(thisArg, args));
   }, []);
 
   const startTimer = useCallback(

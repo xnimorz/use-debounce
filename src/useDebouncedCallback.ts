@@ -37,7 +37,10 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function');
   }
+
   wait = +wait || 0;
+  options = options || {};
+
   const leading = !!options.leading;
   const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
   const maxing = 'maxWait' in options;

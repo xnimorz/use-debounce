@@ -19,7 +19,7 @@ export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> ext
 export default function useDebouncedCallback<T extends (...args: any[]) => ReturnType<T>>(
   func: T,
   wait: number,
-  options: Options = { leading: false, trailing: true }
+  options?: Options
 ): DebouncedState<T> {
   const lastCallTime = useRef(null);
   const lastInvokeTime = useRef(0);
@@ -39,7 +39,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   }
   wait = +wait || 0;
   const leading = !!options.leading;
-  const trailing = 'trailing' in options ? !!options.trailing : true;
+  const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
   const maxing = 'maxWait' in options;
   const maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : null;
 

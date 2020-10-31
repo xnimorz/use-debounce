@@ -212,9 +212,9 @@ function Component({ text }) {
 }
 ```
 
-#### leading calls
+#### leading/trailing calls
 
-Both `useDebounce` and `useDebouncedCallback` work with the `leading` option. This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires.
+Both `useDebounce` and `useDebouncedCallback` work with the `leading` and `trailing` options. `leading` param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. `trailing` option controls whenever to call the callback after timeout again.
 
 For more information on how leading debounce calls work see: https://lodash.com/docs/#debounce
 
@@ -251,4 +251,5 @@ You can provide additional options as a third argument to both `useDebounce` and
 | ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | maxWait    | -                             | Describes the maximum time func is allowed to be delayed before it's invoked                                                     | https://github.com/xnimorz/use-debounce#cancel-maxwait-and-memoization |
 | leading    | -                             | This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. | https://github.com/xnimorz/use-debounce#leading-calls                  |
+| trailing   | true                          | This param executes the function after timeout. | https://github.com/xnimorz/use-debounce#leading-calls                  |
 | equalityFn | (prev, next) => prev === next | Comparator function which shows if timeout should be started                                                                     |                                                                        |

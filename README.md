@@ -141,6 +141,40 @@ function ScrolledComponent() {
 }
 ```
 
+### Returned value from `debounced.callback`
+
+Subsequent calls to the debounced function `debounced.callback` return the result of the last func invocation.
+Note, that if there are no previous invocations it's mean you will get undefined. You should check it in your code properly.
+
+Example:
+
+```javascript
+it('Subsequent calls to the debounced function `debounced.callback` return the result of the last func invocation.', () => {
+  const callback = jest.fn(() => 42);
+
+  let callbackCache;
+  function Component() {
+    const debounced = useDebouncedCallback(callback, 1000);
+    callbackCache = debounced.callback;
+    return null;
+  }
+  Enzyme.mount(<Component />);
+
+  const result = callbackCache();
+  expect(callback.mock.calls.length).toBe(0);
+  expect(result).toBeUndefined();
+
+  act(() => {
+    jest.runAllTimers();
+  });
+  expect(callback.mock.calls.length).toBe(1);
+  const subsequentResult = callbackCache();
+
+  expect(callback.mock.calls.length).toBe(1);
+  expect(subsequentResult).toBe(42);
+});
+```
+
 ### Advanced usage
 
 #### Cancel, maxWait and memoization

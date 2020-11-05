@@ -12,6 +12,10 @@ export interface ControlFunctions {
   pending: () => boolean;
 }
 
+/**
+ * Subsequent calls to the debounced function `debounced.callback` return the result of the last func invocation.
+ * Note, that if there are no previous invocations it's mean you will get undefined. You should check it in your code properly.
+ */
 export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> extends ControlFunctions {
   callback: (...args: Parameters<T>) => ReturnType<T>;
 }

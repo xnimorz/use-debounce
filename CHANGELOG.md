@@ -2,6 +2,30 @@
 
 - Add size-limit and configure it for esm modules. Now the size of the whole library is limited within 1 KB (thanks to [@omgovich](https://github.com/omgovich))
 - Add an [export map](https://docs.skypack.dev/package-authors/package-checks#export-map) to your package.json. (thanks to [@omgovich](https://github.com/omgovich))
+- Reduce bundle size (thanks to [@omgovich](https://github.com/omgovich)):
+  Before:
+  ```
+  esm/index.js  
+  Size:       908 B with all dependencies, minified and gzipped
+
+  esm/index.js  
+  Size:       873 B with all dependencies, minified and gzipped
+
+  esm/index.js  
+  Size:       755 B with all dependencies, minified and gzipped
+  ```
+  Now:
+  ```
+  esm/index.js  
+  Size:       826 B with all dependencies, minified and gzipped
+  
+  esm/index.js  
+  Size:       790 B with all dependencies, minified and gzipped
+  
+  esm/index.js  
+  Size:       675 B with all dependencies, minified and gzipped
+  ```
+- Add notes about subsequent calls: 
 
 ## 5.0.1
 

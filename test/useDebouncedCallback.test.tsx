@@ -89,6 +89,31 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(3);
   });
 
+  it('Subsequent calls to the debounced function `debounced.callback` return the result of the last func invocation.', () => {
+    const callback = jest.fn(() => 42);
+
+    let callbackCache;
+    function Component() {
+      const debounced = useDebouncedCallback(callback, 1000);
+      callbackCache = debounced.callback;
+      return null;
+    }
+    Enzyme.mount(<Component />);
+
+    const result = callbackCache();
+    expect(callback.mock.calls.length).toBe(0);
+    expect(result).toBeUndefined();
+
+    act(() => {
+      jest.runAllTimers();
+    });
+    expect(callback.mock.calls.length).toBe(1);
+    const subsequentResult = callbackCache();
+
+    expect(callback.mock.calls.length).toBe(1);
+    expect(subsequentResult).toBe(42);
+  });
+
   it('will call a second leading callback if no debounced callbacks are pending with trailing false', () => {
     const callback = jest.fn();
 

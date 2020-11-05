@@ -1,20 +1,35 @@
-# useDebounce react hook
+<div align="center">
+  <a href="https://www.npmjs.com/package/use-debounce">
+    <img src="logo.png" width="500" alt="use-debounce" />
+  </a>
+</div>
 
-It provides:
+<div align="center">
+  <a href="https://www.npmjs.com/package/use-debounce">
+    <img alt="npm" src="https://img.shields.io/npm/v/use-debounce.svg?labelColor=49516F&color=8994BC" />
+  </a>
+  <a href="https://npmjs.org/package/use-debounce">
+    <img alt="downloads" src="https://badgen.net/npm/dm/use-debounce?labelColor=49516F&color=8994BC" />
+  </a>
+  <a href="https://bundlephobia.com/result?p=use-debounce">
+    <img alt="tree-shakeable" src="https://badgen.net/bundlephobia/tree-shaking/use-debounce?labelColor=49516F&color=8994BC" />
+  </a>
+  <a href="https://npmjs.org/package/use-debounce">
+    <img alt="types included" src="https://badgen.net/npm/types/use-debounce?labelColor=49516F&color=8994BC" />
+  </a>
+</div>
+
+## Features
 
 - [classic debounced callback](#debounced-callbacks)
 - [**value** debouncing](#simple-values-debouncing)
 - [cancel, maxWait and memoization](#advanced-usage)
 
-Install it with yarn:
+## Install
 
-```
+```sh
 yarn add use-debounce
-```
-
-Or with npm:
-
-```
+# or
 npm i use-debounce --save
 ```
 
@@ -27,7 +42,7 @@ More complex example with searching for matching countries using debounced input
 
 ## Changelog
 
-https://github.com/xnimorz/use-debounce/blob/master/CHANGELOG.md 
+https://github.com/xnimorz/use-debounce/blob/master/CHANGELOG.md
 
 ## Simple values debouncing
 
@@ -251,5 +266,5 @@ You can provide additional options as a third argument to both `useDebounce` and
 | ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | maxWait    | -                             | Describes the maximum time func is allowed to be delayed before it's invoked                                                     | https://github.com/xnimorz/use-debounce#cancel-maxwait-and-memoization |
 | leading    | -                             | This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. | https://github.com/xnimorz/use-debounce#leading-calls                  |
-| trailing   | true                          | This param executes the function after timeout. | https://github.com/xnimorz/use-debounce#leading-calls                  |
+| trailing   | true                          | This param executes the function after timeout.                                                                                  | https://github.com/xnimorz/use-debounce#leading-calls                  |
 | equalityFn | (prev, next) => prev === next | Comparator function which shows if timeout should be started                                                                     |                                                                        |

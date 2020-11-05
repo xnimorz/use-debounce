@@ -1,7 +1,9 @@
-## next (not published yet)
+## 5.0.2
 
 - Add size-limit and configure it for esm modules. Now the size of the whole library is limited within 1 KB (thanks to [@omgovich](https://github.com/omgovich))
+
 - Add an [export map](https://docs.skypack.dev/package-authors/package-checks#export-map) to your package.json. (thanks to [@omgovich](https://github.com/omgovich))
+
 - Reduce bundle size (thanks to [@omgovich](https://github.com/omgovich)):
   Before:
   ```
@@ -25,7 +27,11 @@
   esm/index.js  
   Size:       675 B with all dependencies, minified and gzipped
   ```
-- Add notes about subsequent calls: 
+
+- Add notes about returned value from `debounced.callback` and its subsequent calls: https://github.com/xnimorz/use-debounce#returned-value-from-debouncedcallback
+
+- Add project logo (thanks to [@omgovich](https://github.com/omgovich)):
+<img src="logo.png" width="500" alt="use-debounce" />
 
 ## 5.0.1
 

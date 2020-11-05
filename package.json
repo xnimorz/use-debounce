@@ -7,8 +7,8 @@
   "types": "./lib",
   "exports": {
     ".": {
-      "import": "./dist/index.module.js",
-      "require": "./dist/index.js"
+      "import": "./esm/index.js",
+      "require": "./lib/index.js"
     }
   },
   "sideEffects": false,

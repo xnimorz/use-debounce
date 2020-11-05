@@ -1,3 +1,7 @@
+## 5.0.3
+
+- Fix the export map (https://github.com/xnimorz/use-debounce/issues/84);
+
 ## 5.0.2
 
 - Add size-limit and configure it for esm modules. Now the size of the whole library is limited within 1 KB (thanks to [@omgovich](https://github.com/omgovich))

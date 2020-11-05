@@ -401,7 +401,7 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(1);
   });
 
-  it('won\t call pending callback if callPending function is called and there are no items in queue', () => {
+  it("won't call pending callback if callPending function is called and there are no items in queue", () => {
     const callback = jest.fn();
 
     function Component({ text }) {
@@ -424,7 +424,7 @@ describe('useDebouncedCallback', () => {
     expect(tree.text()).toBe('test');
   });
 
-  it('won\t call pending callback if callPending function is called and cancel method is also executed', () => {
+  it("won't call pending callback if callPending function is called and cancel method is also executed", () => {
     const callback = jest.fn();
 
     function Component({ text }) {
@@ -662,5 +662,29 @@ describe('useDebouncedCallback', () => {
       return <span>{text}</span>;
     }
     Enzyme.mount(<Component text="one" />);
+  });
+
+  it("returns a promise which resolves when function is executed or rejects when function isn't executed with this call", () => {
+    const callback = jest.fn(() => 'executed');
+
+    let debouncedCallback;
+    function Component() {
+      const debounced = useDebouncedCallback(callback, 1000);
+      debouncedCallback = debounced.callback;
+      return null;
+    }
+    Enzyme.mount(<Component />);
+
+    expect(callback.mock.calls.length).toBe(0);
+
+    const resultFirst = debouncedCallback();
+    const resultSecond = debouncedCallback();
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(callback.mock.calls.length).toBe(1);
+    expect(resultFirst).rejects.toThrow(undefined);
+    expect(resultSecond).resolves.toBe('executed');
   });
 });

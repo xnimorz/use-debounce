@@ -12,10 +12,27 @@ export interface ControlFunctions {
   pending: () => boolean;
 }
 
+/**
+ * Each time you call `debounced.callback` a promise will be returned.
+ * This promise can be either fulfilled or rejected. The promise will be resolved when this function call is executed
+ * otherwise if another `debounced.callback` is called before wait time exceeds, the previous promise will be rejected.
+ */
 export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> extends ControlFunctions {
-  callback: (...args: Parameters<T>) => ReturnType<T>;
+  callback: (...args: Parameters<T>) => Promise<ReturnType<T>>;
 }
 
+interface LastResult<T extends (...args: any[]) => ReturnType<T>> {
+  resolve: (result: ReturnType<T>) => unknown;
+  reject: () => unknown;
+  output: ReturnType<T>;
+}
+
+/**
+ *
+ * @param func the function which is going to be debounced.
+ * @param wait
+ * @param options
+ */
 export default function useDebouncedCallback<T extends (...args: any[]) => ReturnType<T>>(
   func: T,
   wait: number,
@@ -26,7 +43,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
   const lastThis = useRef();
-  const result = useRef();
+  const result = useRef<LastResult<T>>();
   const funcRef = useRef(func);
   const mounted = useRef(true);
   funcRef.current = func;
@@ -52,7 +69,10 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
 
     lastArgs.current = lastThis.current = null;
     lastInvokeTime.current = time;
-    return (result.current = funcRef.current.apply(thisArg, args));
+
+    const output = funcRef.current.apply(thisArg, args);
+    result.current.resolve(output);
+    return (result.current.output = output);
   }, []);
 
   const startTimer = useCallback(
@@ -93,7 +113,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
         return invokeFunc(time);
       }
       lastArgs.current = lastThis.current = null;
-      return result.current;
+      return result.current.output;
     },
     [invokeFunc, trailing]
   );
@@ -123,7 +143,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   }, [useRAF]);
 
   const flush = useCallback(() => {
-    return !timerId.current ? result.current : trailingEdge(Date.now());
+    return !timerId.current ? result.current && result.current.output : trailingEdge(Date.now());
   }, [trailingEdge]);
 
   useEffect(() => {
@@ -134,9 +154,20 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   }, []);
 
   const debounced = useCallback(
-    (...args: Parameters<T>): ReturnType<T> => {
+    (...args: Parameters<T>): Promise<ReturnType<T>> => {
       const time = Date.now();
       const isInvoking = shouldInvoke(time);
+
+      if (result.current) {
+        result.current.reject();
+      }
+      const promise = new Promise<ReturnType<T>>((resolve, reject) => {
+        result.current = {
+          resolve,
+          reject,
+          output: null,
+        };
+      });
 
       lastArgs.current = args;
       lastThis.current = this;
@@ -149,18 +180,23 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
           // Start the timer for the trailing edge.
           startTimer(timerExpired, wait);
           // Invoke the leading edge.
-          return leading ? invokeFunc(lastCallTime.current) : result.current;
+
+          if (leading) {
+            invokeFunc(lastCallTime.current);
+          }
+          return promise;
         }
         if (maxing) {
           // Handle invocations in a tight loop.
           startTimer(timerExpired, wait);
-          return invokeFunc(lastCallTime.current);
+          invokeFunc(lastCallTime.current);
+          return promise;
         }
       }
       if (!timerId.current) {
         startTimer(timerExpired, wait);
       }
-      return result.current;
+      return promise;
     },
     [invokeFunc, leading, maxing, shouldInvoke, startTimer, timerExpired, wait]
   );

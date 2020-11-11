@@ -6,6 +6,7 @@
   "module": "esm/index.js",
   "types": "./lib",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
       "import": "./esm/index.js",
       "require": "./lib/index.js"

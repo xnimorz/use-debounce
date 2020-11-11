@@ -1,3 +1,7 @@
+## 5.0.4
+
+- Add an export for React Native
+
 ## 5.0.3
 
 - Fix the export map (https://github.com/xnimorz/use-debounce/issues/84);

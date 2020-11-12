@@ -22,7 +22,7 @@ export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> ext
 
 export default function useDebouncedCallback<T extends (...args: any[]) => ReturnType<T>>(
   func: T,
-  wait: number,
+  wait?: number,
   options?: Options
 ): DebouncedState<T> {
   const lastCallTime = useRef(null);

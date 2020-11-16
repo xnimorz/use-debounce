@@ -1,6 +1,6 @@
 {
   "name": "use-debounce",
-  "version": "5.0.4",
+  "version": "5.1.0",
   "description": "Debounce hook for react",
   "main": "lib/index.js",
   "module": "esm/index.js",

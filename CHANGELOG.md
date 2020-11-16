@@ -1,3 +1,7 @@
+## 5.1.0
+
+— `wait` param is optional. If you don't provide a wait argument, use-debounce will postpone a callback with requestAnimationFrame if it's in browser environment, or through setTimeout(..., 0) otherwise.
+
 ## 5.0.4
 
 - Add an export for React Native

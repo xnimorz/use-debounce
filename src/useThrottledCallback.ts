@@ -42,8 +42,8 @@ import useDebouncedCallback, { CallOptions, DebouncedState } from './useDebounce
  * window.addEventListener('scroll', scrollHandler)
  *
  * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
- * const throttled = useThrottledCallback(renewToken, 300000, { 'trailing': false })
- * <button onClick={throttled}>click</button>
+ * const { callback } = useThrottledCallback(renewToken, 300000, { 'trailing': false })
+ * <button onClick={callback}>click</button>
  *
  * // Cancel the trailing throttled invocation.
  * window.addEventListener('popstate', throttled.cancel);

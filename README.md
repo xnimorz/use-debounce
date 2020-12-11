@@ -302,3 +302,41 @@ You can provide additional options as a third argument to both `useDebounce` and
 | leading    | -                             | This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. | https://github.com/xnimorz/use-debounce#leading-calls                  |
 | trailing   | true                          | This param executes the function after timeout.                                                                                  | https://github.com/xnimorz/use-debounce#leading-calls                  |
 | equalityFn | (prev, next) => prev === next | Comparator function which shows if timeout should be started                                                                     |                                                                        |
+
+## useThrottledCallback
+
+You are able to use throttled callback with this library also (starting 5.2.0 version).
+For this purpose use:
+
+```
+import useThrottledCallback from 'use-debounce/useThrottledCallback';
+```
+
+or
+
+```
+import { useThrottledCallback } from 'use-debounce';
+```
+
+Several examples:
+
+1. Avoid excessively updating the position while scrolling.
+
+   ```js
+   const scrollHandler = useThrottledCallback(updatePosition, 100);
+   window.addEventListener('scroll', scrollHandler);
+   ```
+
+2. Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
+   ```js
+   const throttled = useThrottledCallback(renewToken, 300000, { 'trailing': false })
+   <button onClick={throttled}>click</button>
+   ```
+
+All the params for `useThrottledCallback` are the same as for `useDebouncedCallback` except `maxWait` option. As it's not needed for throttle callbacks.
+
+# Special thanks:
+
+[@tryggvigy](https://github.com/tryggvigy) — for managing lots of new features of the library like trailing and leading params, throttle callback, etc;
+
+[@omgovich](https://github.com/omgovich) — for reducing bundle size.

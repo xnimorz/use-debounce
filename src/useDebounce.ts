@@ -1,8 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, Dispatch } from 'react';
 import useDebouncedCallback, { ControlFunctions } from './useDebouncedCallback';
 
 function valueEquality<T>(left: T, right: T): boolean {
   return left === right;
+}
+
+function adjustFunctionValueOfSetState<T>(value: T): T | (() => T) {
+  return typeof value === 'function' ? () => value : value;
+}
+
+function useStateIgnoreCallback<T>(initialState: T): [T, Dispatch<T>] {
+  const [state, setState] = useState(adjustFunctionValueOfSetState(initialState));
+  const setStateIgnoreCallback = useCallback((value: T) => setState(adjustFunctionValueOfSetState(value)), []);
+  return [state, setStateIgnoreCallback];
 }
 
 export default function useDebounce<T>(
@@ -12,8 +22,8 @@ export default function useDebounce<T>(
 ): [T, ControlFunctions] {
   const eq = (options && options.equalityFn) || valueEquality;
 
-  const [state, dispatch] = useState(value);
-  const debounced = useDebouncedCallback(useCallback((value: T) => dispatch(value), []), delay, options);
+  const [state, dispatch] = useStateIgnoreCallback(value);
+  const debounced = useDebouncedCallback(useCallback((value: T) => dispatch(value), [dispatch]), delay, options);
   const previousValue = useRef(value);
 
   useEffect(() => {

@@ -87,7 +87,7 @@
   New:
 
   ```js
-  const [value, fn] = useDebouncedCallback(/*...*/);
+  const [value, fn] = useDebounce(/*...*/);
   /**
    * value is just a value without changes
    * But fn now is an object: {

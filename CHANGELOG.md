@@ -22,9 +22,10 @@
    *   flush: () => void
    *   isPending: () => boolean
    * }
-   * So you can call debounced.cancel(), debounced.flush(), debounced.isPending()   
+   * So you can call debounced.cancel(), debounced.flush(), debounced.isPending()
    */
   ```
+
   It makes easier to understand which cancel \ flush or isPending is called in case you have several debounced functions in your component
 
 - _breaking change_: Now `useDebounce`, `useDebouncedCallback` and `useThrottledCallback` has `isPending` method instead of `pending`
@@ -54,6 +55,13 @@
 - improve internal typing
 
 - decrease the amount of functions to initialize each `useDebouncedCallback` call
+
+- reduce library size:
+
+  Whole library: from 946 B to 899 B === 47 B
+  useDebounce: from 844 to 791 === 53 B
+  useDebouncedCallback: from 680 to 623 === 57 B
+  useThrottledCallback: from 736 to 680 === 56 B
 
 ## 5.2.1
 

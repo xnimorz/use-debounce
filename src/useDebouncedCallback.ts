@@ -172,7 +172,10 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
     if (shouldInvoke(time)) {
       return trailingEdge(time);
     }
-
+    // https://github.com/xnimorz/use-debounce/issues/97
+    if (!mounted.current) {
+      return;
+    }
     // Remaining wait calculation
     const timeSinceLastCall = time - lastCallTime.current;
     const timeSinceLastInvoke = time - lastInvokeTime.current;

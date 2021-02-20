@@ -1,6 +1,6 @@
 {
   "name": "use-debounce",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "Debounce hook for react",
   "main": "lib/index.js",
   "module": "esm/index.js",
@@ -14,12 +14,12 @@
   },
   "sideEffects": false,
   "scripts": {
-    "size": "yarn build && size-limit",
+    "size": "yarn build:es && size-limit",
     "test": "yarn jest && eslint \"src/**.ts\"",
-    "build": "rm -rf ./lib/* ./esm/* && yarn build:cjs && yarn build:es",
+    "build": "rm -rf ./lib/* ./esm/* && yarn test && yarn size && yarn build:cjs && yarn build:es",
     "build:cjs": "tsc",
     "build:es": "tsc -m esNext --outDir esm",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "yarn build"
   },
   "engines": {
     "node": ">= 10.0.0"

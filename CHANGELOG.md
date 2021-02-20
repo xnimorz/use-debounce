@@ -1,3 +1,8 @@
+## 5.2.1
+
+- prevent having ininite setTimeout setup when component gets unmounted https://github.com/xnimorz/use-debounce/issues/97
+- function type works correctly with `useDebounce` now. https://github.com/xnimorz/use-debounce/pull/95 Thanks to [@csu-feizao](https://github.com/csu-feizao)
+
 ## 5.2.0
 
 - Added `useThrottledCallback`

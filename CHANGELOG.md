@@ -1,11 +1,38 @@
 ## 6.0.0
 
+- _breakind change_: removed `callback` field, instead of this `useDebouncedCallback` and `useThrottledCallback` returns a callable function:
+  Old:
+
+  ```js
+  const { callback, pending } = useDebouncedCallback(/*...*/);
+  // ...
+  debounced.callback();
+  ```
+
+  New:
+
+  ```js
+  const debounced = useDebouncedCallback(/*...*/);
+  // ...
+  debounced();
+  /**
+   * Also debounced has fields:
+   * {
+   *   cancel: () => void
+   *   flush: () => void
+   *   isPending: () => boolean
+   * }
+   * So you can call debounced.cancel(), debounced.flush(), debounced.isPending()   
+   */
+  ```
+  It makes easier to understand which cancel \ flush or isPending is called in case you have several debounced functions in your component
+
 - _breaking change_: Now `useDebounce`, `useDebouncedCallback` and `useThrottledCallback` has `isPending` method instead of `pending`
 
   Old:
 
   ```js
-  const {callback, pending} = useDebouncedCallback(/*...*/);
+  const { callback, pending } = useDebouncedCallback(/*...*/);
   ```
 
   New:
@@ -21,6 +48,12 @@
    * }
    */
   ```
+
+- get rid of `useCallback` calls
+
+- improve internal typing
+
+- decrease the amount of functions to initialize each `useDebouncedCallback` call
 
 ## 5.2.1
 
@@ -51,32 +84,35 @@
 
 - Reduce bundle size (thanks to [@omgovich](https://github.com/omgovich)):
   Before:
+
   ```
-  esm/index.js  
+  esm/index.js
   Size:       908 B with all dependencies, minified and gzipped
 
-  esm/index.js  
+  esm/index.js
   Size:       873 B with all dependencies, minified and gzipped
 
-  esm/index.js  
+  esm/index.js
   Size:       755 B with all dependencies, minified and gzipped
   ```
+
   Now:
+
   ```
-  esm/index.js  
+  esm/index.js
   Size:       826 B with all dependencies, minified and gzipped
-  
-  esm/index.js  
+
+  esm/index.js
   Size:       790 B with all dependencies, minified and gzipped
-  
-  esm/index.js  
+
+  esm/index.js
   Size:       675 B with all dependencies, minified and gzipped
   ```
 
 - Add notes about returned value from `debounced.callback` and its subsequent calls: https://github.com/xnimorz/use-debounce#returned-value-from-debouncedcallback
 
 - Add project logo (thanks to [@omgovich](https://github.com/omgovich)):
-<img src="logo.png" width="500" alt="use-debounce" />
+  <img src="logo.png" width="500" alt="use-debounce" />
 
 ## 5.0.1
 

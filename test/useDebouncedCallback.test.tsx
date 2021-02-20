@@ -13,7 +13,7 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       const debounced = useDebouncedCallback(callback, 1000);
-      debounced.callback();
+      debounced();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -32,7 +32,7 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       const debounced = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
-      debounced.callback();
+      debounced();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -51,8 +51,8 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       const debounced = useDebouncedCallback(callback, 1000, { leading: true });
-      debounced.callback();
-      debounced.callback();
+      debounced();
+      debounced();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -71,10 +71,10 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       const debounced = useDebouncedCallback(callback, 1000, { leading: true });
-      debounced.callback();
-      debounced.callback();
+      debounced();
+      debounced();
       setTimeout(() => {
-        debounced.callback();
+        debounced();
       }, 1001);
       return null;
     }
@@ -95,7 +95,7 @@ describe('useDebouncedCallback', () => {
     let callbackCache;
     function Component() {
       const debounced = useDebouncedCallback(callback, 1000);
-      callbackCache = debounced.callback;
+      callbackCache = debounced;
       return null;
     }
     Enzyme.mount(<Component />);
@@ -119,9 +119,9 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       const debounced = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
-      debounced.callback();
+      debounced();
       setTimeout(() => {
-        debounced.callback();
+        debounced();
       }, 1001);
       return null;
     }
@@ -143,7 +143,7 @@ describe('useDebouncedCallback', () => {
       // trailing is true by default
       const debounced = useDebouncedCallback(callback, 1000, { leading: true });
 
-      debounced.callback();
+      debounced();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -163,8 +163,8 @@ describe('useDebouncedCallback', () => {
     function Component() {
       // trailing is true by default
       const debounced = useDebouncedCallback(callback, 1000, { leading: true });
-      debounced.callback();
-      debounced.callback();
+      debounced();
+      debounced();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -200,22 +200,22 @@ describe('useDebouncedCallback', () => {
     function Component() {
       const debounced = useDebouncedCallback(callback, 200, options);
 
-      debounced.callback();
+      debounced();
       expect(callback.mock.calls.length).toBe(_0);
 
       setTimeout(() => {
         expect(callback.mock.calls.length).toBe(_190);
-        debounced.callback();
+        debounced();
       }, 191);
 
       setTimeout(() => {
         expect(callback.mock.calls.length).toBe(_200);
-        debounced.callback();
+        debounced();
       }, 201);
 
       setTimeout(() => {
         expect(callback.mock.calls.length).toBe(_210);
-        debounced.callback();
+        debounced();
       }, 211);
 
       setTimeout(() => {
@@ -238,9 +238,9 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       const debounced = useDebouncedCallback(callback, 1000);
-      debounced.callback('Wrong param');
+      debounced('Wrong param');
       setTimeout(() => {
-        debounced.callback('Right param');
+        debounced('Right param');
       }, 500);
       return null;
     }
@@ -263,7 +263,7 @@ describe('useDebouncedCallback', () => {
 
     function Component() {
       const debounced = useDebouncedCallback(callback, 1000);
-      debounced.callback();
+      debounced();
       setTimeout(debounced.cancel, 500);
       return null;
     }
@@ -287,7 +287,7 @@ describe('useDebouncedCallback', () => {
         ),
         1000
       );
-      return <button onClick={debounced.callback} />;
+      return <button onClick={debounced} />;
     }
     const tree = Enzyme.mount(<Component text="Wrong param" />);
 
@@ -311,7 +311,7 @@ describe('useDebouncedCallback', () => {
         ),
         1000
       );
-      return <button onClick={debounced.callback} />;
+      return <button onClick={debounced} />;
     }
     const tree = Enzyme.mount(<Component text="Right param" />);
 
@@ -329,7 +329,7 @@ describe('useDebouncedCallback', () => {
 
     function Component({ text }) {
       const debounced = useDebouncedCallback(callback, 500, { maxWait: 600 });
-      debounced.callback(text);
+      debounced(text);
       return <span>{text}</span>;
     }
     const tree = Enzyme.mount(<Component text="Wrong Value" />);
@@ -349,7 +349,7 @@ describe('useDebouncedCallback', () => {
 
     function Component({ text }) {
       const debounced = useDebouncedCallback(callback, 500, { maxWait: 600 });
-      debounced.callback();
+      debounced();
       return <span>{text}</span>;
     }
     const tree = Enzyme.mount(<Component text="one" />);
@@ -377,7 +377,7 @@ describe('useDebouncedCallback', () => {
 
     function Component({ text }) {
       const debounced = useDebouncedCallback(callback, 500, { maxWait: 600 });
-      debounced.callback();
+      debounced();
       if (text === 'test') {
         debounced.cancel();
       }
@@ -408,7 +408,7 @@ describe('useDebouncedCallback', () => {
 
     function Component({ text }) {
       const debounced = useDebouncedCallback(callback, 500);
-      debounced.callback();
+      debounced();
       if (text === 'test') {
         debounced.flush();
       }
@@ -454,7 +454,7 @@ describe('useDebouncedCallback', () => {
 
     function Component({ text }) {
       const debounced = useDebouncedCallback(callback, 500);
-      debounced.callback();
+      debounced();
       if (text === 'test') {
         debounced.cancel();
         debounced.flush();
@@ -480,7 +480,7 @@ describe('useDebouncedCallback', () => {
     function Component({ text }) {
       const debounced = useDebouncedCallback(callback, 500);
 
-      debounced.callback();
+      debounced();
       useEffect(() => {
         return debounced.flush;
       }, []);
@@ -505,9 +505,9 @@ describe('useDebouncedCallback', () => {
       const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
 
       if (debouncedCallbackCached) {
-        expect(debounced.callback).toBe(debouncedCallbackCached);
+        expect(debounced).toBe(debouncedCallbackCached);
       }
-      debouncedCallbackCached = debounced.callback;
+      debouncedCallbackCached = debounced;
 
       return <span>{text}</span>;
     }
@@ -530,12 +530,12 @@ describe('useDebouncedCallback', () => {
 
       if (debouncedCallbackCached) {
         if (timeoutCached === timeout) {
-          expect(debounced.callback).toBe(debouncedCallbackCached);
+          expect(debounced).toBe(debouncedCallbackCached);
         } else {
-          expect(debounced.callback).not.toBe(debouncedCallbackCached);
+          expect(debounced).not.toBe(debouncedCallbackCached);
         }
       }
-      debouncedCallbackCached = debounced.callback;
+      debouncedCallbackCached = debounced;
       timeoutCached = timeout;
 
       return <span>{text}</span>;
@@ -562,10 +562,10 @@ describe('useDebouncedCallback', () => {
 
       useEffect(() => {
         // this useEffect should be called only once
-        debounced.callback(counter.current);
+        debounced(counter.current);
 
         counter.current = counter.current + 1;
-      }, [debounced.callback]);
+      }, [debounced]);
 
       return null;
     }
@@ -599,12 +599,12 @@ describe('useDebouncedCallback', () => {
 
       if (debouncedCallbackCached) {
         if (cachedObj.delay === delay && cachedObj.maxWait === maxWait) {
-          expect(debounced.callback).toBe(debouncedCallbackCached);
+          expect(debounced).toBe(debouncedCallbackCached);
         } else {
-          expect(debounced.callback).not.toBe(debouncedCallbackCached);
+          expect(debounced).not.toBe(debouncedCallbackCached);
         }
       }
-      debouncedCallbackCached = debounced.callback;
+      debouncedCallbackCached = debounced;
       cachedObj = { text, maxWait, delay };
 
       return <span>{text}</span>;
@@ -679,7 +679,7 @@ describe('useDebouncedCallback', () => {
       const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
 
       expect(debounced.isPending()).toBeFalsy();
-      debounced.callback();
+      debounced();
       expect(debounced.isPending()).toBeTruthy();
       debounced.flush();
       expect(debounced.isPending()).toBeFalsy();

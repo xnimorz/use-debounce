@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 
 export interface CallOptions {
   leading?: boolean;
@@ -20,7 +20,7 @@ export interface ControlFunctions {
  * Note, that if there are no previous invocations it's mean you will get undefined. You should check it in your code properly.
  */
 export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> extends ControlFunctions {
-  callback: (...args: Parameters<T>) => ReturnType<T>;
+  (...args: Parameters<T>): ReturnType<T>;
 }
 
 /**
@@ -54,12 +54,12 @@ export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> ext
  *  The number of milliseconds to delay; if omitted, `requestAnimationFrame` is
  *  used (if available, otherwise it will be setTimeout(...,0)).
  * @param {Object} [options={}] The options object.
- * @param {boolean} [options.leading=false]
  *  Specify invoking on the leading edge of the timeout.
- * @param {number} [options.maxWait]
+ * @param {boolean} [options.leading=false]
  *  The maximum time `func` is allowed to be delayed before it's invoked.
- * @param {boolean} [options.trailing=true]
+ * @param {number} [options.maxWait]
  *  Specify invoking on the trailing edge of the timeout.
+ * @param {boolean} [options.trailing=true]
  * @returns {Function} Returns the new debounced function.
  * @example
  *
@@ -94,10 +94,11 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   const lastInvokeTime = useRef(0);
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
-  const lastThis = useRef();
-  const result = useRef();
+  const lastThis = useRef<unknown>();
+  const result = useRef<ReturnType<T>>();
   const funcRef = useRef(func);
   const mounted = useRef(true);
+
   funcRef.current = func;
 
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
@@ -115,25 +116,39 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   const maxing = 'maxWait' in options;
   const maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : null;
 
-  const invokeFunc = useCallback((time) => {
-    const args = lastArgs.current;
-    const thisArg = lastThis.current;
-
-    lastArgs.current = lastThis.current = null;
-    lastInvokeTime.current = time;
-    return (result.current = funcRef.current.apply(thisArg, args));
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
   }, []);
 
-  const startTimer = useCallback(
-    (pendingFunc, wait) => {
+  // You may have a question, why we have so many code under the useMemo definition.
+  //
+  // This was made as we want to escape from useCallback hell and
+  // not to initialize a number of functions each time useDebouncedCallback is called.
+  //
+  // It means that we have less garbage for our GC calls which improves performance.
+  // Also, it makes this library smaller.
+  //
+  // And the last reason, that the code without lots of useCallback with deps is easier to read.
+  // You have only one place for that.
+  const debounced = useMemo(() => {
+    const invokeFunc = (time: number) => {
+      const args = lastArgs.current;
+      const thisArg = lastThis.current;
+
+      lastArgs.current = lastThis.current = null;
+      lastInvokeTime.current = time;
+      return (result.current = funcRef.current.apply(thisArg, args));
+    };
+
+    const startTimer = (pendingFunc: () => void, wait: number) => {
       if (useRAF) cancelAnimationFrame(timerId.current);
       timerId.current = useRAF ? requestAnimationFrame(pendingFunc) : setTimeout(pendingFunc, wait);
-    },
-    [useRAF]
-  );
+    };
 
-  const shouldInvoke = useCallback(
-    (time) => {
+    const shouldInvoke = (time: number) => {
       if (!mounted.current) return false;
 
       const timeSinceLastCall = time - lastCallTime.current;
@@ -148,12 +163,9 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
         timeSinceLastCall < 0 ||
         (maxing && timeSinceLastInvoke >= maxWait)
       );
-    },
-    [maxWait, maxing, wait]
-  );
+    };
 
-  const trailingEdge = useCallback(
-    (time) => {
+    const trailingEdge = (time: number) => {
       timerId.current = null;
 
       // Only invoke if we have `lastArgs` which means `func` has been
@@ -163,50 +175,28 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       }
       lastArgs.current = lastThis.current = null;
       return result.current;
-    },
-    [invokeFunc, trailing]
-  );
-
-  const timerExpired = useCallback(() => {
-    const time = Date.now();
-    if (shouldInvoke(time)) {
-      return trailingEdge(time);
-    }
-    // https://github.com/xnimorz/use-debounce/issues/97
-    if (!mounted.current) {
-      return;
-    }
-    // Remaining wait calculation
-    const timeSinceLastCall = time - lastCallTime.current;
-    const timeSinceLastInvoke = time - lastInvokeTime.current;
-    const timeWaiting = wait - timeSinceLastCall;
-    const remainingWait = maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
-
-    // Restart the timer
-    startTimer(timerExpired, remainingWait);
-  }, [maxWait, maxing, shouldInvoke, startTimer, trailingEdge, wait]);
-
-  const cancel = useCallback(() => {
-    if (timerId.current) {
-      useRAF ? cancelAnimationFrame(timerId.current) : clearTimeout(timerId.current);
-    }
-    lastInvokeTime.current = 0;
-    lastArgs.current = lastCallTime.current = lastThis.current = timerId.current = null;
-  }, [useRAF]);
-
-  const flush = useCallback(() => {
-    return !timerId.current ? result.current : trailingEdge(Date.now());
-  }, [trailingEdge]);
-
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
     };
-  }, []);
 
-  const debounced = useCallback(
-    (...args: Parameters<T>): ReturnType<T> => {
+    const timerExpired = () => {
+      const time = Date.now();
+      if (shouldInvoke(time)) {
+        return trailingEdge(time);
+      }
+      // https://github.com/xnimorz/use-debounce/issues/97
+      if (!mounted.current) {
+        return;
+      }
+      // Remaining wait calculation
+      const timeSinceLastCall = time - lastCallTime.current;
+      const timeSinceLastInvoke = time - lastInvokeTime.current;
+      const timeWaiting = wait - timeSinceLastCall;
+      const remainingWait = maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
+
+      // Restart the timer
+      startTimer(timerExpired, remainingWait);
+    };
+
+    const func: DebouncedState<T> = (...args: Parameters<T>): ReturnType<T> => {
       const time = Date.now();
       const isInvoking = shouldInvoke(time);
 
@@ -233,23 +223,26 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
         startTimer(timerExpired, wait);
       }
       return result.current;
-    },
-    [invokeFunc, leading, maxing, shouldInvoke, startTimer, timerExpired, wait]
-  );
+    };
 
-  const isPending = useCallback(() => {
-    return !!timerId.current;
-  }, []);
+    func.cancel = () => {
+      if (timerId.current) {
+        useRAF ? cancelAnimationFrame(timerId.current) : clearTimeout(timerId.current);
+      }
+      lastInvokeTime.current = 0;
+      lastArgs.current = lastCallTime.current = lastThis.current = timerId.current = null;
+    };
 
-  const debouncedState: DebouncedState<T> = useMemo(
-    () => ({
-      callback: debounced,
-      cancel,
-      flush,
-      isPending,
-    }),
-    [debounced, cancel, flush, isPending]
-  );
+    func.isPending = () => {
+      return !!timerId.current;
+    };
 
-  return debouncedState;
+    func.flush = () => {
+      return !timerId.current ? result.current : trailingEdge(Date.now());
+    };
+
+    return func;
+  }, [leading, maxing, wait, maxWait, trailing, useRAF]);
+
+  return debounced;
 }

@@ -324,13 +324,13 @@ Several examples:
 
    ```js
    const scrollHandler = useThrottledCallback(updatePosition, 100);
-   window.addEventListener('scroll', scrollHandler);
+   window.addEventListener('scroll', scrollHandler.callback);
    ```
 
 2. Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
    ```js
    const throttled = useThrottledCallback(renewToken, 300000, { 'trailing': false })
-   <button onClick={throttled}>click</button>
+   <button onClick={throttled.callback}>click</button>
    ```
 
 All the params for `useThrottledCallback` are the same as for `useDebouncedCallback` except `maxWait` option. As it's not needed for throttle callbacks.

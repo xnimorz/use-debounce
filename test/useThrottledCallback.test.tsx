@@ -12,7 +12,7 @@ describe('useThrottledCallback', () => {
 
     function Component() {
       const debounced = useThrottledCallback(callback, 1000, { leading: false, trailing: true });
-      debounced.callback();
+      debounced();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -31,7 +31,7 @@ describe('useThrottledCallback', () => {
 
     function Component() {
       const debounced = useThrottledCallback(callback, 1000, { leading: true, trailing: false });
-      debounced.callback();
+      debounced();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -50,8 +50,8 @@ describe('useThrottledCallback', () => {
 
     function Component() {
       const debounced = useThrottledCallback(callback, 1000, { leading: true });
-      debounced.callback();
-      debounced.callback();
+      debounced();
+      debounced();
       return null;
     }
     Enzyme.mount(<Component />);
@@ -70,10 +70,10 @@ describe('useThrottledCallback', () => {
 
     function Component() {
       const debounced = useThrottledCallback(callback, 1000, { leading: true });
-      debounced.callback();
-      debounced.callback();
+      debounced();
+      debounced();
       setTimeout(() => {
-        debounced.callback();
+        debounced();
       }, 1001);
       return null;
     }

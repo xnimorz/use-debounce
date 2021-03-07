@@ -29,10 +29,10 @@ export default function useDebounce<T>(
   useEffect(() => {
     // We need to use this condition otherwise we will run debounce timer for the first render (including maxWait option)
     if (!eq(previousValue.current, value)) {
-      debounced.callback(value);
+      debounced(value);
       previousValue.current = value;
     }
   }, [value, debounced, eq]);
 
-  return [state, { cancel: debounced.cancel, pending: debounced.pending, flush: debounced.flush }];
+  return [state, { cancel: debounced.cancel, isPending: debounced.isPending, flush: debounced.flush }];
 }

@@ -93,10 +93,10 @@ function Input({ defaultValue }) {
     1000
   );
 
-  // you should use `e => debounced.callback(e.target.value)` as react works with synthetic events
+  // you should use `e => debounced(e.target.value)` as react works with synthetic events
   return (
     <div>
-      <input defaultValue={defaultValue} onChange={(e) => debounced.callback(e.target.value)} />
+      <input defaultValue={defaultValue} onChange={(e) => debounced(e.target.value)} />
       <p>Debounced value: {value}</p>
     </div>
   );
@@ -124,7 +124,7 @@ function ScrolledComponent() {
   );
 
   useEffect(() => {
-    const unsubscribe = subscribe(window, 'scroll', debounced.callback);
+    const unsubscribe = subscribe(window, 'scroll', debounced);
     return () => {
       unsubscribe();
     };
@@ -141,21 +141,21 @@ function ScrolledComponent() {
 }
 ```
 
-### Returned value from `debounced.callback`
+### Returned value from `debounced()`
 
-Subsequent calls to the debounced function `debounced.callback` return the result of the last func invocation.
+Subsequent calls to the debounced function `debounced` return the result of the last func invocation.
 Note, that if there are no previous invocations it's mean you will get undefined. You should check it in your code properly.
 
 Example:
 
 ```javascript
-it('Subsequent calls to the debounced function `debounced.callback` return the result of the last func invocation.', () => {
+it('Subsequent calls to the debounced function `debounced` return the result of the last func invocation.', () => {
   const callback = jest.fn(() => 42);
 
   let callbackCache;
   function Component() {
     const debounced = useDebouncedCallback(callback, 1000);
-    callbackCache = debounced.callback;
+    callbackCache = debounced;
     return null;
   }
   Enzyme.mount(<Component />);
@@ -200,10 +200,10 @@ function Input({ defaultValue }) {
     { maxWait: 2000 }
   );
 
-  // you should use `e => debounced.callback(e.target.value)` as react works with synthetic events
+  // you should use `e => debounced(e.target.value)` as react works with synthetic events
   return (
     <div>
-      <input defaultValue={defaultValue} onChange={(e) => debounced.callback(e.target.value)} />
+      <input defaultValue={defaultValue} onChange={(e) => debounced(e.target.value)} />
       <p>Debounced value: {value}</p>
       <button onClick={debounced.cancel}>Cancel Debounce cycle</button>
     </div>
@@ -239,7 +239,7 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
     [debounced]
   );
 
-  return <input defaultValue={defaultValue} onChange={(e) => debounced.callback(e.target.value)} />;
+  return <input defaultValue={defaultValue} onChange={(e) => debounced(e.target.value)} />;
 }
 ```
 
@@ -252,7 +252,7 @@ function Component({ text }) {
   const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
 
   expect(debounced.pending()).toBeFalsy();
-  debounced.callback();
+  debounced();
   expect(debounced.pending()).toBeTruthy();
   debounced.flush();
   expect(debounced.pending()).toBeFalsy();
@@ -324,13 +324,13 @@ Several examples:
 
    ```js
    const scrollHandler = useThrottledCallback(updatePosition, 100);
-   window.addEventListener('scroll', scrollHandler.callback);
+   window.addEventListener('scroll', scrollHandler);
    ```
 
 2. Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
    ```js
    const throttled = useThrottledCallback(renewToken, 300000, { 'trailing': false })
-   <button onClick={throttled.callback}>click</button>
+   <button onClick={throttled}>click</button>
    ```
 
 All the params for `useThrottledCallback` are the same as for `useDebouncedCallback` except `maxWait` option. As it's not needed for throttle callbacks.

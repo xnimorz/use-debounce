@@ -39,10 +39,9 @@
   New:
 
   ```js
-  const { callback, isPending } = useDebouncedCallback(/*...*/);
+  const { isPending } = useDebouncedCallback(/*...*/);
   /**
    * {
-   *   callback: (...args: any[]) => ReturnType<T>
    *   cancel: () => void
    *   flush: () => void
    *   isPending: () => boolean

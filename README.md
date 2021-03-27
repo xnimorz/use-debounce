@@ -243,19 +243,19 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
 }
 ```
 
-#### Pending method
+#### isPending method
 
-`pending` method shows whether component has pending callbacks. Works for both `useDebounce` and `useDebouncedCallback`:
+`isPending` method shows whether component has pending callbacks. Works for both `useDebounce` and `useDebouncedCallback`:
 
 ```javascript
 function Component({ text }) {
   const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
 
-  expect(debounced.pending()).toBeFalsy();
+  expect(debounced.isPending()).toBeFalsy();
   debounced();
-  expect(debounced.pending()).toBeTruthy();
+  expect(debounced.isPending()).toBeTruthy();
   debounced.flush();
-  expect(debounced.pending()).toBeFalsy();
+  expect(debounced.isPending()).toBeFalsy();
 
   return <span>{text}</span>;
 }

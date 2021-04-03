@@ -20,7 +20,7 @@ export interface ControlFunctions {
  * Note, that if there are no previous invocations it's mean you will get undefined. You should check it in your code properly.
  */
 export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> extends ControlFunctions {
-  (...args: Parameters<T>): ReturnType<T>;
+  (...args: Parameters<T>): ReturnType<T> | undefined;
 }
 
 /**

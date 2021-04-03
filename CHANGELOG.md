@@ -1,3 +1,7 @@
+## 6.0.1
+
+- Fixed `useDebouncedCallback` return type. Closed https://github.com/xnimorz/use-debounce/issues/103 thanks to [@VanTanev](https://github.com/VanTanev)
+
 ## 6.0.0
 
 - _breakind change_: removed `callback` field, instead of this `useDebouncedCallback` and `useThrottledCallback` returns a callable function:

@@ -87,7 +87,7 @@ export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> ext
  */
 export default function useDebouncedCallback<T extends (...args: any[]) => ReturnType<T>>(
   func: T,
-  wait?: number,
+  _wait?: number,
   options?: Options
 ): DebouncedState<T> {
   const lastCallTime = useRef(null);
@@ -98,23 +98,24 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   const result = useRef<ReturnType<T>>();
   const funcRef = useRef(func);
   const mounted = useRef(true);
+  const waitRef = useRef(_wait);
 
   funcRef.current = func;
 
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
-  const useRAF = !wait && wait !== 0 && typeof window !== 'undefined';
+  const useRAF = !waitRef.current && waitRef.current !== 0 && typeof window !== 'undefined';
 
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function');
   }
 
-  wait = +wait || 0;
+  waitRef.current = +waitRef.current || 0;
   options = options || {};
 
   const leading = !!options.leading;
   const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
   const maxing = 'maxWait' in options;
-  const maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : null;
+  const maxWait = maxing ? Math.max(+options.maxWait || 0, waitRef.current) : null;
 
   useEffect(() => {
     mounted.current = true;
@@ -159,7 +160,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       // it as the trailing edge, or we've hit the `maxWait` limit.
       return (
         !lastCallTime.current ||
-        timeSinceLastCall >= wait ||
+        timeSinceLastCall >= waitRef.current ||
         timeSinceLastCall < 0 ||
         (maxing && timeSinceLastInvoke >= maxWait)
       );
@@ -189,7 +190,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
       // Remaining wait calculation
       const timeSinceLastCall = time - lastCallTime.current;
       const timeSinceLastInvoke = time - lastInvokeTime.current;
-      const timeWaiting = wait - timeSinceLastCall;
+      const timeWaiting = waitRef.current - timeSinceLastCall;
       const remainingWait = maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
 
       // Restart the timer
@@ -209,18 +210,18 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
           // Reset any `maxWait` timer.
           lastInvokeTime.current = lastCallTime.current;
           // Start the timer for the trailing edge.
-          startTimer(timerExpired, wait);
+          startTimer(timerExpired, waitRef.current);
           // Invoke the leading edge.
           return leading ? invokeFunc(lastCallTime.current) : result.current;
         }
         if (maxing) {
           // Handle invocations in a tight loop.
-          startTimer(timerExpired, wait);
+          startTimer(timerExpired, waitRef.current);
           return invokeFunc(lastCallTime.current);
         }
       }
       if (!timerId.current) {
-        startTimer(timerExpired, wait);
+        startTimer(timerExpired, waitRef.current);
       }
       return result.current;
     };
@@ -242,7 +243,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
     };
 
     return func;
-  }, [leading, maxing, wait, maxWait, trailing, useRAF]);
+  }, [leading, maxing, waitRef.current, maxWait, trailing, useRAF]);
 
   return debounced;
 }

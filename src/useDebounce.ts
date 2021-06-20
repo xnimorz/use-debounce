@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, Dispatch } from 'react';
+import { useCallback, useRef, useState, Dispatch } from 'react';
 import useDebouncedCallback, { ControlFunctions } from './useDebouncedCallback';
 
 function valueEquality<T>(left: T, right: T): boolean {
@@ -26,13 +26,10 @@ export default function useDebounce<T>(
   const debounced = useDebouncedCallback(useCallback((value: T) => dispatch(value), [dispatch]), delay, options);
   const previousValue = useRef(value);
 
-  useEffect(() => {
-    // We need to use this condition otherwise we will run debounce timer for the first render (including maxWait option)
-    if (!eq(previousValue.current, value)) {
-      debounced(value);
-      previousValue.current = value;
-    }
-  }, [value, debounced, eq]);
+  if (!eq(previousValue.current, value)) {
+    debounced(value);
+    previousValue.current = value;
+  }
 
   return [state, { cancel: debounced.cancel, isPending: debounced.isPending, flush: debounced.flush }];
 }

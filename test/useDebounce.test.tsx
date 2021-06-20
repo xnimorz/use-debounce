@@ -299,4 +299,32 @@ describe('useDebounce', () => {
 
     expect(tree.text()).toBe('Test');
   });
+
+  it('should change debounced.isPending to true as soon as the function is called in a sync way', () => {
+    function Component({ text }) {
+      const [value, { isPending }] = useDebounce(text, 1000);
+      if (value === text) {
+        expect(isPending()).toBeFalsy();
+      } else {
+        expect(isPending()).toBeTruthy();
+      }
+      return <div>{value}</div>;
+    }
+    const tree = Enzyme.mount(<Component text={'Hello'} />);
+
+    // check inited value
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      tree.setProps({ text: 'Hello world' });
+    });
+    // timeout shouldn't have called yet
+    expect(tree.text()).toBe('Hello');
+
+    act(() => {
+      jest.runAllTimers();
+    });
+    // after runAllTimer text should be updated
+    expect(tree.text()).toBe('Hello world');
+  })
 });

@@ -1,3 +1,7 @@
+## 7.0.0
+- _breakng change_ `useDebounce` hook changed `isPending` behavior from `async` reacting to the sync. Now `isPending` returns `True` as soon as the new value is sent to the hook. 
+- Dev dependencies updated
+
 ## 6.0.1
 
 - Fixed `useDebouncedCallback` return type. Closed https://github.com/xnimorz/use-debounce/issues/103 thanks to [@VanTanev](https://github.com/VanTanev)

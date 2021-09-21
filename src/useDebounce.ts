@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, Dispatch } from 'react';
+import { useCallback, useRef, useState, useMemo, Dispatch } from 'react';
 import useDebouncedCallback, { ControlFunctions } from './useDebouncedCallback';
 
 function valueEquality<T>(left: T, right: T): boolean {
@@ -26,10 +26,16 @@ export default function useDebounce<T>(
   const debounced = useDebouncedCallback(useCallback((value: T) => dispatch(value), [dispatch]), delay, options);
   const previousValue = useRef(value);
 
+  const stateController = useMemo(() => ({ 
+    cancel: debounced.cancel,
+    isPending: debounced.isPending,
+    flush: debounced.flush
+  }), [debounced])
+
   if (!eq(previousValue.current, value)) {
     debounced(value);
     previousValue.current = value;
   }
 
-  return [state, { cancel: debounced.cancel, isPending: debounced.isPending, flush: debounced.flush }];
+  return [state, stateController];
 }

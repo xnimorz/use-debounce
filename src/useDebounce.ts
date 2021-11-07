@@ -31,5 +31,5 @@ export default function useDebounce<T>(
     previousValue.current = value;
   }
 
-  return [state, { cancel: debounced.cancel, isPending: debounced.isPending, flush: debounced.flush }];
+  return [state, debounced];
 }

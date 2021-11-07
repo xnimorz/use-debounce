@@ -1,3 +1,6 @@
+## 7.0.1
+- `debounced` object now is preserved for `use-debounce` between the renders. Thanks to [@msharifi99](https://github.com/msharifi99) for reporting.
+
 ## 7.0.0
 - _breaking change_ `useDebounce` hook changed `isPending` behavior from `async` reacting to the sync. Now `isPending` returns `True` as soon as the new value is sent to the hook. 
 - Dev dependencies updated

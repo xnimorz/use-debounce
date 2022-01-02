@@ -11,7 +11,7 @@
 
 ## 6.0.0
 
-- _breakind change_: removed `callback` field, instead of this `useDebouncedCallback` and `useThrottledCallback` returns a callable function:
+- _breaking change_: removed `callback` field, instead of this `useDebouncedCallback` and `useThrottledCallback` returns a callable function:
   Old:
 
   ```js

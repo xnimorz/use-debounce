@@ -1,3 +1,26 @@
+## 8.0.0
+- _breaking change_ `useDebounce` changed its build system to microbundle. For now we have several entries:
+
+`index.js` is for commonJS approach
+`index.modern.js` for esnext module system
+`index.umd.js` for UMD.
+All the files are in `dist` folder.
+
+If you have any paths which have `esm` or `lib`, please, replace them to `dist`:
+
+Before:
+```js
+import useDebounceCallback from 'use-debounce/lib/useDebounceCallback'
+```
+After:
+```js
+import { useDebounceCallback } from 'use-debounce';
+```
+
+- Fixed issue with incorrect VSCode autocomplete https://github.com/xnimorz/use-debounce/issues/131 Thanks to [@c-ehrlich](https://github.com/c-ehrlich) for reporting
+- Fixed `useDebounce` behaviour with react-devtools tab when devtools have a component with `useDebounce` or `useDebounceCallback` opened. https://github.com/xnimorz/use-debounce/issues/129 Thanks to [@alexniarchos](https://github.com/alexniarchos) for reporting
+- Fixed issue with `leading: true` https://github.com/xnimorz/use-debounce/issues/124 Thanks to [@mntnoe](https://github.com/mntnoe) for reporting
+
 ## 7.0.1
 - `debounced` object now is preserved for `use-debounce` between the renders. Thanks to [@msharifi99](https://github.com/msharifi99) for reporting.
 

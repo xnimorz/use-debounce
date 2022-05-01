@@ -33,12 +33,25 @@ yarn add use-debounce
 npm i use-debounce --save
 ```
 
-## Demos
+## Copy paste guidance:
 
-The simplest way to start playing around with use-debounce is with this CodeSandbox snippet:
-https://codesandbox.io/s/kx75xzyrq7
+### use-debounce
 
-More complex example with searching for matching countries using debounced input: https://codesandbox.io/s/rr40wnropq (thanks to https://twitter.com/ZephDavies)
+Simple usage: https://codesandbox.io/s/kx75xzyrq7
+
+Debounce HTTP request: https://codesandbox.io/s/rr40wnropq
+
+Debounce HTTP request with `leading` param: https://codesandbox.io/s/cache-example-with-areas-and-leading-param-119r3i
+
+### use-debounce callback
+
+Simple usage: https://codesandbox.io/s/x0jvqrwyq
+
+Combining with native event listeners: https://codesandbox.io/s/32yqlyo815 
+
+Cancelling, maxWait and memoization: https://codesandbox.io/s/4wvmp1xlw4 
+
+HTTP requests: https://codesandbox.io/s/use-debounce-callback-http-y1h3m6
 
 ## Changelog
 

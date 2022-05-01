@@ -1,24 +1,27 @@
 {
   "name": "use-debounce",
-  "version": "7.0.1",
+  "version": "8.0.0-beta",
   "description": "Debounce hook for react",
-  "main": "lib/index.js",
-  "module": "esm/index.js",
-  "types": "./lib",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
+  "esmodule": "dist/index.modern.js",
+  "umd:main": "dist/index.umd.js",
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "import": "./esm/index.js",
-      "require": "./lib/index.js"
+      "browser": "./dist/index.module.js",
+      "umd": "./dist/index.umd.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.module.js"
     }
   },
   "sideEffects": false,
   "scripts": {
-    "size": "yarn build:es && size-limit",
+    "size": "yarn build-only && size-limit",
     "test": "yarn jest && eslint \"src/**.ts\"",
-    "build": "rm -rf ./lib/* ./esm/* && yarn test && yarn size && yarn build:cjs && yarn build:es",
-    "build:cjs": "tsc",
-    "build:es": "tsc -m esNext --outDir esm",
+    "build-only": "rm -rf ./dist/*; microbundle build --entry src/index.ts --name use-debounce --tsconfig tsconfig.json",
+    "build": "yarn test && yarn size && yarn build-only",
     "prepublishOnly": "yarn build"
   },
   "engines": {
@@ -39,8 +42,7 @@
     "url": "https://github.com/xnimorz/use-debounce/issues"
   },
   "files": [
-    "esm",
-    "lib"
+    "dist"
   ],
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -68,6 +70,7 @@
     "eslint-plugin-react-hooks": "^1.6.0",
     "eslint-plugin-standard": "^4.0.0",
     "jest": "^26.4.2",
+    "microbundle": "^0.15.0",
     "prettier": "^1.17.1",
     "react": "16.8.3",
     "react-dom": "16.8.3",
@@ -80,21 +83,33 @@
   },
   "size-limit": [
     {
-      "path": "esm/index.js",
+      "path": "dist/index.js",
       "limit": "1 KB"
     },
     {
-      "path": "esm/index.js",
+      "path": "dist/index.modern.js",
+      "limit": "1 KB"
+    },
+    {
+      "path": "dist/index.module.js",
+      "limit": "1 KB"
+    },
+    {
+      "path": "dist/index.umd.js",
+      "limit": "1 KB"
+    },
+    {
+      "path": "dist/index.js",
       "import": "{ useDebounce }",
       "limit": "1 KB"
     },
     {
-      "path": "esm/index.js",
+      "path": "dist/index.js",
       "import": "{ useDebouncedCallback }",
       "limit": "1 KB"
     },
     {
-      "path": "esm/index.js",
+      "path": "dist/index.js",
       "import": "{ useThrottledCallback }",
       "limit": "1 KB"
     }

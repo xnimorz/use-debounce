@@ -99,7 +99,9 @@ export default function useDebouncedCallback<T extends (...args: any[]) => Retur
   const funcRef = useRef(func);
   const mounted = useRef(true);
 
-  funcRef.current = func;
+  useEffect(() => {
+    funcRef.current = func;
+  }, [func]);
 
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
   const useRAF = !wait && wait !== 0 && typeof window !== 'undefined';

@@ -1,6 +1,6 @@
 {
   "name": "use-debounce",
-  "version": "8.0.0",
+  "version": "8.0.1-beta",
   "description": "Debounce hook for react",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -9,18 +9,24 @@
   "umd:main": "dist/index.umd.js",
   "exports": {
     ".": {
-      "browser": "./dist/index.module.js",
-      "umd": "./dist/index.umd.js",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
+      "node": {
+        "module": "./dist/index.module.js",
+        "require": "./dist/index.js",
+        "import": "./dist/index.mjs"
+      },
+      "browser": {
+        "import": "./dist/index.module.js",
+        "require": "./dist/index.js"
+      },
       "default": "./dist/index.module.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "sideEffects": false,
   "scripts": {
     "size": "yarn build-only && size-limit",
     "test": "yarn jest && eslint \"src/**.ts\"",
-    "build-only": "rm -rf ./dist/*; microbundle build --entry src/index.ts --name use-debounce --tsconfig tsconfig.json",
+    "build-only": "rm -rf ./dist/*; microbundle build --entry src/index.ts --name use-debounce --tsconfig tsconfig.json; cp ./dist/index.modern.js ./dist/index.mjs",
     "build": "yarn test && yarn size && yarn build-only",
     "prepublishOnly": "yarn build"
   },

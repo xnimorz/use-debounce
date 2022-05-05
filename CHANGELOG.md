@@ -1,3 +1,6 @@
+## 8.0.1
+- update library exports section to make exports work correctly with jest@28
+
 ## 8.0.0
 - _breaking change_ `useDebounce` changed its build system to microbundle. For now we have several entries:
 

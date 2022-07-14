@@ -1,3 +1,7 @@
+## 8.0.2
+- Added type exports. https://github.com/xnimorz/use-debounce/pull/136 Thanks to [@tryggvigy](https://github.com/tryggvigy)
+- Improved code comments. https://github.com/xnimorz/use-debounce/pull/135 Thanks to [@tryggvigy](https://github.com/tryggvigy)
+
 ## 8.0.1
 - update library exports section to make exports work correctly with jest@28
 

@@ -1,17 +1,35 @@
 import { useRef, useEffect, useMemo } from 'react';
 
 export interface CallOptions {
+  /**
+   * Controls if the function should be invoked on the leading edge of the timeout.
+   */
   leading?: boolean;
+  /**
+   * Controls if the function should be invoked on the trailing edge of the timeout.
+   */
   trailing?: boolean;
 }
 
 export interface Options extends CallOptions {
+  /**
+   * The maximum time the given function is allowed to be delayed before it's invoked.
+   */
   maxWait?: number;
 }
 
 export interface ControlFunctions {
+  /**
+   * Cancel pending function invocations
+   */
   cancel: () => void;
+  /**
+   * Immediately invoke pending function invocations
+   */
   flush: () => void;
+  /**
+   * Returns `true` if there are any pending function invocations
+   */
   isPending: () => boolean;
 }
 
@@ -26,13 +44,17 @@ export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> ext
 /**
  * Creates a debounced function that delays invoking `func` until after `wait`
  * milliseconds have elapsed since the last time the debounced function was
- * invoked, or until the next browser frame is drawn. The debounced function
- * comes with a `cancel` method to cancel delayed `func` invocations and a
- * `flush` method to immediately invoke them. Provide `options` to indicate
- * whether `func` should be invoked on the leading and/or trailing edge of the
- * `wait` timeout. The `func` is invoked with the last arguments provided to the
- * debounced function. Subsequent calls to the debounced function return the
- * result of the last `func` invocation.
+ * invoked, or until the next browser frame is drawn.
+ *
+ * The debounced function comes with a `cancel` method to cancel delayed `func`
+ * invocations and a `flush` method to immediately invoke them.
+ *
+ * Provide `options` to indicate whether `func` should be invoked on the leading
+ * and/or trailing edge of the `wait` timeout. The `func` is invoked with the
+ * last arguments provided to the debounced function.
+ *
+ * Subsequent calls to the debounced function return the result of the last
+ * `func` invocation.
  *
  * **Note:** If `leading` and `trailing` options are `true`, `func` is
  * invoked on the trailing edge of the timeout only if the debounced function
@@ -54,11 +76,11 @@ export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> ext
  *  The number of milliseconds to delay; if omitted, `requestAnimationFrame` is
  *  used (if available, otherwise it will be setTimeout(...,0)).
  * @param {Object} [options={}] The options object.
- *  Specify invoking on the leading edge of the timeout.
+ *  Controls if `func` should be invoked on the leading edge of the timeout.
  * @param {boolean} [options.leading=false]
  *  The maximum time `func` is allowed to be delayed before it's invoked.
  * @param {number} [options.maxWait]
- *  Specify invoking on the trailing edge of the timeout.
+ *  Controls if `func` should be invoked the trailing edge of the timeout.
  * @param {boolean} [options.trailing=true]
  * @returns {Function} Returns the new debounced function.
  * @example

@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "node": {
+        "types": "./dist/index.d.ts",
         "module": "./dist/index.module.js",
         "require": "./dist/index.js",
         "import": "./dist/index.mjs"
       },
       "browser": {
+        "types": "./dist/index.d.ts",
         "import": "./dist/index.module.js",
         "require": "./dist/index.js"
       },

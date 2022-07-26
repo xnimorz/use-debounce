@@ -1,3 +1,6 @@
+## 8.0.3
+- Added `types` to package json to mitigate https://github.com/microsoft/TypeScript/issues/49160. https://github.com/xnimorz/use-debounce/pull/138 Thanks to [@wuzzeb](https://github.com/wuzzeb)
+
 ## 8.0.2
 - Added type exports. https://github.com/xnimorz/use-debounce/pull/136 Thanks to [@tryggvigy](https://github.com/tryggvigy)
 - Improved code comments. https://github.com/xnimorz/use-debounce/pull/135 Thanks to [@tryggvigy](https://github.com/tryggvigy)

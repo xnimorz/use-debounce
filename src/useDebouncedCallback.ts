@@ -107,7 +107,7 @@ export interface DebouncedState<T extends (...args: any[]) => ReturnType<T>> ext
  * // Check for pending invocations.
  * const status = debounced.pending() ? "Pending..." : "Ready"
  */
-export default function useDebouncedCallback<T extends (...args: any[]) => ReturnType<T>>(
+export default function useDebouncedCallback<T extends (...args: any) => ReturnType<T>>(
   func: T,
   wait?: number,
   options?: Options

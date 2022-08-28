@@ -1,3 +1,6 @@
+## 8.0.4
+- Changes types for `useDebouncedCallback` args: https://github.com/xnimorz/use-debounce/pull/140 Thanks to [@sarunast](https://github.com/sarunast)
+
 ## 8.0.3
 - Added `types` to package json to mitigate https://github.com/microsoft/TypeScript/issues/49160. https://github.com/xnimorz/use-debounce/pull/138 Thanks to [@wuzzeb](https://github.com/wuzzeb)
 

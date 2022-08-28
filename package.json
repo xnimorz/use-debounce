@@ -1,6 +1,6 @@
 {
   "name": "use-debounce",
-  "version": "8.0.3",
+  "version": "8.0.4",
   "description": "Debounce hook for react",
   "source": "src/index.ts",
   "main": "dist/index.js",

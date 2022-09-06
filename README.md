@@ -261,6 +261,8 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
 `isPending` method shows whether component has pending callbacks. Works for both `useDebounce` and `useDebouncedCallback`:
 
 ```javascript
+import React, { useCallback } from 'react';
+
 function Component({ text }) {
   const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
 

@@ -198,7 +198,7 @@ it('Subsequent calls to the debounced function `debounced` return the result of 
 The full example you can see here https://codesandbox.io/s/4wvmp1xlw4
 
 ```javascript
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -232,7 +232,7 @@ ReactDOM.render(<Input defaultValue="Hello world" />, rootElement);
 `useDebouncedCallback` has `flush` method. It allows to call the callback manually if it hasn't fired yet. This method is handy to use when the user takes an action that would cause the component to unmount, but you need to execute the callback.
 
 ```javascript
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {

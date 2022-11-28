@@ -1,3 +1,7 @@
+## 9.0.0
+- Moved use-debounce to support modules see [issue](https://github.com/xnimorz/use-debounce/issues/147) Thank to [@matewilk](https://github.com/matewilk)
+- _breaking change_ The path to `dist/index.js` is changed. Now it's `dist/index.cjs`.
+
 ## 8.0.4
 - Changes types for `useDebouncedCallback` args: https://github.com/xnimorz/use-debounce/pull/140 Thanks to [@sarunast](https://github.com/sarunast)
 

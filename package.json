@@ -82,7 +82,7 @@
     "prettier": "^1.17.1",
     "react": "16.8.3",
     "react-dom": "16.8.3",
-    "size-limit": "^4.6.2",
+    "size-limit": "^8.1.0",
     "ts-jest": "^26.3.0",
     "typescript": "^3.5.1"
   },
@@ -91,7 +91,7 @@
   },
   "size-limit": [
     {
-      "path": "dist/index.js",
+      "path": "dist/index.cjs",
       "limit": "1 KB"
     },
     {
@@ -107,17 +107,17 @@
       "limit": "1 KB"
     },
     {
-      "path": "dist/index.js",
+      "path": "dist/index.cjs",
       "import": "{ useDebounce }",
       "limit": "1 KB"
     },
     {
-      "path": "dist/index.js",
+      "path": "dist/index.cjs",
       "import": "{ useDebouncedCallback }",
       "limit": "1 KB"
     },
     {
-      "path": "dist/index.js",
+      "path": "dist/index.cjs",
       "import": "{ useThrottledCallback }",
       "limit": "1 KB"
     }

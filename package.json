@@ -1,10 +1,10 @@
 {
   "name": "use-debounce",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "description": "Debounce hook for react",
   "type": "module",
   "source": "src/index.ts",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.module.js",
   "esmodule": "dist/index.modern.js",
   "umd:main": "dist/index.umd.js",
@@ -13,13 +13,13 @@
       "node": {
         "types": "./dist/index.d.ts",
         "module": "./dist/index.module.js",
-        "require": "./dist/index.js",
+        "require": "./dist/index.cjs",
         "import": "./dist/index.mjs"
       },
       "browser": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.module.js",
-        "require": "./dist/index.js"
+        "require": "./dist/index.cjs"
       },
       "default": "./dist/index.module.js"
     },

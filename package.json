@@ -1,10 +1,9 @@
 {
   "name": "use-debounce",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "description": "Debounce hook for react",
-  "type": "module",
   "source": "src/index.ts",
-  "main": "dist/index.cjs",
+  "main": "dist/index.js",
   "module": "dist/index.module.js",
   "esmodule": "dist/index.modern.js",
   "umd:main": "dist/index.umd.js",
@@ -13,13 +12,13 @@
       "node": {
         "types": "./dist/index.d.ts",
         "module": "./dist/index.module.js",
-        "require": "./dist/index.cjs",
+        "require": "./dist/index.js",
         "import": "./dist/index.mjs"
       },
       "browser": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.module.js",
-        "require": "./dist/index.cjs"
+        "require": "./dist/index.js"
       },
       "default": "./dist/index.module.js"
     },
@@ -92,7 +91,7 @@
   },
   "size-limit": [
     {
-      "path": "dist/index.cjs",
+      "path": "dist/index.js",
       "limit": "1 KB"
     },
     {
@@ -108,17 +107,17 @@
       "limit": "1 KB"
     },
     {
-      "path": "dist/index.cjs",
+      "path": "dist/index.js",
       "import": "{ useDebounce }",
       "limit": "1 KB"
     },
     {
-      "path": "dist/index.cjs",
+      "path": "dist/index.js",
       "import": "{ useDebouncedCallback }",
       "limit": "1 KB"
     },
     {
-      "path": "dist/index.cjs",
+      "path": "dist/index.js",
       "import": "{ useThrottledCallback }",
       "limit": "1 KB"
     }

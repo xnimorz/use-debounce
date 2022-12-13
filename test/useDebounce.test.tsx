@@ -301,13 +301,13 @@ describe('useDebounce', () => {
   });
 
   it('should preserve debounced object between re-renders', () => {
-    let cachedDebounced = null;
+    let cachedDebounced: unknown = null;
     function Component({ text }) {
       const [value, debounced] = useDebounce(text, 1000);
       if (cachedDebounced == null) {
         cachedDebounced = debounced;
       } else {
-        expect(cachedDebounced).toBe(debounced)
+        expect(cachedDebounced).toBe(debounced);
       }
       return <div>{value}</div>;
     }
@@ -327,8 +327,7 @@ describe('useDebounce', () => {
     });
     // after runAllTimer text should be updated
     expect(tree.text()).toBe('Hello world');
-  })
-  
+  });
 
   it('should change debounced.isPending to true as soon as the function is called in a sync way', () => {
     function Component({ text }) {
@@ -356,5 +355,5 @@ describe('useDebounce', () => {
     });
     // after runAllTimer text should be updated
     expect(tree.text()).toBe('Hello world');
-  })
+  });
 });

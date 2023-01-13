@@ -1,8 +1,11 @@
+## 9.0.3
+- Represent correct return type from useDebounce(), see [issue](https://github.com/xnimorz/use-debounce/pull/155), thanks to [@appden](https://github.com/appden)
+
 ## 9.0.2
 - Reverted 9.0.0. We will revisit these changes later
 
 ## 9.0.0
-- Moved use-debounce to support modules see [issue](https://github.com/xnimorz/use-debounce/issues/147) Thank to [@matewilk](https://github.com/matewilk)
+- Moved use-debounce to support modules see [issue](https://github.com/xnimorz/use-debounce/issues/147) Thanks to [@matewilk](https://github.com/matewilk)
 - _breaking change_ The path to `dist/index.js` is changed. Now it's `dist/index.cjs`.
 
 ## 8.0.4

@@ -52,7 +52,7 @@ import useDebouncedCallback, { CallOptions, DebouncedState } from './useDebounce
  * // Cancel the trailing throttled invocation.
  * window.addEventListener('popstate', throttled.cancel);
  */
-export default function useThrottledCallback<T extends (...args: any[]) => ReturnType<T>>(
+export default function useThrottledCallback<T extends (...args: any) => ReturnType<T>>(
   func: T,
   wait: number,
   { leading = true, trailing = true }: CallOptions = {}

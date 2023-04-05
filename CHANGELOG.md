@@ -1,3 +1,7 @@
+## 9.0.4
+- Tweak exports, see [PR](https://github.com/xnimorz/use-debounce/pull/160), thanks to [@Andarist](https://github.com/Andarist)
+- Changed types, see [PR](https://github.com/xnimorz/use-debounce/pull/158), thanks to [@wangcch](https://github.com/wangcch)
+
 ## 9.0.3
 - Represent correct return type from useDebounce(), see [issue](https://github.com/xnimorz/use-debounce/pull/155), thanks to [@appden](https://github.com/appden)
 

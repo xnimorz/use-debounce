@@ -37,6 +37,8 @@ npm i use-debounce --save
 
 ### use-debounce
 
+Introduction -A Debouncing Events in ReactJS will allow you to call a function that ensures that a time-consuming task does not fire so often.
+
 Simple usage: https://codesandbox.io/s/kx75xzyrq7
 
 Debounce HTTP request: https://codesandbox.io/s/rr40wnropq
@@ -47,9 +49,9 @@ Debounce HTTP request with `leading` param: https://codesandbox.io/s/cache-examp
 
 Simple usage: https://codesandbox.io/s/x0jvqrwyq
 
-Combining with native event listeners: https://codesandbox.io/s/32yqlyo815 
+Combining with native event listeners: https://codesandbox.io/s/32yqlyo815
 
-Cancelling, maxWait and memoization: https://codesandbox.io/s/4wvmp1xlw4 
+Cancelling, maxWait and memoization: https://codesandbox.io/s/4wvmp1xlw4
 
 HTTP requests: https://codesandbox.io/s/use-debounce-callback-http-y1h3m6
 
@@ -316,7 +318,7 @@ You can provide additional options as a third argument to both `useDebounce` and
 | maxWait    | -                             | Describes the maximum time func is allowed to be delayed before it's invoked                                                     | https://github.com/xnimorz/use-debounce#cancel-maxwait-and-memoization |
 | leading    | -                             | This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. | https://github.com/xnimorz/use-debounce#leading-calls                  |
 | trailing   | true                          | This param executes the function after timeout.                                                                                  | https://github.com/xnimorz/use-debounce#leading-calls                  |
-| equalityFn | (prev, next) => prev === next | [useDebounce ONLY] Comparator function which shows if timeout should be started                                                                     |                                                                        |
+| equalityFn | (prev, next) => prev === next | [useDebounce ONLY] Comparator function which shows if timeout should be started                                                  |                                                                        |
 
 ## useThrottledCallback
 

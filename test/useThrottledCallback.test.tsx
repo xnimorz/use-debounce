@@ -1,21 +1,24 @@
-import * as Enzyme from 'enzyme';
+import { render, act } from '@testing-library/react';
 import * as React from 'react';
 import useThrottledCallback from '../src/useThrottledCallback';
-import { act } from 'react-dom/test-utils';
+import { describe, it, expect, jest, beforeEach, test } from '@jest/globals';
 
 describe('useThrottledCallback', () => {
   beforeEach(() => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
   });
   it('will call callback when timeout is called', () => {
     const callback = jest.fn();
 
     function Component() {
-      const debounced = useThrottledCallback(callback, 1000, { leading: false, trailing: true });
+      const debounced = useThrottledCallback(callback, 1000, {
+        leading: false,
+        trailing: true,
+      });
       debounced();
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(0);
 
@@ -30,11 +33,14 @@ describe('useThrottledCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const debounced = useThrottledCallback(callback, 1000, { leading: true, trailing: false });
+      const debounced = useThrottledCallback(callback, 1000, {
+        leading: true,
+        trailing: false,
+      });
       debounced();
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
@@ -54,7 +60,7 @@ describe('useThrottledCallback', () => {
       debounced();
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
@@ -77,12 +83,12 @@ describe('useThrottledCallback', () => {
       }, 1001);
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
     act(() => {
-      jest.runTimersToTime(1001);
+      jest.advanceTimersByTime(1001);
     });
 
     expect(callback.mock.calls.length).toBe(3);

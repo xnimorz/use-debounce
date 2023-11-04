@@ -37,7 +37,8 @@ export interface ControlFunctions {
  * Subsequent calls to the debounced function `debounced.callback` return the result of the last func invocation.
  * Note, that if there are no previous invocations it's mean you will get undefined. You should check it in your code properly.
  */
-export interface DebouncedState<T extends (...args: any) => ReturnType<T>> extends ControlFunctions {
+export interface DebouncedState<T extends (...args: any) => ReturnType<T>>
+  extends ControlFunctions {
   (...args: Parameters<T>): ReturnType<T> | undefined;
 }
 
@@ -107,11 +108,9 @@ export interface DebouncedState<T extends (...args: any) => ReturnType<T>> exten
  * // Check for pending invocations.
  * const status = debounced.pending() ? "Pending..." : "Ready"
  */
-export default function useDebouncedCallback<T extends (...args: any) => ReturnType<T>>(
-  func: T,
-  wait?: number,
-  options?: Options
-): DebouncedState<T> {
+export default function useDebouncedCallback<
+  T extends (...args: any) => ReturnType<T>,
+>(func: T, wait?: number, options?: Options): DebouncedState<T> {
   const lastCallTime = useRef(null);
   const lastInvokeTime = useRef(0);
   const timerId = useRef(null);
@@ -169,7 +168,9 @@ export default function useDebouncedCallback<T extends (...args: any) => ReturnT
 
     const startTimer = (pendingFunc: () => void, wait: number) => {
       if (useRAF) cancelAnimationFrame(timerId.current);
-      timerId.current = useRAF ? requestAnimationFrame(pendingFunc) : setTimeout(pendingFunc, wait);
+      timerId.current = useRAF
+        ? requestAnimationFrame(pendingFunc)
+        : setTimeout(pendingFunc, wait);
     };
 
     const shouldInvoke = (time: number) => {
@@ -214,7 +215,9 @@ export default function useDebouncedCallback<T extends (...args: any) => ReturnT
       const timeSinceLastCall = time - lastCallTime.current;
       const timeSinceLastInvoke = time - lastInvokeTime.current;
       const timeWaiting = wait - timeSinceLastCall;
-      const remainingWait = maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
+      const remainingWait = maxing
+        ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke)
+        : timeWaiting;
 
       // Restart the timer
       startTimer(timerExpired, remainingWait);
@@ -251,10 +254,16 @@ export default function useDebouncedCallback<T extends (...args: any) => ReturnT
 
     func.cancel = () => {
       if (timerId.current) {
-        useRAF ? cancelAnimationFrame(timerId.current) : clearTimeout(timerId.current);
+        useRAF
+          ? cancelAnimationFrame(timerId.current)
+          : clearTimeout(timerId.current);
       }
       lastInvokeTime.current = 0;
-      lastArgs.current = lastCallTime.current = lastThis.current = timerId.current = null;
+      lastArgs.current =
+        lastCallTime.current =
+        lastThis.current =
+        timerId.current =
+          null;
     };
 
     func.isPending = () => {

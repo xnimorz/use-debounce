@@ -37,7 +37,7 @@
     "react-hook",
     "react"
   ],
-  "author": "Nikita Mostovoy (nik.mostovoy@gmail.com)",
+  "author": "Nik (nik@xnim.me)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/xnimorz/use-debounce/issues"

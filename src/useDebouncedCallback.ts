@@ -119,10 +119,8 @@ export default function useDebouncedCallback<
   const result = useRef<ReturnType<T>>();
   const funcRef = useRef(func);
   const mounted = useRef(true);
-
-  useEffect(() => {
-    funcRef.current = func;
-  }, [func]);
+  // Always keep the latest version of debounce callback, with no wait time.
+  funcRef.current = func;
 
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
   const useRAF = !wait && wait !== 0 && typeof window !== 'undefined';

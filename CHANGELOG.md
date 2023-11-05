@@ -1,6 +1,17 @@
 ## 10.0.0
 
-- _Major_ replaced `index.modern.js` with `index.mjs`. Might require a little change in your build pipeline
+- _Major breaking change_: replaced `index.modern.js` with `index.mjs`. Might require a little change in your build pipeline
+- _Minor breaking change_: Replaced `useState` for `useDebounce` with `useReducer`. It might lead to reduced amount of re-renders, as useState is known to have excess re-renders in some corner: https://stackoverflow.com/questions/57652176/react-hooks-usestate-setvalue-still-rerender-one-more-time-when-value-is-equal
+- _Minor breaking change_: `useDebouncedCallback` now updates function to call asap. Meaning, if you re-called the hook and it should trigger immediately, it will trigger the newest function all the time.
+- Lib size:
+  883 B: index.js.gz
+  814 B: index.js.br
+  850 B: index.mjs.gz
+  792 B: index.mjs.br
+  903 B: index.module.js.gz
+  847 B: index.module.js.br
+  958 B: index.umd.js.gz
+  888 B: index.umd.js.br
 - [Internal] Replaced Enzyme with @testing-library
 - [Internal] yarn classic => npm
 - [Internal] Updated devDependencies

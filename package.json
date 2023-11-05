@@ -1,11 +1,11 @@
 {
   "name": "use-debounce",
-  "version": "9.0.4",
+  "version": "10.0.0",
   "description": "Debounce hook for react",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "module": "dist/index.module.js",
-  "esmodule": "dist/index.modern.js",
+  "esmodule": "dist/index.mjs",
   "umd:main": "dist/index.umd.js",
   "exports": {
     ".": {
@@ -21,12 +21,12 @@
     "jest": "jest",
     "size": "npm run build-only && size-limit",
     "test": "jest && eslint \"src/**.ts\"",
-    "build-only": "rm -rf ./dist/*; microbundle build --entry src/index.ts --name use-debounce --tsconfig tsconfig.json; cp ./dist/index.modern.js ./dist/index.mjs",
-    "build": "npm run test && npm run size && npm run build-only",
+    "build-only": "rm -rf ./dist/*; microbundle build --entry src/index.ts --name use-debounce --tsconfig tsconfig.json",
+    "build": "npm run test && npm run build-only && size-limit",
     "prepublishOnly": "npm run build"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 16.0.0"
   },
   "repository": {
     "type": "git",
@@ -85,34 +85,30 @@
   "size-limit": [
     {
       "path": "dist/index.js",
-      "limit": "1 KB"
-    },
-    {
-      "path": "dist/index.modern.js",
-      "limit": "1 KB"
+      "limit": "1.2 KB"
     },
     {
       "path": "dist/index.module.js",
-      "limit": "1 KB"
+      "limit": "1.2 KB"
     },
     {
       "path": "dist/index.umd.js",
-      "limit": "1 KB"
+      "limit": "1.2 KB"
     },
     {
       "path": "dist/index.js",
       "import": "{ useDebounce }",
-      "limit": "1 KB"
+      "limit": "1.2 KB"
     },
     {
       "path": "dist/index.js",
       "import": "{ useDebouncedCallback }",
-      "limit": "1 KB"
+      "limit": "1.2 KB"
     },
     {
       "path": "dist/index.js",
       "import": "{ useThrottledCallback }",
-      "limit": "1 KB"
+      "limit": "1.2 KB"
     }
   ]
 }

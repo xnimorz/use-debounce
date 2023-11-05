@@ -19,6 +19,14 @@
   </a>
 </div>
 
+# useDebounce, useDebouncedCallback & useThrottledCallback
+
+React libraries for debouncing without tears!
+
+- Small size < 1 Kb
+- Compatible with underscore / lodash impl — learn once, use everywhere
+- Server-rendering friendly!
+
 ## Features
 
 - [classic debounced callback](#debounced-callbacks)
@@ -47,9 +55,9 @@ Debounce HTTP request with `leading` param: https://codesandbox.io/s/cache-examp
 
 Simple usage: https://codesandbox.io/s/x0jvqrwyq
 
-Combining with native event listeners: https://codesandbox.io/s/32yqlyo815 
+Combining with native event listeners: https://codesandbox.io/s/32yqlyo815
 
-Cancelling, maxWait and memoization: https://codesandbox.io/s/4wvmp1xlw4 
+Cancelling, maxWait and memoization: https://codesandbox.io/s/4wvmp1xlw4
 
 HTTP requests: https://codesandbox.io/s/use-debounce-callback-http-y1h3m6
 
@@ -109,7 +117,10 @@ function Input({ defaultValue }) {
   // you should use `e => debounced(e.target.value)` as react works with synthetic events
   return (
     <div>
-      <input defaultValue={defaultValue} onChange={(e) => debounced(e.target.value)} />
+      <input
+        defaultValue={defaultValue}
+        onChange={(e) => debounced(e.target.value)}
+      />
       <p>Debounced value: {value}</p>
     </div>
   );
@@ -216,7 +227,10 @@ function Input({ defaultValue }) {
   // you should use `e => debounced(e.target.value)` as react works with synthetic events
   return (
     <div>
-      <input defaultValue={defaultValue} onChange={(e) => debounced(e.target.value)} />
+      <input
+        defaultValue={defaultValue}
+        onChange={(e) => debounced(e.target.value)}
+      />
       <p>Debounced value: {value}</p>
       <button onClick={debounced.cancel}>Cancel Debounce cycle</button>
     </div>
@@ -252,7 +266,12 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
     [debounced]
   );
 
-  return <input defaultValue={defaultValue} onChange={(e) => debounced(e.target.value)} />;
+  return (
+    <input
+      defaultValue={defaultValue}
+      onChange={(e) => debounced(e.target.value)}
+    />
+  );
 }
 ```
 
@@ -264,7 +283,10 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
 import React, { useCallback } from 'react';
 
 function Component({ text }) {
-  const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+  const debounced = useDebouncedCallback(
+    useCallback(() => {}, []),
+    500
+  );
 
   expect(debounced.isPending()).toBeFalsy();
   debounced();
@@ -316,7 +338,7 @@ You can provide additional options as a third argument to both `useDebounce` and
 | maxWait    | -                             | Describes the maximum time func is allowed to be delayed before it's invoked                                                     | https://github.com/xnimorz/use-debounce#cancel-maxwait-and-memoization |
 | leading    | -                             | This param will execute the function once immediately when called. Subsequent calls will be debounced until the timeout expires. | https://github.com/xnimorz/use-debounce#leading-calls                  |
 | trailing   | true                          | This param executes the function after timeout.                                                                                  | https://github.com/xnimorz/use-debounce#leading-calls                  |
-| equalityFn | (prev, next) => prev === next | [useDebounce ONLY] Comparator function which shows if timeout should be started                                                                     |                                                                        |
+| equalityFn | (prev, next) => prev === next | [useDebounce ONLY] Comparator function which shows if timeout should be started                                                  |                                                                        |
 
 ## useThrottledCallback
 

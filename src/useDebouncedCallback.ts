@@ -16,6 +16,10 @@ export interface Options extends CallOptions {
    * The maximum time the given function is allowed to be delayed before it's invoked.
    */
   maxWait?: number;
+  /**
+   * If the setting is set to true, all debouncing and timers will happen on the server side as well
+   */
+  debounceOnServer?: boolean;
 }
 
 export interface ControlFunctions {
@@ -122,8 +126,9 @@ export default function useDebouncedCallback<
   // Always keep the latest version of debounce callback, with no wait time.
   funcRef.current = func;
 
+  const isClientSize = typeof window !== 'undefined';
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
-  const useRAF = !wait && wait !== 0 && typeof window !== 'undefined';
+  const useRAF = !wait && wait !== 0 && isClientSize;
 
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function');
@@ -135,6 +140,8 @@ export default function useDebouncedCallback<
   const leading = !!options.leading;
   const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
   const maxing = 'maxWait' in options;
+  const debounceOnServer =
+    'debounceOnServer' in options ? !!options.debounceOnServer : false; // `false` by default
   const maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : null;
 
   useEffect(() => {
@@ -222,6 +229,9 @@ export default function useDebouncedCallback<
     };
 
     const func: DebouncedState<T> = (...args: Parameters<T>): ReturnType<T> => {
+      if (!isClientSize && !debounceOnServer) {
+        return;
+      }
       const time = Date.now();
       const isInvoking = shouldInvoke(time);
 
@@ -273,7 +283,16 @@ export default function useDebouncedCallback<
     };
 
     return func;
-  }, [leading, maxing, wait, maxWait, trailing, useRAF]);
+  }, [
+    leading,
+    maxing,
+    wait,
+    maxWait,
+    trailing,
+    useRAF,
+    isClientSize,
+    debounceOnServer,
+  ]);
 
   return debounced;
 }

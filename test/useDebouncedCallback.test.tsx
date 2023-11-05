@@ -1,12 +1,12 @@
-import * as Enzyme from 'enzyme';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { useEffect, useCallback, useRef } from 'react';
 import * as React from 'react';
 import useDebouncedCallback from '../src/useDebouncedCallback';
-import { act } from 'react-dom/test-utils';
+import { describe, it, expect, jest, beforeEach, test } from '@jest/globals';
 
 describe('useDebouncedCallback', () => {
   beforeEach(() => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
   });
   it('will call callback when timeout is called', () => {
     const callback = jest.fn();
@@ -16,7 +16,7 @@ describe('useDebouncedCallback', () => {
       debounced();
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(0);
 
@@ -31,11 +31,14 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const debounced = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
+      const debounced = useDebouncedCallback(callback, 1000, {
+        leading: true,
+        trailing: false,
+      });
       debounced();
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
@@ -55,7 +58,7 @@ describe('useDebouncedCallback', () => {
       debounced();
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
@@ -78,12 +81,12 @@ describe('useDebouncedCallback', () => {
       }, 1001);
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
     act(() => {
-      jest.runTimersToTime(1001);
+      jest.advanceTimersByTime(1001);
     });
 
     expect(callback.mock.calls.length).toBe(3);
@@ -98,7 +101,7 @@ describe('useDebouncedCallback', () => {
       callbackCache = debounced;
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     const result = callbackCache();
     expect(callback.mock.calls.length).toBe(0);
@@ -118,19 +121,22 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
-      const debounced = useDebouncedCallback(callback, 1000, { leading: true, trailing: false });
+      const debounced = useDebouncedCallback(callback, 1000, {
+        leading: true,
+        trailing: false,
+      });
       debounced();
       setTimeout(() => {
         debounced();
       }, 1001);
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
     act(() => {
-      jest.runTimersToTime(1001);
+      jest.advanceTimersByTime(1001);
     });
 
     expect(callback.mock.calls.length).toBe(2);
@@ -146,7 +152,7 @@ describe('useDebouncedCallback', () => {
       debounced();
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
@@ -167,7 +173,7 @@ describe('useDebouncedCallback', () => {
       debounced();
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     expect(callback.mock.calls.length).toBe(1);
 
@@ -198,6 +204,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component() {
+      // @ts-ignore
       const debounced = useDebouncedCallback(callback, 200, options);
 
       debounced();
@@ -224,7 +231,7 @@ describe('useDebouncedCallback', () => {
 
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     act(() => {
       jest.runAllTimers();
@@ -244,15 +251,15 @@ describe('useDebouncedCallback', () => {
       }, 500);
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     act(() => {
-      jest.runTimersToTime(500);
+      jest.advanceTimersByTime(500);
     });
     expect(callback.mock.calls.length).toBe(0);
 
     act(() => {
-      jest.runTimersToTime(1000);
+      jest.advanceTimersByTime(1000);
     });
 
     expect(callback.mock.calls.length).toBe(1);
@@ -267,7 +274,7 @@ describe('useDebouncedCallback', () => {
       setTimeout(debounced.cancel, 500);
       return null;
     }
-    Enzyme.mount(<Component />);
+    render(<Component />);
 
     act(() => {
       jest.runAllTimers();
@@ -287,13 +294,15 @@ describe('useDebouncedCallback', () => {
         ),
         1000
       );
-      return <button onClick={debounced} />;
+      return <button role="click" onClick={debounced} />;
     }
-    const tree = Enzyme.mount(<Component text="Wrong param" />);
+    const tree = render(<Component text="Wrong param" />);
 
-    tree.setProps({ text: 'Right param' });
+    tree.rerender(<Component text="Right param" />);
 
-    tree.find('button').simulate('click');
+    act(() => {
+      fireEvent.click(screen.getByRole('click'));
+    });
 
     act(() => {
       jest.runAllTimers();
@@ -311,13 +320,13 @@ describe('useDebouncedCallback', () => {
         ),
         1000
       );
-      return <button onClick={debounced} />;
+      return <button role="click" onClick={debounced} />;
     }
-    const tree = Enzyme.mount(<Component text="Right param" />);
+    const tree = render(<Component text="Right param" />);
 
-    tree.setProps({ text: 'Wrong param' });
+    tree.rerender(<Component text="Wrong param" />);
 
-    tree.find('button').simulate('click');
+    fireEvent.click(screen.getByRole('click'));
 
     act(() => {
       jest.runAllTimers();
@@ -332,15 +341,15 @@ describe('useDebouncedCallback', () => {
       debounced(text);
       return <span>{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="Wrong Value" />);
+    const tree = render(<Component text="Wrong Value" />);
 
     act(() => {
-      jest.runTimersToTime(400);
-      tree.setProps({ text: 'Right value' });
+      jest.advanceTimersByTime(400);
+      tree.rerender(<Component text="Right value" />);
     });
 
     act(() => {
-      jest.runTimersToTime(400);
+      jest.advanceTimersByTime(400);
     });
   });
 
@@ -350,23 +359,25 @@ describe('useDebouncedCallback', () => {
     function Component({ text }) {
       const debounced = useDebouncedCallback(callback, 500, { maxWait: 600 });
       debounced();
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      jest.runTimersToTime(400);
-      tree.setProps({ text: 'test' });
+      jest.advanceTimersByTime(400);
+      tree.rerender(<Component text="test" />);
     });
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('test');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('test');
 
     act(() => {
-      jest.runTimersToTime(400);
+      jest.advanceTimersByTime(400);
     });
 
     expect(callback.mock.calls.length).toBe(1);
@@ -381,23 +392,25 @@ describe('useDebouncedCallback', () => {
       if (text === 'test') {
         debounced.cancel();
       }
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      jest.runTimersToTime(400);
-      tree.setProps({ text: 'test' });
+      jest.advanceTimersByTime(400);
+      // @ts-ignore
+      expect(screen.getByRole('test')).toHaveTextContent('one');
     });
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('test');
+    tree.rerender(<Component text="test" />);
 
     act(() => {
-      jest.runTimersToTime(400);
+      jest.advanceTimersByTime(400);
     });
 
     expect(callback.mock.calls.length).toBe(0);
@@ -412,15 +425,16 @@ describe('useDebouncedCallback', () => {
       if (text === 'test') {
         debounced.flush();
       }
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      tree.setProps({ text: 'test' });
+      tree.rerender(<Component text="test" />);
     });
 
     expect(callback.mock.calls.length).toBe(1);
@@ -434,19 +448,21 @@ describe('useDebouncedCallback', () => {
       if (text === 'test') {
         debounced.flush();
       }
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      tree.setProps({ text: 'test' });
+      tree.rerender(<Component text="test" />);
     });
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('test');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('test');
   });
 
   it('won\t call pending callback if callPending function is called and cancel method is also executed', () => {
@@ -459,19 +475,21 @@ describe('useDebouncedCallback', () => {
         debounced.cancel();
         debounced.flush();
       }
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      tree.setProps({ text: 'test' });
+      tree.rerender(<Component text="test" />);
     });
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('test');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('test');
   });
 
   it('will call pending callback if callPending function is called on component unmount', () => {
@@ -484,12 +502,13 @@ describe('useDebouncedCallback', () => {
       useEffect(() => {
         return debounced.flush;
       }, []);
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
     expect(callback.mock.calls.length).toBe(0);
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
       tree.unmount();
@@ -499,34 +518,41 @@ describe('useDebouncedCallback', () => {
   });
 
   it('will memoize debouncedCallback', () => {
-    let debouncedCallbackCached = null;
+    let debouncedCallbackCached: any = null;
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+      const debounced = useDebouncedCallback(
+        useCallback(() => {}, []),
+        500
+      );
 
       if (debouncedCallbackCached) {
         expect(debounced).toBe(debouncedCallbackCached);
       }
       debouncedCallbackCached = debounced;
 
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      tree.setProps({ text: 'two' });
+      tree.rerender(<Component text="two" />);
     });
   });
 
   it('will change reference to debouncedCallback timeout is changed', () => {
     expect.assertions(3);
-    let debouncedCallbackCached = null;
+    let debouncedCallbackCached: any = null;
     let timeoutCached = null;
 
     function Component({ text, timeout }) {
-      const debounced = useDebouncedCallback(useCallback(() => {}, [text]), timeout);
+      const debounced = useDebouncedCallback(
+        useCallback(() => {}, [text]),
+        timeout
+      );
 
       if (debouncedCallbackCached) {
         if (timeoutCached === timeout) {
@@ -538,18 +564,19 @@ describe('useDebouncedCallback', () => {
       debouncedCallbackCached = debounced;
       timeoutCached = timeout;
 
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component timeout={500} text="one" />);
+    const tree = render(<Component timeout={500} text="one" />);
 
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      tree.setProps({ timeout: 500 });
+      tree.rerender(<Component text="one" timeout={500} />);
     });
 
     act(() => {
-      tree.setProps({ text: 1000 });
+      tree.rerender(<Component text="1000" timeout={1000} />);
     });
   });
 
@@ -569,7 +596,7 @@ describe('useDebouncedCallback', () => {
 
       return null;
     }
-    const tree = Enzyme.mount(
+    const tree = render(
       <Component
         callback={() => {
           throw new Error("This callback shouldn't be executed");
@@ -578,24 +605,30 @@ describe('useDebouncedCallback', () => {
     );
 
     act(() => {
-      tree.setProps({
-        callback: (counter) => {
-          // This callback should be called with counter === 1
-          expect(counter).toBe(1);
-        },
-      });
+      tree.rerender(
+        <Component
+          callback={(counter) => {
+            // This callback should be called with counter === 1
+            expect(counter).toBe(1);
+          }}
+        />
+      );
     });
 
-    jest.runTimersToTime(500);
+    jest.advanceTimersByTime(500);
   });
 
   it('will change reference to debouncedCallback if maxWait or delay option is changed', () => {
     expect.assertions(5);
-    let debouncedCallbackCached = null;
-    let cachedObj = null;
+    let debouncedCallbackCached: any = null;
+    let cachedObj: any = null;
 
     function Component({ text, maxWait = 1000, delay = 500 }) {
-      const debounced = useDebouncedCallback(useCallback(() => {}, []), delay, { maxWait });
+      const debounced = useDebouncedCallback(
+        useCallback(() => {}, []),
+        delay,
+        { maxWait }
+      );
 
       if (debouncedCallbackCached) {
         if (cachedObj.delay === delay && cachedObj.maxWait === maxWait) {
@@ -607,76 +640,88 @@ describe('useDebouncedCallback', () => {
       debouncedCallbackCached = debounced;
       cachedObj = { text, maxWait, delay };
 
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      tree.setProps({ text: 'one' });
+      tree.rerender(<Component text="one" />);
     });
 
     act(() => {
-      tree.setProps({ text: 'two' });
+      tree.rerender(<Component text="two" />);
     });
 
     act(() => {
-      tree.setProps({ delay: 1 });
+      tree.rerender(<Component text="two" delay={1} />);
     });
 
     act(() => {
-      tree.setProps({ maxWait: 2 });
+      tree.rerender(<Component maxWait={2} text="two" />);
     });
   });
 
   it('will memoize callPending', () => {
-    let callPendingCached = null;
+    let callPendingCached: any = null;
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+      const debounced = useDebouncedCallback(
+        useCallback(() => {}, []),
+        500
+      );
 
       if (callPendingCached) {
         expect(debounced.flush).toBe(callPendingCached);
       }
       callPendingCached = debounced.flush;
 
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      tree.setProps({ text: 'two' });
+      tree.rerender(<Component text="two" />);
     });
   });
 
   it('will memoize debounced object', () => {
-    let cached = null;
+    let cached: any = null;
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+      const debounced = useDebouncedCallback(
+        useCallback(() => {}, []),
+        500
+      );
 
       if (cached) {
         expect(debounced).toBe(cached);
       }
       cached = debounced;
 
-      return <span>{text}</span>;
+      return <span role="test">{text}</span>;
     }
-    const tree = Enzyme.mount(<Component text="one" />);
+    const tree = render(<Component text="one" />);
 
-    expect(tree.text()).toBe('one');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
 
     act(() => {
-      tree.setProps({ text: 'two' });
+      tree.rerender(<Component text="two" />);
     });
   });
 
   it('pending indicates whether we have pending callbacks', () => {
     function Component({ text }) {
-      const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+      const debounced = useDebouncedCallback(
+        useCallback(() => {}, []),
+        500
+      );
 
       expect(debounced.isPending()).toBeFalsy();
       debounced();
@@ -686,6 +731,6 @@ describe('useDebouncedCallback', () => {
 
       return <span>{text}</span>;
     }
-    Enzyme.mount(<Component text="one" />);
+    render(<Component text="one" />);
   });
 });

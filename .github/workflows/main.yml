@@ -14,14 +14,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js 16.x
+      - name: Use Node.js 21.x
         uses: actions/setup-node@v1
         with:
-          node-version: 16.x
+          node-version: 21.x
       - name: install and tests
         run: |
-          yarn install
-          yarn test
-          yarn size
+          npm install
+          npm run test
+          npm run size
         env:
           CI: true

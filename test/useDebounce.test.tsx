@@ -1,122 +1,133 @@
-import * as Enzyme from 'enzyme';
+import { render, screen, act } from '@testing-library/react';
 import * as React from 'react';
 import useDebounce from '../src/useDebounce';
-import { act } from 'react-dom/test-utils';
-
-jest.useFakeTimers('modern');
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
 describe('useDebounce', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
   it('put initialized value in first render', () => {
     function Component() {
       const [value] = useDebounce('Hello world', 1000);
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component />);
-    expect(tree.text()).toBe('Hello world');
+    render(<Component />);
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
   });
 
   it('will update value when timer is called', () => {
     function Component({ text }) {
       const [value] = useDebounce(text, 1000);
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const { rerender } = render(<Component text={'Hello'} />);
 
-    // check inited value
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
-    act(() => {
-      tree.setProps({ text: 'Hello world' });
-    });
-    // timeout shouldn't have called yet
-    expect(tree.text()).toBe('Hello');
+    rerender(<Component text={'Hello world'} />);
+
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
       jest.runAllTimers();
     });
     // after runAllTimer text should be updated
-    expect(tree.text()).toBe('Hello world');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
   });
 
   it('will update value immediately if leading is set to true', () => {
     function Component({ text }) {
       const [value] = useDebounce(text, 1000, { leading: true });
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
     // check inited value
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
-      tree.setProps({ text: 'Hello world' });
+      tree.rerender(<Component text={'Hello world'} />);
     });
 
     // value should be set immediately by first leading call
-    expect(tree.text()).toBe('Hello world');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
 
     act(() => {
-      tree.setProps({ text: 'Hello again, world' });
+      tree.rerender(<Component text={'Hello again'} />);
     });
 
     // timeout shouldn't have been called yet after leading call was executed
-    expect(tree.text()).toBe('Hello world');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
 
     act(() => {
       jest.runAllTimers();
     });
     // final value should update as per last timeout
-    expect(tree.text()).toBe('Hello again, world');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello again');
   });
 
   it('will cancel value when cancel method is called', () => {
     function Component({ text }) {
       const [value, fn] = useDebounce(text, 1000);
       setTimeout(fn.cancel, 500);
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
-    // check inited value
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
-      tree.setProps({ text: 'Hello world' });
+      tree.rerender(<Component text={'Hello again'} />);
     });
     // timeout shouldn't have called yet
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
       jest.runAllTimers();
     });
     // after runAllTimer text should not be updated as debounce was cancelled
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
   });
 
   it('should apply the latest value', () => {
     function Component({ text }) {
       const [value] = useDebounce(text, 1000);
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
     // check inited value
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
       // this value shouldn't be applied, as we'll set up another one
-      tree.setProps({ text: 'Wrong value' });
+      tree.rerender(<Component text="Wrong value" />);
     });
     // timeout shouldn't have called yet
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
-    tree.setProps({ text: 'Right value' });
+    tree.rerender(<Component text="Right value" />);
 
     act(() => {
       jest.runAllTimers();
     });
     // after runAllTimer text should be updated
-    expect(tree.text()).toBe('Right value');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Right value');
   });
 
   it('should cancel maxWait callback', () => {
@@ -125,95 +136,103 @@ describe('useDebounce', () => {
       if (text === 'Right value') {
         fn.cancel();
       }
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
     // check inited value
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
       // this value shouldn't be applied, as we'll set up another one
-      tree.setProps({ text: 'Wrong value' });
+      tree.rerender(<Component text="Wrong value" />);
     });
 
     act(() => {
-      jest.runTimersToTime(400);
+      jest.advanceTimersByTime(400);
     });
 
     // timeout shouldn't have called yet
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
-      tree.setProps({ text: 'Right value' });
+      tree.rerender(<Component text="Right value" />);
     });
 
     act(() => {
-      jest.runTimersToTime(400);
+      jest.advanceTimersByTime(400);
     });
 
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
   });
 
   it('should apply the latest value if maxWait timeout is called', () => {
     function Component({ text }) {
       const [value] = useDebounce(text, 500, { maxWait: 600 });
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
     // check inited value
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
       // this value shouldn't be applied, as we'll set up another one
-      tree.setProps({ text: 'Wrong value' });
+      tree.rerender(<Component text="Wrong value" />);
     });
 
     act(() => {
-      jest.runTimersToTime(400);
+      jest.advanceTimersByTime(400);
     });
 
     // timeout shouldn't have been called yet
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
-      tree.setProps({ text: 'Right value' });
+      tree.rerender(<Component text="Right value" />);
     });
 
     act(() => {
-      jest.runTimersToTime(400);
+      jest.advanceTimersByTime(400);
     });
     // after runAllTimer text should be updated
-    expect(tree.text()).toBe('Right value');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Right value');
   });
 
   it("shouldn't apply the previous value if it was changed to started one", () => {
     function Component({ text }) {
       const [value] = useDebounce(text, 500);
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
 
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
     act(() => {
       // this value shouldn't be applied, as we'll set up another one
-      tree.setProps({ text: 'new value' });
+      tree.rerender(<Component text="new value" />);
     });
 
     // timeout shouldn't have been called yet
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
-      tree.setProps({ text: 'Hello' });
+      tree.rerender(<Component text="Hello" />);
     });
 
     act(() => {
-      jest.runTimersToTime(500);
+      jest.advanceTimersByTime(500);
     });
 
     // Value shouldn't be changed, as we rerender Component with text prop === 'Hello'
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
   });
 
   it("shouldn't rerender component for the first time", () => {
@@ -221,31 +240,34 @@ describe('useDebounce', () => {
       const [value] = useDebounce(text, 1000, { maxWait: 500 });
       const rerenderCounter = React.useRef(0);
       rerenderCounter.current += 1;
-      return <div>{rerenderCounter.current}</div>;
+      return <div role="test">{rerenderCounter.current}</div>;
     }
 
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
-    expect(tree.text()).toBe('1');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('1');
 
     act(() => {
       // We wait for the half of maxWait Timeout,
-      jest.runTimersToTime(250);
+      jest.advanceTimersByTime(250);
     });
 
     act(() => {
-      tree.setProps({ text: 'Test' });
+      tree.rerender(<Component text="Test" />);
     });
 
-    expect(tree.text()).toBe('2');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('2');
 
     act(() => {
       // We wait for the maxWait Timeout,
-      jest.runTimersToTime(250);
+      jest.advanceTimersByTime(250);
     });
 
     // If maxWait wasn't started at the first render of the component, we shouldn't receive the new value
-    expect(tree.text()).toBe('2');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('2');
   });
 
   it('should use equality function if supplied', () => {
@@ -256,21 +278,22 @@ describe('useDebounce', () => {
 
     function Component({ text }) {
       const [value] = useDebounce(text, 1000, { equalityFn: eq });
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
 
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
     expect(eq).toHaveBeenCalledTimes(1);
 
     act(() => {
-      tree.setProps({ text: 'Test' });
+      tree.rerender(<Component text="Test" />);
     });
 
     expect(eq).toHaveBeenCalledTimes(2);
     expect(eq).toHaveBeenCalledWith('Hello', 'Test');
     // Since the equality function always returns true, expect the value to stay the same
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
   });
 
   it('should setup new value immediately if callPending is called', () => {
@@ -279,25 +302,28 @@ describe('useDebounce', () => {
       const [value, fn] = useDebounce(text, 1000);
       callPending = fn.flush;
 
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
 
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
-      tree.setProps({ text: 'Test' });
+      tree.rerender(<Component text="Test" />);
     });
 
     // We don't call neither runTimers no callPending.
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
       callPending();
     });
 
-    expect(tree.text()).toBe('Test');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Test');
   });
 
   it('should preserve debounced object between re-renders', () => {
@@ -309,24 +335,27 @@ describe('useDebounce', () => {
       } else {
         expect(cachedDebounced).toBe(debounced);
       }
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
     // check inited value
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
-      tree.setProps({ text: 'Hello world' });
+      tree.rerender(<Component text="Hello world" />);
     });
     // timeout shouldn't have called yet
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
       jest.runAllTimers();
     });
     // after runAllTimer text should be updated
-    expect(tree.text()).toBe('Hello world');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
   });
 
   it('should change debounced.isPending to true as soon as the function is called in a sync way', () => {
@@ -337,23 +366,52 @@ describe('useDebounce', () => {
       } else {
         expect(isPending()).toBeTruthy();
       }
-      return <div>{value}</div>;
+      return <div role="test">{value}</div>;
     }
-    const tree = Enzyme.mount(<Component text={'Hello'} />);
+    const tree = render(<Component text={'Hello'} />);
 
     // check inited value
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
-      tree.setProps({ text: 'Hello world' });
+      tree.rerender(<Component text="Hello world" />);
     });
     // timeout shouldn't have called yet
-    expect(tree.text()).toBe('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
 
     act(() => {
       jest.runAllTimers();
     });
     // after runAllTimer text should be updated
-    expect(tree.text()).toBe('Hello world');
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
+  });
+
+  it('Should use function as debounced value', () => {
+    function Component({ fn }) {
+      const [value] = useDebounce(fn, 1000);
+      return <div role="test">{value()}</div>;
+    }
+    const tree = render(<Component fn={() => 'Hello'} />);
+
+    // check inited value
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
+
+    act(() => {
+      tree.rerender(<Component fn={() => 'Hello world'} />);
+    });
+    // timeout shouldn't have called yet
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
+
+    act(() => {
+      jest.runAllTimers();
+    });
+    // after runAllTimer text should be updated
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
   });
 });

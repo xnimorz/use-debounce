@@ -1,13 +1,13 @@
 import useDebounce from './useDebounce';
-import useDebouncedCallback, { CallOptions, ControlFunctions, DebouncedState, Options } from './useDebouncedCallback';
-import useThrottledCallback from './useThrottledCallback';
-
-export {
-  useDebounce,
-  useDebouncedCallback,
-  useThrottledCallback,
+import useDebouncedCallback from './useDebouncedCallback';
+import type {
   CallOptions,
   ControlFunctions,
   DebouncedState,
   Options,
-};
+} from './useDebouncedCallback';
+import useThrottledCallback from './useThrottledCallback';
+
+export { useDebounce, useDebouncedCallback, useThrottledCallback };
+
+export { CallOptions, ControlFunctions, DebouncedState, Options };

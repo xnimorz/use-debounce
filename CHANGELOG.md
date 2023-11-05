@@ -1,31 +1,59 @@
+## 10.0.0
+
+- _Major breaking change_: replaced `index.modern.js` with `index.mjs`. Might require a little change in your build pipeline
+- _Major breaking change_: New option `debounceOnServer`: if you put the option to true, it will run debouncing on server (via `setTimeout`). The new option can break your current server behaviour, as v9.x, it runs all the time and might cause unnessesary server CPU utilisation. Now, by default, debounced callbacks do not happen on server.
+- _Minor breaking change_: Replaced `useState` for `useDebounce` with `useReducer`. It might lead to reduced amount of re-renders, as useState is known to have excess re-renders in some corner: https://stackoverflow.com/questions/57652176/react-hooks-usestate-setvalue-still-rerender-one-more-time-when-value-is-equal
+- _Minor breaking change_: `useDebouncedCallback` now updates function to call asap. Meaning, if you re-called the hook and it should trigger immediately, it will trigger the newest function all the time.
+- Lib size:
+  914 B: index.js.gz
+  851 B: index.js.br
+  883 B: index.mjs.gz
+  826 B: index.mjs.br
+  938 B: index.module.js.gz
+  873 B: index.module.js.br
+  989 B: index.umd.js.gz
+  919 B: index.umd.js.br
+- [Internal] Replaced Enzyme with @testing-library
+- [Internal] yarn classic => npm
+- [Internal] Updated devDependencies
+
 ## 9.0.4
+
 - Tweak exports, see [PR](https://github.com/xnimorz/use-debounce/pull/160), thanks to [@Andarist](https://github.com/Andarist)
 - Changed types, see [PR](https://github.com/xnimorz/use-debounce/pull/158), thanks to [@wangcch](https://github.com/wangcch)
 
 ## 9.0.3
+
 - Represent correct return type from useDebounce(), see [issue](https://github.com/xnimorz/use-debounce/pull/155), thanks to [@appden](https://github.com/appden)
 
 ## 9.0.2
+
 - Reverted 9.0.0. We will revisit these changes later
 
 ## 9.0.0
+
 - Moved use-debounce to support modules see [issue](https://github.com/xnimorz/use-debounce/issues/147) Thanks to [@matewilk](https://github.com/matewilk)
 - _breaking change_ The path to `dist/index.js` is changed. Now it's `dist/index.cjs`.
 
 ## 8.0.4
+
 - Changes types for `useDebouncedCallback` args: https://github.com/xnimorz/use-debounce/pull/140 Thanks to [@sarunast](https://github.com/sarunast)
 
 ## 8.0.3
+
 - Added `types` to package json to mitigate https://github.com/microsoft/TypeScript/issues/49160. https://github.com/xnimorz/use-debounce/pull/138 Thanks to [@wuzzeb](https://github.com/wuzzeb)
 
 ## 8.0.2
+
 - Added type exports. https://github.com/xnimorz/use-debounce/pull/136 Thanks to [@tryggvigy](https://github.com/tryggvigy)
 - Improved code comments. https://github.com/xnimorz/use-debounce/pull/135 Thanks to [@tryggvigy](https://github.com/tryggvigy)
 
 ## 8.0.1
+
 - update library exports section to make exports work correctly with jest@28
 
 ## 8.0.0
+
 - _breaking change_ `useDebounce` changed its build system to microbundle. For now we have several entries:
 
 `index.js` is for commonJS approach
@@ -36,10 +64,13 @@ All the files are in `dist` folder.
 If you have any paths which have `esm` or `lib`, please, replace them to `dist`:
 
 Before:
+
 ```js
-import useDebounceCallback from 'use-debounce/lib/useDebounceCallback'
+import useDebounceCallback from 'use-debounce/lib/useDebounceCallback';
 ```
+
 After:
+
 ```js
 import { useDebounceCallback } from 'use-debounce';
 ```
@@ -49,10 +80,12 @@ import { useDebounceCallback } from 'use-debounce';
 - Fixed issue with `leading: true` https://github.com/xnimorz/use-debounce/issues/124 Thanks to [@mntnoe](https://github.com/mntnoe) for reporting
 
 ## 7.0.1
+
 - `debounced` object now is preserved for `use-debounce` between the renders. Thanks to [@msharifi99](https://github.com/msharifi99) for reporting.
 
 ## 7.0.0
-- _breaking change_ `useDebounce` hook changed `isPending` behavior from `async` reacting to the sync. Now `isPending` returns `True` as soon as the new value is sent to the hook. 
+
+- _breaking change_ `useDebounce` hook changed `isPending` behavior from `async` reacting to the sync. Now `isPending` returns `True` as soon as the new value is sent to the hook.
 - Dev dependencies updated
 
 ## 6.0.1
@@ -193,7 +226,8 @@ import { useDebounceCallback } from 'use-debounce';
   Old:
 
   ```js
-  const [debouncedCallback, cancelDebouncedCallback, callPending] = useDebouncedCallback(/*...*/);
+  const [debouncedCallback, cancelDebouncedCallback, callPending] =
+    useDebouncedCallback(/*...*/);
   ```
 
   New:
@@ -236,7 +270,10 @@ import { useDebounceCallback } from 'use-debounce';
 
   ```js
   function Component({ text }) {
-    const debounced = useDebouncedCallback(useCallback(() => {}, []), 500);
+    const debounced = useDebouncedCallback(
+      useCallback(() => {}, []),
+      500
+    );
 
     expect(debounced.pending()).toBeFalsy();
     debounced.callback();
@@ -404,7 +441,12 @@ function InputWhichFetchesSomeData({ defaultValue, asyncFetchData }) {
     []
   );
 
-  return <input defaultValue={defaultValue} onChange={(e) => debouncedFunction(e.target.value)} />;
+  return (
+    <input
+      defaultValue={defaultValue}
+      onChange={(e) => debouncedFunction(e.target.value)}
+    />
+  );
 }
 ```
 

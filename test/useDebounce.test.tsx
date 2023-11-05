@@ -388,4 +388,30 @@ describe('useDebounce', () => {
     // @ts-ignore
     expect(screen.getByRole('test')).toHaveTextContent('Hello world');
   });
+
+  it('Should use function as debounced value', () => {
+    function Component({ fn }) {
+      const [value] = useDebounce(fn, 1000);
+      return <div role="test">{value()}</div>;
+    }
+    const tree = render(<Component fn={() => 'Hello'} />);
+
+    // check inited value
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
+
+    act(() => {
+      tree.rerender(<Component fn={() => 'Hello world'} />);
+    });
+    // timeout shouldn't have called yet
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello');
+
+    act(() => {
+      jest.runAllTimers();
+    });
+    // after runAllTimer text should be updated
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
+  });
 });

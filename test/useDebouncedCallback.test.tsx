@@ -500,7 +500,7 @@ describe('useDebouncedCallback', () => {
 
       debounced();
       useEffect(() => {
-        return debounced.flush;
+        return () => { debounced.flush(); };
       }, []);
       return <span role="test">{text}</span>;
     }

@@ -22,7 +22,7 @@ export interface Options extends CallOptions {
   debounceOnServer?: boolean;
 }
 
-export interface ControlFunctions {
+export interface ControlFunctions<ReturnT> {
   /**
    * Cancel pending function invocations
    */
@@ -30,7 +30,7 @@ export interface ControlFunctions {
   /**
    * Immediately invoke pending function invocations
    */
-  flush: () => void;
+  flush: () => ReturnT | undefined;
   /**
    * Returns `true` if there are any pending function invocations
    */
@@ -42,7 +42,7 @@ export interface ControlFunctions {
  * Note, that if there are no previous invocations you will get undefined. You should check it in your code properly.
  */
 export interface DebouncedState<T extends (...args: any) => ReturnType<T>>
-  extends ControlFunctions {
+  extends ControlFunctions<ReturnType<T>> {
   (...args: Parameters<T>): ReturnType<T> | undefined;
 }
 

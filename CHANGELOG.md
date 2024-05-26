@@ -1,3 +1,7 @@
+## 10.0.1
+
+- Fixed flush method return args, thanks to [@h](https://github.com/h)
+
 ## 10.0.0
 
 - _Major breaking change_: replaced `index.modern.js` with `index.mjs`. Might require a little change in your build pipeline

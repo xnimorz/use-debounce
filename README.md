@@ -241,6 +241,16 @@ const rootElement = document.getElementById('root');
 ReactDOM.render(<Input defaultValue="Hello world" />, rootElement);
 ```
 
+The same API is available for `useDebounce` calls:
+```js
+const [value, {cancel, isPending, flush}] = useDebounce(valueToDebounce);
+...
+cancel() // cancels pending debounce request
+isPending() // returns if there is a pending debouncing request
+flush() // immediately flushes pending request
+```
+
+
 #### Flush method
 
 `useDebouncedCallback` has `flush` method. It allows to call the callback manually if it hasn't fired yet. This method is handy to use when the user takes an action that would cause the component to unmount, but you need to execute the callback.

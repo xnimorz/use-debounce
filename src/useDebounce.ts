@@ -34,5 +34,9 @@ export default function useDebounce<T>(
     previousValue.current = value;
   }
 
+  if (eq(state as T, value)) {
+    debounced.cancel();
+  }
+
   return [state as T, debounced];
 }

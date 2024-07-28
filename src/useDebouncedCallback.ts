@@ -126,9 +126,9 @@ export default function useDebouncedCallback<
   // Always keep the latest version of debounce callback, with no wait time.
   funcRef.current = func;
 
-  const isClientSize = typeof window !== 'undefined';
+  const isClientSide = typeof window !== 'undefined';
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
-  const useRAF = !wait && wait !== 0 && isClientSize;
+  const useRAF = !wait && wait !== 0 && isClientSide;
 
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function');
@@ -229,7 +229,7 @@ export default function useDebouncedCallback<
     };
 
     const func: DebouncedState<T> = (...args: Parameters<T>): ReturnType<T> => {
-      if (!isClientSize && !debounceOnServer) {
+      if (!isClientSide && !debounceOnServer) {
         return;
       }
       const time = Date.now();
@@ -290,7 +290,7 @@ export default function useDebouncedCallback<
     maxWait,
     trailing,
     useRAF,
-    isClientSize,
+    isClientSide,
     debounceOnServer,
   ]);
 

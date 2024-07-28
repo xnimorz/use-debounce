@@ -65,7 +65,7 @@ describe('useDebounce', () => {
 
     // timeout shouldn't have been called yet after leading call was executed
     // @ts-ignore
-    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
+    expect(screen.getByRole('test')).toHaveTextContent('Hello again');
 
     act(() => {
       jest.runAllTimers();
@@ -283,13 +283,13 @@ describe('useDebounce', () => {
 
     const tree = render(<Component text={'Hello'} />);
 
-    expect(eq).toHaveBeenCalledTimes(1);
+    expect(eq).toHaveBeenCalledTimes(2);
 
     act(() => {
       tree.rerender(<Component text="Test" />);
     });
 
-    expect(eq).toHaveBeenCalledTimes(2);
+    expect(eq).toHaveBeenCalledTimes(4);
     expect(eq).toHaveBeenCalledWith('Hello', 'Test');
     // Since the equality function always returns true, expect the value to stay the same
     // @ts-ignore
@@ -414,4 +414,91 @@ describe('useDebounce', () => {
     // @ts-ignore
     expect(screen.getByRole('test')).toHaveTextContent('Hello world');
   });
+
+
+  it('Handles isPending', () => {
+    function Component({propValue}) {
+      const [value, fns] = useDebounce(propValue, 1000);
+      return (
+        <div>
+          <div role="value">{value}</div>
+          <div role="pending">{fns.isPending().toString()}</div>
+        </div>
+      );
+    }
+
+    const tree = render(<Component propValue={'Hello'} />);
+
+    // check inited value
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+
+    act(() => {
+      tree.rerender(<Component propValue={'Hello 1'} />);
+    });
+    // timeout shouldn't have called yet
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('true');
+
+    act(() => {
+      jest.runAllTimers();
+    });
+    // after runAllTimer text should be updated
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello 1');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+  })
+
+  it('Should handle isPending state correctly while switching between bounced values', () => {
+    function Component({propValue}) {
+      const [value, fns] = useDebounce(propValue, 1000);
+      return (
+        <div>
+          <div role="value">{value}</div>
+          <div role="pending">{fns.isPending().toString()}</div>
+        </div>
+      );
+    }
+
+    const tree = render(<Component propValue={'Hello'} />);
+
+    // check inited value
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+
+    act(() => {
+      tree.rerender(<Component propValue={'Hello 1'} />);
+    });
+    // timeout shouldn't have called yet
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('true');
+
+    act(() => {
+      tree.rerender(<Component propValue={'Hello'} />);
+    });
+
+    // timeout shouldn't have called yet
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+
+    act(() => {
+      jest.runAllTimers();
+    });
+    // after runAllTimer text should be updated
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+  })
 });

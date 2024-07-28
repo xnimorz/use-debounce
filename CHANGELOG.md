@@ -1,3 +1,7 @@
+## 10.0.2
+
+- Fixed: `isPending` does not reset the state if the tracked value hasn't changed.. See https://github.com/xnimorz/use-debounce/issues/178
+
 ## 10.0.1
 
 - Fixed flush method return args, thanks to [@h](https://github.com/h)

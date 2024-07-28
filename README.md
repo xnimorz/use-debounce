@@ -68,6 +68,7 @@ https://github.com/xnimorz/use-debounce/blob/master/CHANGELOG.md
 ## Simple values debouncing
 
 According to https://twitter.com/dan_abramov/status/1060729512227467264
+WebArchive link: https://web.archive.org/web/20210828073432/https://twitter.com/dan_abramov/status/1060729512227467264
 
 ```javascript
 import React, { useState } from 'react';

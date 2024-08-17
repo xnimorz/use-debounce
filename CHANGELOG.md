@@ -1,3 +1,6 @@
+## 10.0.3
+- Removed `peerDependency` part from `package.json` as NPM cannot correctly resolve `peerDependency` for beta and rc versions: see https://stackoverflow.com/questions/67934358/npm-including-all-range-of-pre-release-when-defining-peer-dependency for context
+
 ## 10.0.2
 
 - Fixed: `isPending` does not reset the state if the tracked value hasn't changed.. See https://github.com/xnimorz/use-debounce/issues/178

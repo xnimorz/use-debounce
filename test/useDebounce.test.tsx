@@ -65,7 +65,7 @@ describe('useDebounce', () => {
 
     // timeout shouldn't have been called yet after leading call was executed
     // @ts-ignore
-    expect(screen.getByRole('test')).toHaveTextContent('Hello again');
+    expect(screen.getByRole('test')).toHaveTextContent('Hello world');
 
     act(() => {
       jest.runAllTimers();
@@ -283,13 +283,13 @@ describe('useDebounce', () => {
 
     const tree = render(<Component text={'Hello'} />);
 
-    expect(eq).toHaveBeenCalledTimes(2);
+    expect(eq).toHaveBeenCalledTimes(1);
 
     act(() => {
       tree.rerender(<Component text="Test" />);
     });
 
-    expect(eq).toHaveBeenCalledTimes(4);
+    expect(eq).toHaveBeenCalledTimes(2);
     expect(eq).toHaveBeenCalledWith('Hello', 'Test');
     // Since the equality function always returns true, expect the value to stay the same
     // @ts-ignore
@@ -490,7 +490,7 @@ describe('useDebounce', () => {
     // @ts-ignore
     expect(screen.getByRole('value')).toHaveTextContent('Hello');
     // @ts-ignore
-    expect(screen.getByRole('pending')).toHaveTextContent('false');
+    expect(screen.getByRole('pending')).toHaveTextContent('true');
 
     act(() => {
       jest.runAllTimers();

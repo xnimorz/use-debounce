@@ -110,7 +110,7 @@ export interface DebouncedState<T extends (...args: any) => ReturnType<T>>
  * window.addEventListener('popstate', debounced.cancel)
  *
  * // Check for pending invocations.
- * const status = debounced.pending() ? "Pending..." : "Ready"
+ * const status = debounced.isPending() ? "Pending..." : "Ready"
  */
 export default function useDebouncedCallback<
   T extends (...args: any) => ReturnType<T>,

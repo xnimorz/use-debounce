@@ -1,4 +1,10 @@
-import { useRef, useEffect, useMemo } from 'react';
+import {
+  useRef,
+  useEffect,
+  useMemo,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 
 export interface CallOptions {
   /**
@@ -114,9 +120,15 @@ export interface DebouncedState<T extends (...args: any) => ReturnType<T>>
  */
 export default function useDebouncedCallback<
   T extends (...args: any) => ReturnType<T>,
->(func: T, wait?: number, options?: Options): DebouncedState<T> {
+>(
+  func: T,
+  wait?: number,
+  options?: Options,
+  forceUpdate?: Dispatch<SetStateAction<object>>
+): DebouncedState<T> {
   const lastCallTime = useRef(null);
   const lastInvokeTime = useRef(0);
+  const firstInvokeTime = useRef(0);
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
   const lastThis = useRef<unknown>();
@@ -165,9 +177,10 @@ export default function useDebouncedCallback<
     const invokeFunc = (time: number) => {
       const args = lastArgs.current;
       const thisArg = lastThis.current;
-
       lastArgs.current = lastThis.current = null;
       lastInvokeTime.current = time;
+      firstInvokeTime.current = firstInvokeTime.current || time;
+
       return (result.current = funcRef.current.apply(thisArg, args));
     };
 
@@ -203,12 +216,18 @@ export default function useDebouncedCallback<
       if (trailing && lastArgs.current) {
         return invokeFunc(time);
       }
+
       lastArgs.current = lastThis.current = null;
       return result.current;
     };
 
     const timerExpired = () => {
       const time = Date.now();
+
+      if (leading && firstInvokeTime.current === lastInvokeTime.current) {
+        notifyManuallyTimerExpired();
+      }
+
       if (shouldInvoke(time)) {
         return trailingEdge(time);
       }
@@ -226,6 +245,12 @@ export default function useDebouncedCallback<
 
       // Restart the timer
       startTimer(timerExpired, remainingWait);
+    };
+
+    const notifyManuallyTimerExpired = () => {
+      if (forceUpdate) {
+        forceUpdate({});
+      }
     };
 
     const func: DebouncedState<T> = (...args: Parameters<T>): ReturnType<T> => {
@@ -292,6 +317,7 @@ export default function useDebouncedCallback<
     useRAF,
     isClientSide,
     debounceOnServer,
+    forceUpdate,
   ]);
 
   return debounced;

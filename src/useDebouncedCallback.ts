@@ -220,7 +220,7 @@ export default function useDebouncedCallback<
       const time = Date.now();
 
       if (leading && firstInvokeTime.current === lastInvokeTime.current) {
-        forceUpdate?.({});
+        notifyManuallyTimerExpired();
       }
 
       if (shouldInvoke(time)) {
@@ -240,6 +240,12 @@ export default function useDebouncedCallback<
 
       // Restart the timer
       startTimer(timerExpired, remainingWait);
+    };
+
+    const notifyManuallyTimerExpired = () => {
+      if (forceUpdate) {
+        forceUpdate({});
+      }
     };
 
     const func: DebouncedState<T> = (...args: Parameters<T>): ReturnType<T> => {

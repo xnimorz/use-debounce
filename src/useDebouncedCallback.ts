@@ -122,7 +122,6 @@ export default function useDebouncedCallback<
 ): DebouncedState<T> {
   const lastCallTime = useRef(null);
   const lastInvokeTime = useRef(0);
-  const firstCallTime = useRef(null);
   const firstInvokeTime = useRef(0);
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
@@ -175,13 +174,9 @@ export default function useDebouncedCallback<
       lastArgs.current = lastThis.current = null;
       lastInvokeTime.current = time;
 
-      if (firstInvokeTime.current === 0) {
-        firstInvokeTime.current = time;
-      }
+      firstInvokeTime.current = firstInvokeTime.current || time;
 
-      result.current = funcRef.current.apply(thisArg, args);
-
-      return result.current;
+      return (result.current = funcRef.current.apply(thisArg, args));
     };
 
     const startTimer = (pendingFunc: () => void, wait: number) => {
@@ -257,10 +252,6 @@ export default function useDebouncedCallback<
       lastArgs.current = args;
       lastThis.current = this;
       lastCallTime.current = time;
-
-      if (firstCallTime.current === null) {
-        firstCallTime.current = lastCallTime.current;
-      }
 
       if (isInvoking) {
         if (!timerId.current && mounted.current) {

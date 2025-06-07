@@ -28,7 +28,8 @@ export default function useDebounce<T>(
       [forceUpdate]
     ),
     delay,
-    options
+    options,
+    forceUpdate
   );
   const previousValue = useRef(value);
 

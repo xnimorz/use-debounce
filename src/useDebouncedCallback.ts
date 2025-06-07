@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 
 export interface CallOptions {
   /**
@@ -114,9 +114,16 @@ export interface DebouncedState<T extends (...args: any) => ReturnType<T>>
  */
 export default function useDebouncedCallback<
   T extends (...args: any) => ReturnType<T>,
->(func: T, wait?: number, options?: Options): DebouncedState<T> {
+>(
+  func: T,
+  wait?: number,
+  options?: Options,
+  forceUpdate?: Dispatch<SetStateAction<object>>
+): DebouncedState<T> {
   const lastCallTime = useRef(null);
   const lastInvokeTime = useRef(0);
+  const firstCallTime = useRef(null);
+  const firstInvokeTime = useRef(0);
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
   const lastThis = useRef<unknown>();
@@ -165,10 +172,16 @@ export default function useDebouncedCallback<
     const invokeFunc = (time: number) => {
       const args = lastArgs.current;
       const thisArg = lastThis.current;
-
       lastArgs.current = lastThis.current = null;
       lastInvokeTime.current = time;
-      return (result.current = funcRef.current.apply(thisArg, args));
+
+      if (firstInvokeTime.current === 0) {
+        firstInvokeTime.current = time;
+      }
+
+      result.current = funcRef.current.apply(thisArg, args);
+
+      return result.current;
     };
 
     const startTimer = (pendingFunc: () => void, wait: number) => {
@@ -203,12 +216,18 @@ export default function useDebouncedCallback<
       if (trailing && lastArgs.current) {
         return invokeFunc(time);
       }
+
       lastArgs.current = lastThis.current = null;
       return result.current;
     };
 
     const timerExpired = () => {
       const time = Date.now();
+
+      if (leading && firstInvokeTime.current === lastInvokeTime.current) {
+        forceUpdate?.({});
+      }
+
       if (shouldInvoke(time)) {
         return trailingEdge(time);
       }
@@ -238,6 +257,10 @@ export default function useDebouncedCallback<
       lastArgs.current = args;
       lastThis.current = this;
       lastCallTime.current = time;
+
+      if (firstCallTime.current === null) {
+        firstCallTime.current = lastCallTime.current;
+      }
 
       if (isInvoking) {
         if (!timerId.current && mounted.current) {
@@ -292,6 +315,7 @@ export default function useDebouncedCallback<
     useRAF,
     isClientSide,
     debounceOnServer,
+    forceUpdate,
   ]);
 
   return debounced;

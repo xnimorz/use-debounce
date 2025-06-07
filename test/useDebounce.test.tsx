@@ -415,9 +415,8 @@ describe('useDebounce', () => {
     expect(screen.getByRole('test')).toHaveTextContent('Hello world');
   });
 
-
   it('Handles isPending', () => {
-    function Component({propValue}) {
+    function Component({ propValue }) {
       const [value, fns] = useDebounce(propValue, 1000);
       return (
         <div>
@@ -452,10 +451,10 @@ describe('useDebounce', () => {
     expect(screen.getByRole('value')).toHaveTextContent('Hello 1');
     // @ts-ignore
     expect(screen.getByRole('pending')).toHaveTextContent('false');
-  })
+  });
 
   it('Should handle isPending state correctly while switching between bounced values', () => {
-    function Component({propValue}) {
+    function Component({ propValue }) {
       const [value, fns] = useDebounce(propValue, 1000);
       return (
         <div>
@@ -500,5 +499,43 @@ describe('useDebounce', () => {
     expect(screen.getByRole('value')).toHaveTextContent('Hello');
     // @ts-ignore
     expect(screen.getByRole('pending')).toHaveTextContent('false');
-  })
+  });
+
+  it('Handles isPending with leading option', () => {
+    function Component({ propValue }) {
+      const [value, fns] = useDebounce(propValue, 1000, { leading: true });
+      return (
+        <div>
+          <div role="value">{value}</div>
+          <div role="pending">{fns.isPending().toString()}</div>
+        </div>
+      );
+    }
+
+    const tree = render(<Component propValue={'Hello'} />);
+
+    // check inited value
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+
+    act(() => {
+      tree.rerender(<Component propValue={'Hello 1'} />);
+    });
+    // // timeout shouldn't have called yet
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello 1');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('true');
+
+    act(() => {
+      jest.runAllTimers();
+    });
+    // after runAllTimer text should be updated
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello 1');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+  });
 });

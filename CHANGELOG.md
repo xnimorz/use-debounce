@@ -1,5 +1,8 @@
+## 10.0.5
+- Fixed issue https://github.com/xnimorz/use-debounce/issues/192, where isPending remains true with leading: true configuration, thanks to [@elrion018](https://github.com/elrion018)
+
 ## 10.0.4
-- Fix behaviour for strictMode react when leading is set to true and trailing is true 
+- Fix behaviour for strictMode react when leading is set to true and trailing is true
 
 ## 10.0.3
 - Removed `peerDependency` part from `package.json` as NPM cannot correctly resolve `peerDependency` for beta and rc versions: see https://stackoverflow.com/questions/67934358/npm-including-all-range-of-pre-release-when-defining-peer-dependency for context

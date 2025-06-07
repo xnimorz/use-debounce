@@ -1,4 +1,10 @@
-import { useRef, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
+import {
+  useRef,
+  useEffect,
+  useMemo,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 
 export interface CallOptions {
   /**

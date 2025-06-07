@@ -179,7 +179,6 @@ export default function useDebouncedCallback<
       const thisArg = lastThis.current;
       lastArgs.current = lastThis.current = null;
       lastInvokeTime.current = time;
-
       firstInvokeTime.current = firstInvokeTime.current || time;
 
       return (result.current = funcRef.current.apply(thisArg, args));

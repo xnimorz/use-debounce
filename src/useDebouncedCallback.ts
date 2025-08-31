@@ -286,6 +286,7 @@ export default function useDebouncedCallback<
     };
 
     func.cancel = () => {
+      const hadTimer = !!timerId.current;
       if (timerId.current) {
         useRAF
           ? cancelAnimationFrame(timerId.current)
@@ -297,6 +298,11 @@ export default function useDebouncedCallback<
         lastThis.current =
         timerId.current =
           null;
+
+      // Notify React to re-render when cancel is called and there was an active timer
+      if (hadTimer && forceUpdate) {
+        forceUpdate({});
+      }
     };
 
     func.isPending = () => {

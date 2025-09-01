@@ -538,4 +538,50 @@ describe('useDebounce', () => {
     // @ts-ignore
     expect(screen.getByRole('pending')).toHaveTextContent('false');
   });
+
+  it('Updates isPending UI when cancel is called', () => {
+    function Component({ text }) {
+      const [value, { cancel, isPending }] = useDebounce(text, 1000);
+      return (
+        <div>
+          <div role="value">{value}</div>
+          <div role="pending">{isPending().toString()}</div>
+          <button role="cancel" onClick={() => cancel()}>
+            Cancel
+          </button>
+        </div>
+      );
+    }
+
+    const tree = render(<Component text={'Hello'} />);
+
+    // Initially, not pending
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+
+    // Update text to trigger debounce
+    act(() => {
+      tree.rerender(<Component text={'World'} />);
+    });
+
+    // Should be pending now
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('true');
+
+    // Click cancel button
+    act(() => {
+      // @ts-ignore
+      screen.getByRole('cancel').click();
+    });
+
+    // After cancel, should not be pending and UI should update
+    // @ts-ignore
+    expect(screen.getByRole('value')).toHaveTextContent('Hello');
+    // @ts-ignore
+    expect(screen.getByRole('pending')).toHaveTextContent('false');
+  });
 });

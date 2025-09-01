@@ -286,8 +286,8 @@ export default function useDebouncedCallback<
     };
 
     func.cancel = () => {
-      const hadTimer = !!timerId.current;
-      if (timerId.current) {
+      const hadTimer = timerId.current;
+      if (hadTimer) {
         useRAF
           ? cancelAnimationFrame(timerId.current)
           : clearTimeout(timerId.current);

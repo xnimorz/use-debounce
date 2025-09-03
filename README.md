@@ -93,6 +93,28 @@ export default function Input() {
 }
 ```
 
+### Using the debounced setter
+
+In addition to getting the debounced value, you can destructure a second element which is a debounced setter function. This allows you to use `useDebounce` without needing a separate state variable for the input value:
+
+```javascript
+import React from 'react';
+import { useDebounce } from 'use-debounce';
+
+export default function Input() {
+  const [state, setState] = useDebounce('', 300);
+
+  return (
+    <div>
+      <input onChange={(e) => setState(e.target.value)} />
+      <p>Debounced value: {state}</p>
+    </div>
+  );
+}
+```
+
+This is particularly useful when you don't need to track the immediate input value and only care about the debounced result. The debounced setter also provides additional methods like `cancel`, `isPending`, and `flush` for advanced control.
+
 This hook compares prev and next value using shallow equal. It means, setting an object `{}` will trigger debounce timer. If you have to compare objects (https://github.com/xnimorz/use-debounce/issues/27#issuecomment-496828063), you can use `useDebouncedCallback`, that is explained below:
 
 ## Debounced callbacks

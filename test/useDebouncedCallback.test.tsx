@@ -517,6 +517,48 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(1);
   });
 
+  it('will call callback on unmount if flushOnUnmount=true', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const debounced = useDebouncedCallback(callback, 500, {flushOnUnmount: true});
+
+      debounced();
+      return <span role="test">{text}</span>;
+    }
+    const tree = render(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
+
+    act(() => {
+      tree.unmount();
+    });
+
+    expect(callback.mock.calls.length).toBe(1);
+  });
+  
+  it('no action when debounced never called, even after unmount with flushOnUnmount=true', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const debounced = useDebouncedCallback(callback, 500, {flushOnUnmount: true});
+      return <span role="test">{text}</span>;
+    }
+    const tree = render(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
+
+    act(() => {
+      tree.unmount();
+    });
+
+    expect(callback.mock.calls.length).toBe(0);
+  });
+
   it('will memoize debouncedCallback', () => {
     let debouncedCallbackCached: any = null;
 

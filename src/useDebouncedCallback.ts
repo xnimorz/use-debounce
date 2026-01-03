@@ -15,6 +15,15 @@ export interface CallOptions {
    * Controls if the function should be invoked on the trailing edge of the timeout.
    */
   trailing?: boolean;
+  /**
+   * Controls if the function should be invoked immediately when the React component unmounts,
+   * or if the page is closed. This is usually desirable whenever `func` is a function that
+   * persists data. This has no effect if `trailing == false`.
+   * 
+   * Note: If `func` calls the `fetch()` API, you probably also want to set the `keepalive=true`
+   * option for `fetch()` so it can finish in the background if the user closes the page.
+   */
+  flushOnUnmount?: boolean;
 }
 
 export interface Options extends CallOptions {
@@ -132,9 +141,10 @@ export default function useDebouncedCallback<
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
   const lastThis = useRef<unknown>();
-  const result = useRef<ReturnType<T>>();
+  const result = useRef<ReturnType<T>|null>(null);
   const funcRef = useRef(func);
   const mounted = useRef(true);
+  const visibilityChangeListener = useRef<VoidFunction>(null);
   // Always keep the latest version of debounce callback, with no wait time.
   funcRef.current = func;
 
@@ -151,17 +161,11 @@ export default function useDebouncedCallback<
 
   const leading = !!options.leading;
   const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
+  const flushOnUnmount = !!options.flushOnUnmount;
   const maxing = 'maxWait' in options;
   const debounceOnServer =
     'debounceOnServer' in options ? !!options.debounceOnServer : false; // `false` by default
   const maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : null;
-
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
 
   // You may have a question, why we have so many code under the useMemo definition.
   //
@@ -282,6 +286,15 @@ export default function useDebouncedCallback<
       if (!timerId.current) {
         startTimer(timerExpired, wait);
       }
+      if (flushOnUnmount && trailing && !visibilityChangeListener.current &&
+          global.document && global.document.addEventListener &&
+          mounted.current) {
+        visibilityChangeListener.current = this.flush.bind(this);
+        global.document.addEventListener(
+          'visibilitychange',
+          visibilityChangeListener.current,
+          { passive: true });
+      }
       return result.current;
     };
 
@@ -325,6 +338,21 @@ export default function useDebouncedCallback<
     debounceOnServer,
     forceUpdate,
   ]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      if (flushOnUnmount && trailing) {
+        debounced.flush();
+      }
+      if (visibilityChangeListener.current) {
+        global.document.removeEventListener(
+          'visibilitychange', visibilityChangeListener.current);
+        visibilityChangeListener.current = null;
+      }
+      mounted.current = false;
+    };
+  }, []);
 
   return debounced;
 }

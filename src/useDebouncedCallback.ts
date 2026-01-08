@@ -140,8 +140,8 @@ export default function useDebouncedCallback<
   const firstInvokeTime = useRef(0);
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
-  const lastThis = useRef<unknown>();
-  const result = useRef<ReturnType<T>|null>(null);
+  const lastThis = useRef<ControlFunctions<ReturnType<T>>>();
+  const result = useRef<ReturnType<T>>(null);
   const funcRef = useRef(func);
   const mounted = useRef(true);
   const visibilityChangeListener = useRef<VoidFunction>(null);
@@ -289,7 +289,11 @@ export default function useDebouncedCallback<
       if (flushOnUnmount && trailing && !visibilityChangeListener.current &&
           global.document && global.document.addEventListener &&
           mounted.current) {
-        visibilityChangeListener.current = this.flush.bind(this);
+        visibilityChangeListener.current = () => {
+          if (global.document.visibilityState === 'hidden' && lastThis.current) {
+            lastThis.current.flush();
+          }
+        }
         global.document.addEventListener(
           'visibilitychange',
           visibilityChangeListener.current,
@@ -342,8 +346,8 @@ export default function useDebouncedCallback<
   useEffect(() => {
     mounted.current = true;
     return () => {
-      if (flushOnUnmount && trailing) {
-        debounced.flush();
+      if (flushOnUnmount && trailing && lastThis.current) {
+        lastThis.current.flush();
       }
       if (visibilityChangeListener.current) {
         global.document.removeEventListener(
@@ -352,7 +356,18 @@ export default function useDebouncedCallback<
       }
       mounted.current = false;
     };
-  }, []);
+  }, [mounted, visibilityChangeListener, lastThis]);
+
+  useEffect(() => {
+    // This handles an unusual edge-case: If 'flushOnUnmount' or 'trailing'
+    // changed their value since initial invocation, then a visibilityChangeListener
+    // may have been created that now needs to be removed.
+    if (!(flushOnUnmount && trailing) && visibilityChangeListener.current) {
+      global.document.removeEventListener(
+        'visibilitychange', visibilityChangeListener.current);
+      visibilityChangeListener.current = null;
+    }
+  }, [visibilityChangeListener, flushOnUnmount, trailing]);
 
   return debounced;
 }

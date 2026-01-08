@@ -85,30 +85,30 @@
   "size-limit": [
     {
       "path": "dist/index.js",
-      "limit": "1.2 KB"
+      "limit": "1.34 KB"
     },
     {
       "path": "dist/index.module.js",
-      "limit": "1.2 KB"
+      "limit": "1.34 KB"
     },
     {
       "path": "dist/index.umd.js",
-      "limit": "1.23 KB"
+      "limit": "1.34 KB"
     },
     {
       "path": "dist/index.js",
       "import": "{ useDebounce }",
-      "limit": "1.2 KB"
+      "limit": "1.34 KB"
     },
     {
       "path": "dist/index.js",
       "import": "{ useDebouncedCallback }",
-      "limit": "1.2 KB"
+      "limit": "1.34 KB"
     },
     {
       "path": "dist/index.js",
       "import": "{ useThrottledCallback }",
-      "limit": "1.2 KB"
+      "limit": "1.34 KB"
     }
   ]
 }

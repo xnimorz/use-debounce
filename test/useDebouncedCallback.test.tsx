@@ -573,7 +573,7 @@ describe('useDebouncedCallback', () => {
     // @ts-ignore
     expect(screen.getByRole('test')).toHaveTextContent('one');
 
-    const visibilityMock = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    const visibilityStateMock = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
     document.dispatchEvent(new Event('visibilitychange'));
     expect(callback.mock.calls.length).toBe(1);
     visibilityStateMock.mockRestore();

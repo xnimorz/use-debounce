@@ -559,6 +559,26 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(0);
   });
 
+  it('will call on visibilitychange:hidden', () => {
+    const callback = jest.fn();
+
+    function Component({ text }) {
+      const debounced = useDebouncedCallback(callback, 500, {trailing: true, flushOnUnmount: true});
+      debounced();
+      return <span role="test">{text}</span>;
+    }
+    const tree = render(<Component text="one" />);
+
+    expect(callback.mock.calls.length).toBe(0);
+    // @ts-ignore
+    expect(screen.getByRole('test')).toHaveTextContent('one');
+
+    const visibilityMock = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(callback.mock.calls.length).toBe(1);
+    visibilityStateMock.mockRestore();
+  });
+
   it('will memoize debouncedCallback', () => {
     let debouncedCallbackCached: any = null;
 

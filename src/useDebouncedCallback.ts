@@ -19,7 +19,7 @@ export interface CallOptions {
    * Controls if the function should be invoked immediately when the React component unmounts,
    * or if the page is closed. This is usually desirable whenever `func` is a function that
    * persists data. This has no effect if `trailing == false`.
-   * 
+   *
    * Note: If `func` calls the `fetch()` API, you probably also want to set the `keepalive=true`
    * option for `fetch()` so it can finish in the background if the user closes the page.
    */
@@ -140,11 +140,12 @@ export default function useDebouncedCallback<
   const firstInvokeTime = useRef(0);
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
-  const lastThis = useRef<ControlFunctions<ReturnType<T>>>();
+  const lastThis = useRef<unknown>();
   const result = useRef<ReturnType<T>>();
   const funcRef = useRef(func);
   const mounted = useRef(true);
   const visibilityChangeListener = useRef<VoidFunction>(null);
+  const debouncedRef = useRef<DebouncedState<T>>();
   // Always keep the latest version of debounce callback, with no wait time.
   funcRef.current = func;
 
@@ -268,6 +269,28 @@ export default function useDebouncedCallback<
       lastThis.current = this;
       lastCallTime.current = time;
 
+      if (
+        flushOnUnmount &&
+        trailing &&
+        !visibilityChangeListener.current &&
+        global.document &&
+        global.document.addEventListener &&
+        mounted.current
+      ) {
+        visibilityChangeListener.current = () => {
+          if (
+            global.document.visibilityState === 'hidden' &&
+            debouncedRef.current
+          ) {
+            debouncedRef.current.flush();
+          }
+        };
+        global.document.addEventListener(
+          'visibilitychange',
+          visibilityChangeListener.current,
+          { passive: true }
+        );
+      }
       if (isInvoking) {
         if (!timerId.current && mounted.current) {
           // Reset any `maxWait` timer.
@@ -285,19 +308,6 @@ export default function useDebouncedCallback<
       }
       if (!timerId.current) {
         startTimer(timerExpired, wait);
-      }
-      if (flushOnUnmount && trailing && !visibilityChangeListener.current &&
-          global.document && global.document.addEventListener &&
-          mounted.current) {
-        visibilityChangeListener.current = () => {
-          if (global.document.visibilityState === 'hidden' && lastThis.current) {
-            lastThis.current.flush();
-          }
-        }
-        global.document.addEventListener(
-          'visibilitychange',
-          visibilityChangeListener.current,
-          { passive: true });
       }
       return result.current;
     };
@@ -337,26 +347,32 @@ export default function useDebouncedCallback<
     wait,
     maxWait,
     trailing,
+    flushOnUnmount,
     useRAF,
     isClientSide,
     debounceOnServer,
     forceUpdate,
   ]);
 
+  // Store reference to debounced function for cleanup
+  debouncedRef.current = debounced;
+
   useEffect(() => {
     mounted.current = true;
     return () => {
-      if (flushOnUnmount && trailing && lastThis.current) {
-        lastThis.current.flush();
+      if (flushOnUnmount && trailing && debouncedRef.current) {
+        debouncedRef.current.flush();
       }
       if (visibilityChangeListener.current) {
         global.document.removeEventListener(
-          'visibilitychange', visibilityChangeListener.current);
+          'visibilitychange',
+          visibilityChangeListener.current
+        );
         visibilityChangeListener.current = null;
       }
       mounted.current = false;
     };
-  }, [mounted, visibilityChangeListener, lastThis]);
+  }, [flushOnUnmount, trailing]);
 
   useEffect(() => {
     // This handles an unusual edge-case: If 'flushOnUnmount' or 'trailing'
@@ -364,7 +380,9 @@ export default function useDebouncedCallback<
     // may have been created that now needs to be removed.
     if (!(flushOnUnmount && trailing) && visibilityChangeListener.current) {
       global.document.removeEventListener(
-        'visibilitychange', visibilityChangeListener.current);
+        'visibilitychange',
+        visibilityChangeListener.current
+      );
       visibilityChangeListener.current = null;
     }
   }, [visibilityChangeListener, flushOnUnmount, trailing]);

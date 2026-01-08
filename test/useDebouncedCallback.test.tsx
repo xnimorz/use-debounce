@@ -517,11 +517,11 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(1);
   });
 
-  it('will call callback on unmount if flushOnUnmount=true', () => {
+  it('will call callback on unmount if flushOnExit=true', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(callback, 500, {flushOnUnmount: true});
+      const debounced = useDebouncedCallback(callback, 500, {flushOnExit: true});
 
       debounced();
       return <span role="test">{text}</span>;
@@ -539,11 +539,11 @@ describe('useDebouncedCallback', () => {
     expect(callback.mock.calls.length).toBe(1);
   });
   
-  it('no action when debounced never called, even after unmount with flushOnUnmount=true', () => {
+  it('no action when debounced never called, even after unmount with flushOnExit=true', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(callback, 500, {flushOnUnmount: true});
+      const debounced = useDebouncedCallback(callback, 500, {flushOnExit: true});
       return <span role="test">{text}</span>;
     }
     const tree = render(<Component text="one" />);
@@ -563,7 +563,7 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(callback, 500, {trailing: true, flushOnUnmount: true});
+      const debounced = useDebouncedCallback(callback, 500, {trailing: true, flushOnExit: true});
       debounced();
       return <span role="test">{text}</span>;
     }

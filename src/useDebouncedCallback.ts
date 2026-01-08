@@ -23,7 +23,7 @@ export interface CallOptions {
    * Note: If `func` calls the `fetch()` API, you probably also want to set the `keepalive=true`
    * option for `fetch()` so it can finish in the background if the user closes the page.
    */
-  flushOnUnmount?: boolean;
+  flushOnExit?: boolean;
 }
 
 export interface Options extends CallOptions {
@@ -162,7 +162,7 @@ export default function useDebouncedCallback<
 
   const leading = !!options.leading;
   const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
-  const flushOnUnmount = !!options.flushOnUnmount;
+  const flushOnExit = !!options.flushOnExit;
   const maxing = 'maxWait' in options;
   const debounceOnServer =
     'debounceOnServer' in options ? !!options.debounceOnServer : false; // `false` by default
@@ -270,7 +270,7 @@ export default function useDebouncedCallback<
       lastCallTime.current = time;
 
       if (
-        flushOnUnmount &&
+        flushOnExit &&
         trailing &&
         !visibilityChangeListener.current &&
         global.document &&
@@ -347,7 +347,7 @@ export default function useDebouncedCallback<
     wait,
     maxWait,
     trailing,
-    flushOnUnmount,
+    flushOnExit,
     useRAF,
     isClientSide,
     debounceOnServer,
@@ -360,7 +360,7 @@ export default function useDebouncedCallback<
   useEffect(() => {
     mounted.current = true;
     return () => {
-      if (flushOnUnmount && trailing && debouncedRef.current) {
+      if (flushOnExit && trailing && debouncedRef.current) {
         debouncedRef.current.flush();
       }
       if (visibilityChangeListener.current) {
@@ -372,20 +372,20 @@ export default function useDebouncedCallback<
       }
       mounted.current = false;
     };
-  }, [flushOnUnmount, trailing]);
+  }, [flushOnExit, trailing]);
 
   useEffect(() => {
-    // This handles an unusual edge-case: If 'flushOnUnmount' or 'trailing'
+    // This handles an unusual edge-case: If 'flushOnExit' or 'trailing'
     // changed their value since initial invocation, then a visibilityChangeListener
     // may have been created that now needs to be removed.
-    if (!(flushOnUnmount && trailing) && visibilityChangeListener.current) {
+    if (!(flushOnExit && trailing) && visibilityChangeListener.current) {
       global.document.removeEventListener(
         'visibilitychange',
         visibilityChangeListener.current
       );
       visibilityChangeListener.current = null;
     }
-  }, [visibilityChangeListener, flushOnUnmount, trailing]);
+  }, [visibilityChangeListener, flushOnExit, trailing]);
 
   return debounced;
 }

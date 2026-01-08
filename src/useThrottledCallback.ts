@@ -60,12 +60,12 @@ export default function useThrottledCallback<
 >(
   func: T,
   wait: number,
-  { leading = true, trailing = true, flushOnUnmount = false }: CallOptions = {}
+  { leading = true, trailing = true, flushOnExit = false }: CallOptions = {}
 ): DebouncedState<T> {
   return useDebouncedCallback(func, wait, {
     maxWait: wait,
     leading,
     trailing,
-    flushOnUnmount,
+    flushOnExit,
   });
 }

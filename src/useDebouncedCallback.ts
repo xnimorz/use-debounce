@@ -16,12 +16,14 @@ export interface CallOptions {
    */
   trailing?: boolean;
   /**
-   * Controls if the function should be invoked immediately when the React component unmounts,
-   * or if the page is closed. This is usually desirable whenever `func` is a function that
-   * persists data. This has no effect if `trailing == false`.
+   * Controls if the function should be invoked when the React component unmounts or
+   * the page is closed. This is usually desirable whenever `func` has persistent side-effects
+   * such as persists data.
    *
-   * Note: If `func` calls the `fetch()` API, you probably also want to set the `keepalive=true`
-   * option for `fetch()` so it can finish in the background if the user closes the page.
+   * NOTE: If the callback calls `fetch()`, you usually also want to specify the `keepalive=true`
+   * option for `fetch()` so it can finish in the background after the page is closed.
+   *
+   * This option has no effect if `trailing == false`.
    */
   flushOnExit?: boolean;
 }
@@ -144,7 +146,7 @@ export default function useDebouncedCallback<
   const result = useRef<ReturnType<T>>();
   const funcRef = useRef(func);
   const mounted = useRef(true);
-  const visibilityChangeListener = useRef<VoidFunction>(null);
+  const visibilityListener = useRef<VoidFunction>();
   const debouncedRef = useRef<DebouncedState<T>>();
   // Always keep the latest version of debounce callback, with no wait time.
   funcRef.current = func;
@@ -162,7 +164,7 @@ export default function useDebouncedCallback<
 
   const leading = !!options.leading;
   const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
-  const flushOnExit = !!options.flushOnExit;
+  const flushOnExit = !!options.flushOnExit && trailing;
   const maxing = 'maxWait' in options;
   const debounceOnServer =
     'debounceOnServer' in options ? !!options.debounceOnServer : false; // `false` by default
@@ -269,26 +271,15 @@ export default function useDebouncedCallback<
       lastThis.current = this;
       lastCallTime.current = time;
 
-      if (
-        flushOnExit &&
-        trailing &&
-        !visibilityChangeListener.current &&
-        global.document &&
-        global.document.addEventListener &&
-        mounted.current
-      ) {
-        visibilityChangeListener.current = () => {
-          if (
-            global.document.visibilityState === 'hidden' &&
-            debouncedRef.current
-          ) {
+      if (flushOnExit && !visibilityListener.current) {
+        visibilityListener.current = () => {
+          if (global.document?.visibilityState === 'hidden') {
             debouncedRef.current.flush();
           }
         };
-        global.document.addEventListener(
+        global.document?.addEventListener?.(
           'visibilitychange',
-          visibilityChangeListener.current,
-          { passive: true }
+          visibilityListener.current
         );
       }
       if (isInvoking) {
@@ -360,32 +351,19 @@ export default function useDebouncedCallback<
   useEffect(() => {
     mounted.current = true;
     return () => {
-      if (flushOnExit && trailing && debouncedRef.current) {
+      if (flushOnExit) {
         debouncedRef.current.flush();
       }
-      if (visibilityChangeListener.current) {
-        global.document.removeEventListener(
+      if (visibilityListener.current) {
+        global.document?.removeEventListener?.(
           'visibilitychange',
-          visibilityChangeListener.current
+          visibilityListener.current
         );
-        visibilityChangeListener.current = null;
+        visibilityListener.current = null;
       }
       mounted.current = false;
     };
-  }, [flushOnExit, trailing]);
-
-  useEffect(() => {
-    // This handles an unusual edge-case: If 'flushOnExit' or 'trailing'
-    // changed their value since initial invocation, then a visibilityChangeListener
-    // may have been created that now needs to be removed.
-    if (!(flushOnExit && trailing) && visibilityChangeListener.current) {
-      global.document.removeEventListener(
-        'visibilitychange',
-        visibilityChangeListener.current
-      );
-      visibilityChangeListener.current = null;
-    }
-  }, [visibilityChangeListener, flushOnExit, trailing]);
+  }, [flushOnExit]);
 
   return debounced;
 }

@@ -93,7 +93,7 @@
     },
     {
       "path": "dist/index.umd.js",
-      "limit": "1.2 KB"
+      "limit": "1.23 KB"
     },
     {
       "path": "dist/index.js",

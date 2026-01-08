@@ -141,7 +141,7 @@ export default function useDebouncedCallback<
   const timerId = useRef(null);
   const lastArgs = useRef<unknown[]>([]);
   const lastThis = useRef<ControlFunctions<ReturnType<T>>>();
-  const result = useRef<ReturnType<T>>(null);
+  const result = useRef<ReturnType<T>>();
   const funcRef = useRef(func);
   const mounted = useRef(true);
   const visibilityChangeListener = useRef<VoidFunction>(null);

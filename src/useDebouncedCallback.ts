@@ -15,6 +15,17 @@ export interface CallOptions {
    * Controls if the function should be invoked on the trailing edge of the timeout.
    */
   trailing?: boolean;
+  /**
+   * Controls if the function should be invoked when the React component unmounts or
+   * the page is closed. This is usually desirable whenever `func` has persistent side-effects
+   * such as persists data.
+   *
+   * NOTE: If the callback calls `fetch()`, you usually also want to specify the `keepalive=true`
+   * option for `fetch()` so it can finish in the background after the page is closed.
+   *
+   * This option has no effect if `trailing == false`.
+   */
+  flushOnExit?: boolean;
 }
 
 export interface Options extends CallOptions {
@@ -135,6 +146,8 @@ export default function useDebouncedCallback<
   const result = useRef<ReturnType<T>>();
   const funcRef = useRef(func);
   const mounted = useRef(true);
+  const visibilityListener = useRef<VoidFunction>();
+  const debouncedRef = useRef<DebouncedState<T>>();
   // Always keep the latest version of debounce callback, with no wait time.
   funcRef.current = func;
 
@@ -151,17 +164,11 @@ export default function useDebouncedCallback<
 
   const leading = !!options.leading;
   const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
+  const flushOnExit = !!options.flushOnExit && trailing;
   const maxing = 'maxWait' in options;
   const debounceOnServer =
     'debounceOnServer' in options ? !!options.debounceOnServer : false; // `false` by default
   const maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : null;
-
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
 
   // You may have a question, why we have so many code under the useMemo definition.
   //
@@ -264,6 +271,17 @@ export default function useDebouncedCallback<
       lastThis.current = this;
       lastCallTime.current = time;
 
+      if (flushOnExit && !visibilityListener.current) {
+        visibilityListener.current = () => {
+          if (global.document?.visibilityState === 'hidden') {
+            debouncedRef.current.flush();
+          }
+        };
+        global.document?.addEventListener?.(
+          'visibilitychange',
+          visibilityListener.current
+        );
+      }
       if (isInvoking) {
         if (!timerId.current && mounted.current) {
           // Reset any `maxWait` timer.
@@ -320,11 +338,32 @@ export default function useDebouncedCallback<
     wait,
     maxWait,
     trailing,
+    flushOnExit,
     useRAF,
     isClientSide,
     debounceOnServer,
     forceUpdate,
   ]);
+
+  // Store reference to debounced function for cleanup
+  debouncedRef.current = debounced;
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      if (flushOnExit) {
+        debouncedRef.current.flush();
+      }
+      if (visibilityListener.current) {
+        global.document?.removeEventListener?.(
+          'visibilitychange',
+          visibilityListener.current
+        );
+        visibilityListener.current = null;
+      }
+      mounted.current = false;
+    };
+  }, [flushOnExit]);
 
   return debounced;
 }

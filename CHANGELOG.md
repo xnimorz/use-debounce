@@ -1,3 +1,6 @@
+## 10.1.0
+- New parameter introduced: `flushOnExit`. See issue [#205](https://github.com/xnimorz/use-debounce/issues/205) for details. This parameter allows the callback to be executed on component unmount or page exit, enabling specific side-effect such as persistence or other required I/O operations. Thanks to [@h](https://github.com/h) for the contribution. [PR](https://github.com/xnimorz/use-debounce/pull/204)
+
 ## 10.0.5
 - Fixed issue https://github.com/xnimorz/use-debounce/issues/192, where isPending remains true with leading: true configuration, thanks to [@elrion018](https://github.com/elrion018)
 

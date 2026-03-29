@@ -273,11 +273,11 @@ export default function useDebouncedCallback<
 
       if (flushOnExit && !visibilityListener.current) {
         visibilityListener.current = () => {
-          if (global.document?.visibilityState === 'hidden') {
+          if (globalThis.document?.visibilityState === 'hidden') {
             debouncedRef.current.flush();
           }
         };
-        global.document?.addEventListener?.(
+        globalThis.document?.addEventListener?.(
           'visibilitychange',
           visibilityListener.current
         );
@@ -355,7 +355,7 @@ export default function useDebouncedCallback<
         debouncedRef.current.flush();
       }
       if (visibilityListener.current) {
-        global.document?.removeEventListener?.(
+        globalThis.document?.removeEventListener?.(
           'visibilitychange',
           visibilityListener.current
         );

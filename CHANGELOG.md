@@ -1,13 +1,21 @@
+## 10.1.1
+
+- replace global with globalThis which is defined in all possible environments (browser, node, workers) to address https://github.com/xnimorz/use-debounce/issues/212
+
 ## 10.1.0
+
 - New parameter introduced: `flushOnExit`. See issue [#205](https://github.com/xnimorz/use-debounce/issues/205) for details. This parameter allows the callback to be executed on component unmount or page exit, enabling specific side-effect such as persistence or other required I/O operations. Thanks to [@h](https://github.com/h) for the contribution. [PR](https://github.com/xnimorz/use-debounce/pull/204)
 
 ## 10.0.5
+
 - Fixed issue https://github.com/xnimorz/use-debounce/issues/192, where isPending remains true with leading: true configuration, thanks to [@elrion018](https://github.com/elrion018)
 
 ## 10.0.4
+
 - Fix behaviour for strictMode react when leading is set to true and trailing is true
 
 ## 10.0.3
+
 - Removed `peerDependency` part from `package.json` as NPM cannot correctly resolve `peerDependency` for beta and rc versions: see https://stackoverflow.com/questions/67934358/npm-including-all-range-of-pre-release-when-defining-peer-dependency for context
 
 ## 10.0.2

@@ -273,14 +273,16 @@ export default function useDebouncedCallback<
 
       if (flushOnExit && !visibilityListener.current) {
         visibilityListener.current = () => {
-          if (global.document?.visibilityState === 'hidden') {
+          if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
             debouncedRef.current.flush();
           }
         };
-        global.document?.addEventListener?.(
-          'visibilitychange',
-          visibilityListener.current
-        );
+        if (typeof document !== 'undefined') {
+          document.addEventListener(
+            'visibilitychange',
+            visibilityListener.current
+          );
+        }
       }
       if (isInvoking) {
         if (!timerId.current && mounted.current) {
@@ -355,10 +357,12 @@ export default function useDebouncedCallback<
         debouncedRef.current.flush();
       }
       if (visibilityListener.current) {
-        global.document?.removeEventListener?.(
-          'visibilitychange',
-          visibilityListener.current
-        );
+        if (typeof document !== 'undefined') {
+          document.removeEventListener(
+            'visibilitychange',
+            visibilityListener.current
+          );
+        }
         visibilityListener.current = null;
       }
       mounted.current = false;

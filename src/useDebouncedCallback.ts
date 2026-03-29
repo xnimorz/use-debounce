@@ -163,7 +163,10 @@ export default function useDebouncedCallback<
   options = options || {};
 
   const leading = !!options.leading;
-  const trailing = 'trailing' in options ? !!options.trailing : true; // `true` by default
+  // `trailing` is true by default. If both `leading` and `trailing` are false,
+  // force `trailing` to true so the callback is still invocable.
+  const trailing =
+    ('trailing' in options ? !!options.trailing : true) || !leading;
   const flushOnExit = !!options.flushOnExit && trailing;
   const maxing = 'maxWait' in options;
   const debounceOnServer =
@@ -284,7 +287,8 @@ export default function useDebouncedCallback<
       }
       if (isInvoking) {
         if (!timerId.current && mounted.current) {
-          // Reset any `maxWait` timer.
+          // Reset for new debounce cycle.
+          firstInvokeTime.current = 0;
           lastInvokeTime.current = lastCallTime.current;
           // Start the timer for the trailing edge.
           startTimer(timerExpired, wait);
@@ -310,6 +314,7 @@ export default function useDebouncedCallback<
           ? cancelAnimationFrame(timerId.current)
           : clearTimeout(timerId.current);
       }
+      firstInvokeTime.current = 0;
       lastInvokeTime.current = 0;
       lastArgs.current =
         lastCallTime.current =

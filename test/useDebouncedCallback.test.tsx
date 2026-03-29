@@ -189,17 +189,19 @@ describe('useDebouncedCallback', () => {
     ${{ leading: true, trailing: true }}                 | ${1} | ${1} | ${1} | ${1} | ${2}
     ${{ leading: true, trailing: false }}                | ${1} | ${1} | ${1} | ${1} | ${1}
     ${{ leading: false, trailing: true }}                | ${0} | ${0} | ${0} | ${0} | ${1}
-    ${{ leading: false, trailing: false }}               | ${0} | ${0} | ${0} | ${0} | ${0}
+    ${{ leading: false, trailing: false }}               | ${0} | ${0} | ${0} | ${0} | ${1}
     ${{ leading: true, trailing: true, maxWait: 190 }}   | ${1} | ${1} | ${2} | ${2} | ${3}
     ${{ leading: true, trailing: false, maxWait: 190 }}  | ${1} | ${1} | ${1} | ${2} | ${2}
     ${{ leading: false, trailing: true, maxWait: 190 }}  | ${0} | ${0} | ${1} | ${1} | ${2}
     ${{ leading: true, trailing: true, maxWait: 200 }}   | ${1} | ${1} | ${2} | ${2} | ${3}
     ${{ leading: true, trailing: false, maxWait: 200 }}  | ${1} | ${1} | ${1} | ${2} | ${2}
     ${{ leading: false, trailing: true, maxWait: 200 }}  | ${0} | ${0} | ${1} | ${1} | ${2}
-    ${{ leading: false, trailing: false, maxWait: 200 }} | ${0} | ${0} | ${0} | ${0} | ${0}
+    ${{ leading: false, trailing: false, maxWait: 190 }} | ${0} | ${0} | ${1} | ${1} | ${2}
+    ${{ leading: false, trailing: false, maxWait: 200 }} | ${0} | ${0} | ${1} | ${1} | ${2}
     ${{ leading: true, trailing: true, maxWait: 210 }}   | ${1} | ${1} | ${1} | ${2} | ${3}
     ${{ leading: true, trailing: false, maxWait: 210 }}  | ${1} | ${1} | ${1} | ${1} | ${2}
     ${{ leading: false, trailing: true, maxWait: 210 }}  | ${0} | ${0} | ${0} | ${1} | ${2}
+    ${{ leading: false, trailing: false, maxWait: 210 }} | ${0} | ${0} | ${0} | ${1} | ${2}
   `('options=$options', ({ options, _0, _190, _200, _210, _500 }) => {
     const callback = jest.fn();
 
@@ -794,5 +796,216 @@ describe('useDebouncedCallback', () => {
       return <span>{text}</span>;
     }
     render(<Component text="one" />);
+  });
+
+  describe('issue #202: leading=false, trailing=false should still invoke', () => {
+    it('calls callback on trailing edge when both leading and trailing are false', () => {
+      const callback = jest.fn();
+
+      function Component() {
+        const debounced = useDebouncedCallback(callback, 500, {
+          leading: false,
+          trailing: false,
+        });
+        debounced();
+        return null;
+      }
+      render(<Component />);
+
+      expect(callback.mock.calls.length).toBe(0);
+
+      act(() => {
+        jest.runAllTimers();
+      });
+
+      expect(callback.mock.calls.length).toBe(1);
+    });
+
+    it('calls callback only once with rapid calls when both leading and trailing are false', () => {
+      const callback = jest.fn();
+      let debouncedFn: any;
+
+      function Component() {
+        const debounced = useDebouncedCallback(callback, 500, {
+          leading: false,
+          trailing: false,
+        });
+        debouncedFn = debounced;
+        return null;
+      }
+      render(<Component />);
+
+      // Simulate rapid calls
+      act(() => {
+        for (let i = 0; i < 100; i++) {
+          debouncedFn();
+          jest.advanceTimersByTime(10);
+        }
+      });
+
+      expect(callback.mock.calls.length).toBe(0);
+
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      expect(callback.mock.calls.length).toBe(1);
+    });
+
+    it('calls callback with latest args when both leading and trailing are false', () => {
+      const callback = jest.fn();
+      let debouncedFn: any;
+
+      function Component() {
+        const debounced = useDebouncedCallback(callback, 500, {
+          leading: false,
+          trailing: false,
+        });
+        debouncedFn = debounced;
+        return null;
+      }
+      render(<Component />);
+
+      act(() => {
+        debouncedFn('first');
+        jest.advanceTimersByTime(100);
+        debouncedFn('second');
+        jest.advanceTimersByTime(100);
+        debouncedFn('third');
+      });
+
+      act(() => {
+        jest.runAllTimers();
+      });
+
+      expect(callback.mock.calls.length).toBe(1);
+      expect(callback.mock.calls[0][0]).toBe('third');
+    });
+
+    it('supports cancel when both leading and trailing are false', () => {
+      const callback = jest.fn();
+      let debouncedFn: any;
+
+      function Component() {
+        const debounced = useDebouncedCallback(callback, 500, {
+          leading: false,
+          trailing: false,
+        });
+        debouncedFn = debounced;
+        return null;
+      }
+      render(<Component />);
+
+      act(() => {
+        debouncedFn();
+      });
+
+      expect(debouncedFn.isPending()).toBeTruthy();
+      debouncedFn.cancel();
+      expect(debouncedFn.isPending()).toBeFalsy();
+
+      act(() => {
+        jest.runAllTimers();
+      });
+
+      expect(callback.mock.calls.length).toBe(0);
+    });
+
+    it('supports flush when both leading and trailing are false', () => {
+      const callback = jest.fn();
+      let debouncedFn: any;
+
+      function Component() {
+        const debounced = useDebouncedCallback(callback, 500, {
+          leading: false,
+          trailing: false,
+        });
+        debouncedFn = debounced;
+        return null;
+      }
+      render(<Component />);
+
+      act(() => {
+        debouncedFn();
+      });
+
+      expect(callback.mock.calls.length).toBe(0);
+      debouncedFn.flush();
+      expect(callback.mock.calls.length).toBe(1);
+    });
+  });
+
+  describe('firstInvokeTime reset between debounce cycles', () => {
+    it('correctly notifies on timer expiry across multiple leading debounce cycles', () => {
+      const callback = jest.fn();
+      let debouncedFn: any;
+
+      function Component() {
+        const debounced = useDebouncedCallback(callback, 500, {
+          leading: true,
+          trailing: false,
+        });
+        debouncedFn = debounced;
+        return null;
+      }
+      render(<Component />);
+
+      // First cycle: single leading call
+      act(() => {
+        debouncedFn();
+      });
+      expect(callback.mock.calls.length).toBe(1);
+
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+      // No trailing call (trailing: false)
+      expect(callback.mock.calls.length).toBe(1);
+
+      // Second cycle: another single leading call
+      act(() => {
+        debouncedFn();
+      });
+      expect(callback.mock.calls.length).toBe(2);
+
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+      // Should still be 2, no trailing call
+      expect(callback.mock.calls.length).toBe(2);
+    });
+
+    it('resets firstInvokeTime on cancel', () => {
+      const callback = jest.fn();
+      let debouncedFn: any;
+
+      function Component() {
+        const debounced = useDebouncedCallback(callback, 500, {
+          leading: true,
+        });
+        debouncedFn = debounced;
+        return null;
+      }
+      render(<Component />);
+
+      // Start and cancel
+      act(() => {
+        debouncedFn();
+      });
+      expect(callback.mock.calls.length).toBe(1);
+      debouncedFn.cancel();
+
+      // New cycle after cancel
+      act(() => {
+        debouncedFn();
+      });
+      expect(callback.mock.calls.length).toBe(2);
+
+      act(() => {
+        jest.runAllTimers();
+      });
+      // With leading:true, trailing:true (default), single call should NOT fire trailing
+      expect(callback.mock.calls.length).toBe(2);
+    });
   });
 });

@@ -148,8 +148,6 @@ export default function useDebouncedCallback<
   const mounted = useRef(true);
   const visibilityListener = useRef<VoidFunction>();
   const debouncedRef = useRef<DebouncedState<T>>();
-  // Always keep the latest version of debounce callback, with no wait time.
-  funcRef.current = func;
 
   const isClientSide = typeof window !== 'undefined';
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
@@ -169,6 +167,11 @@ export default function useDebouncedCallback<
   const debounceOnServer =
     'debounceOnServer' in options ? !!options.debounceOnServer : false; // `false` by default
   const maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : null;
+
+  useEffect(() => {
+    // Always keep the latest version of debounce callback, with no wait time.
+    funcRef.current = func;
+  }, [func]);
 
   // You may have a question, why we have so many code under the useMemo definition.
   //

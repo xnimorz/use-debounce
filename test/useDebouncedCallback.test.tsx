@@ -500,7 +500,9 @@ describe('useDebouncedCallback', () => {
 
       debounced();
       useEffect(() => {
-        return () => { debounced.flush(); };
+        return () => {
+          debounced.flush();
+        };
       }, []);
       return <span role="test">{text}</span>;
     }
@@ -521,7 +523,9 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(callback, 500, {flushOnExit: true});
+      const debounced = useDebouncedCallback(callback, 500, {
+        flushOnExit: true,
+      });
 
       debounced();
       return <span role="test">{text}</span>;
@@ -538,12 +542,14 @@ describe('useDebouncedCallback', () => {
 
     expect(callback.mock.calls.length).toBe(1);
   });
-  
+
   it('no action when debounced never called, even after unmount with flushOnExit=true', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(callback, 500, {flushOnExit: true});
+      const debounced = useDebouncedCallback(callback, 500, {
+        flushOnExit: true,
+      });
       return <span role="test">{text}</span>;
     }
     const tree = render(<Component text="one" />);
@@ -563,7 +569,10 @@ describe('useDebouncedCallback', () => {
     const callback = jest.fn();
 
     function Component({ text }) {
-      const debounced = useDebouncedCallback(callback, 500, {trailing: true, flushOnExit: true});
+      const debounced = useDebouncedCallback(callback, 500, {
+        trailing: true,
+        flushOnExit: true,
+      });
       debounced();
       return <span role="test">{text}</span>;
     }
@@ -573,7 +582,9 @@ describe('useDebouncedCallback', () => {
     // @ts-ignore
     expect(screen.getByRole('test')).toHaveTextContent('one');
 
-    const visibilityStateMock = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    const visibilityStateMock = jest
+      .spyOn(document, 'visibilityState', 'get')
+      .mockReturnValue('hidden');
     document.dispatchEvent(new Event('visibilitychange'));
     expect(callback.mock.calls.length).toBe(1);
     visibilityStateMock.mockRestore();
@@ -794,5 +805,40 @@ describe('useDebouncedCallback', () => {
       return <span>{text}</span>;
     }
     render(<Component text="one" />);
+  });
+
+  it('should use the latest callback when called during render with leading: true', () => {
+    const callbackFirst = jest.fn();
+    const callbackSecond = jest.fn();
+
+    function Component({ callback }: { callback: () => void }) {
+      const debounced = useDebouncedCallback(callback, 1000, {
+        leading: true,
+        trailing: false,
+      });
+      // Call debounced during render — before useEffect has a chance to run.
+      // This simulates the pattern where debounced is invoked synchronously.
+      debounced();
+      return null;
+    }
+
+    const tree = render(<Component callback={callbackFirst} />);
+
+    expect(callbackFirst).toHaveBeenCalledTimes(1);
+    expect(callbackSecond).toHaveBeenCalledTimes(0);
+
+    // Let the leading cooldown expire so next call triggers leading edge again
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    // Re-render with a new callback — debounced() is called during render,
+    // BEFORE useEffect fires. With the useEffect-based ref update,
+    // funcRef.current still points to callbackFirst at this point.
+    tree.rerender(<Component callback={callbackSecond} />);
+
+    // The new callback should have been called, not the old one
+    expect(callbackSecond).toHaveBeenCalledTimes(1);
+    expect(callbackFirst).toHaveBeenCalledTimes(1);
   });
 });

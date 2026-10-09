@@ -1,4 +1,4 @@
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, renderHook, screen, act, fireEvent } from '@testing-library/react';
 import { useEffect, useCallback, useRef } from 'react';
 import * as React from 'react';
 import useDebouncedCallback from '../src/useDebouncedCallback';
@@ -7,6 +7,38 @@ import { describe, it, expect, jest, beforeEach, test } from '@jest/globals';
 describe('useDebouncedCallback', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+  });
+  it('preserves the latest caller context on the trailing edge', () => {
+    const contexts: unknown[] = [];
+    const callback = jest.fn(function (this: unknown, value: string) {
+      contexts.push(this);
+      return value;
+    });
+    const { result } = renderHook(() => useDebouncedCallback(callback, 100));
+    const first = { name: 'first' };
+    const last = { name: 'last' };
+
+    result.current.call(first, 'first value');
+    result.current.call(last, 'last value');
+    act(() => jest.runAllTimers());
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith('last value');
+    expect(contexts).toEqual([last]);
+  });
+
+  it('preserves caller context and the return value on the leading edge', () => {
+    const context = { value: 'leading value' };
+    const callback = jest.fn(function (this: typeof context) {
+      return this?.value;
+    });
+    const { result } = renderHook(() =>
+      useDebouncedCallback(callback, 100, { leading: true, trailing: false })
+    );
+
+    expect(result.current.call(context)).toBe('leading value');
+    act(() => jest.runAllTimers());
+    expect(callback).toHaveBeenCalledTimes(1);
   });
   it('will call callback when timeout is called', () => {
     const callback = jest.fn();

@@ -260,7 +260,10 @@ export default function useDebouncedCallback<
       }
     };
 
-    const func: DebouncedState<T> = (...args: Parameters<T>): ReturnType<T> => {
+    const func: DebouncedState<T> = function (
+      this: unknown,
+      ...args: Parameters<T>
+    ): ReturnType<T> {
       if (!isClientSide && !debounceOnServer) {
         return;
       }
